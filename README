@@ -1,0 +1,23 @@
+{{name}}
+
+
+{{foreach array as value}}
+	{{value}}
+{{/foreach}}
+
+
+{{foreach array as idx => value}}
+	{{idx}}. {{value}}
+{{/foreach}}
+
+
+{{if( expr )}}
+	...
+{{else if( expr )}}
+	...
+{{else}}
+	...
+{{/if}}
+
+
+{{include filename}}

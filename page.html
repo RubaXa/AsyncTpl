@@ -1,0 +1,26 @@
+<html>
+<head>
+	<title>Example</title>
+</head>
+<body>
+
+	<h1>{{name}}</h1>
+
+	<div>
+		<h3>Colors</h3>
+		<ul>
+		{{foreach colors as idx => color}}
+			{{if idx % 2 }}
+			<li style="color: {{color}}">{{color}}</li>
+			{{/if}}
+		{{/foreach}}
+
+		{{filter colors as color => (color == "red" || color == "yellow")}}
+			<li style="color: {{color}}">{{color}}</li>
+		{{/filter}}
+		</ul>
+	</div>
+
+
+</body>
+</html>
