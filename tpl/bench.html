@@ -1,0 +1,11 @@
+<div>
+	{{js}}
+		var array = [];
+		for( var i = 0; i < 100; i++) array.push(i);
+	{{/js}}
+	{{foreach array as i}}
+		{{foreach checknew.messages as message}}
+			<a href="{{message.Id}}" style="display:block">{{message.Subject}}</a>
+		{{/foreach}}
+	{{/foreach}}
+</div>

@@ -21,3 +21,37 @@
 
 
 {{include filename}}
+
+
+
+
+Возможности
+{{name}}
+{{name.toUpperCase()}}
+{{myFunc(name.toUpperCase())}}
+
+
+{{if( expr )}}...{{else if( expr )}}...{{else}}...{{/if}}
+
+{{switch( var )}}
+	{{case ...:}}
+		{{break;}}
+{{/switch}}
+
+{{foreach}}...{{/foreach}}
+
+
+{{closure (name, items) => (a, b)}}
+{{/closure}}
+
+
+{{block leftcol}}
+	{{include filename.html}}
+	{{block leftcol__banners}}
+		{{include rb.html}}
+		{{include direct.html}}
+	{{/block}}
+{{/block}}
+
+
+

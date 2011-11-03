@@ -1,0 +1,40 @@
+<html>
+<head>
+	<title>Example</title>
+</head>
+<body>
+
+	<h1>{{name}}</h1>
+
+	<div>
+		<h3>Colors</h3>
+
+		<h4>foreach</h4>
+		<ul>
+		{{ foreach colors as idx => color }}
+			{{if idx % 2 }}
+			<li style="color: {{color}}">{{color}}</li>
+			{{/if}}
+		{{/foreach}}
+		</ul>
+		
+		<h4>sort</h4>
+		<ul>
+			<li>
+				{{
+					myArray = ['aaaa', 'bbbb'];
+				}}
+			</li>
+		</ul>
+
+		<h4>filter</h4>
+		<ul>
+			{{filter colors.reverse() as color => (color.toUpperCase() == "RED" || color == "yellow")}}
+				<li style="color: {{color}}">{{color}}</li>
+			{{/filter}}
+		</ul>
+	</div>
+
+
+</body>
+</html>

@@ -2,9 +2,7 @@
 
 var fs = require('fs');
 var sys = require('sys');
-var events = require('events');
 
-var _emitter = new events.EventEmitter;
 var _replaces = [];
 var _cache = {};
 
@@ -13,9 +11,10 @@ var _roblock = /\{\{\s*block\s+([^}]+)\s*\}\}/;
 var _rcblock = /\{\{\s*\/block\s*\}\}/;
 var _rinclude = /\{\{\s*(include|extend)\s+([^\}]+)\s*\}\}[\r\n]*/g;
 
+
 var _transform = {
-	'if ([^}]+)': "if( $1 ){",
-	'else if ([^}]+)': "} else if( $1 ){",
+	'if ([^}]+)': function (a, b){ return "if( "+_safeVar(b)+" ){" },
+	'else if ([^}]+)': function (a, b){ return "} else if( "+_safeVar(b)+" ){" },
 	'/(foreach|if)': '}',
 
 	'foreach (:var) as (:var)(?: => (:var))?': function (a, items, key, val){
@@ -23,7 +22,7 @@ var _transform = {
 			val	= key;
 			key = '__i';
 		}
-		return 'for( var '+key+' = 0, __n = '+items+'.length, '+val+'; '+key+' < __n; '+key+'++ ){ '+val+' = '+items+'['+key+'];';
+		return 'for( var '+key+' = 0, __n = '+_safeVar(items, '[]')+'.length, '+val+'; '+key+' < __n; '+key+'++ ){ '+val+' = '+_safeVar(items+'['+key+']')+';';
 	},
 
 	// Short Filter
@@ -68,9 +67,7 @@ function _replacement(func){
 
 
 function _build(str, inner){
-	str = String(str)
-			.replace(_rinclude, function (a, type, filename){ return _build(fs.readFileSync(filename), true); })
-		;
+	str = String(str).replace(_rinclude, function (a, type, filename){ return _build(fs.readFileSync(filename), true); });
 
 	if( !inner ){
 		var open, close, blocks = {}, name, len;
@@ -88,6 +85,10 @@ function _build(str, inner){
 	return str;
 }
 
+function _safeVar(expr, def){
+	//return	'(function(){ try { return '+expr+'; } catch (x) { return '+def+'; } })()';
+	return	expr;
+}
 
 function _template(filename, func){
 	if( !(filename in _cache) && func ){
@@ -98,7 +99,9 @@ function _template(filename, func){
 
 			str = str
 					.replace(/[\r\t]/g, " ")
-					.replace(/\{\{([^}]+)\}\}/g, '\', this.escape($1), \'')
+					.replace(/\{\{([^}]+)\}\}/g, function (a, b){
+						return	'\', this.escape('+_safeVar(b, "")+'), \'';
+					})
 				;
 
 			//console.log('this.chunk(function (){\nthis.push(\''+ str +'\');\n});');
@@ -120,16 +123,16 @@ function Tpl(filename){
 		return	new Tpl(filename);
 	}
 
-	 events.EventEmitter.call(this);
-
 	this._filename	= filename;
 	this._tpl 		= _template(filename);
 	this._data		= {};
 }
-
-sys.inherits(Tpl, events.EventEmitter);
+Tpl.preload = function (filename){
+	_template(filename, function (){});
+};
 
 Tpl.prototype._fetch = function (tpl){
+	this.emit('start');
 	var reader = new Reader(this.emit.bind(this, 'data'), this.emit.bind(this, 'end'));
 	if( tpl ){
 		this._tpl = tpl;
@@ -153,10 +156,20 @@ Tpl.prototype.fetch = function (){
 	}
 };
 
+Tpl.prototype.on = function (name, fn){
+	if( !this._events ) this._events = {};
+	this._events[name]	= fn;
+	return	this;
+};
+
+Tpl.prototype.emit = function (name, data){
+	this._events[name].call(this, data);
+};
+
 Tpl.prototype.one = function (name, func){
-	this.on(name, function __(){
-		this.removeListener(name, __);
-		func.apply(this, arguments);
+	this.on(name, function __(data){
+		delete this._events[name];
+		func.call(this, data);
 	}.bind(this));
 	return	this;
 };
@@ -230,7 +243,7 @@ Reader.prototype._read = function (tpl){
 				}.bind(this));
 			} else {
 				var res = [];
-				res.escape = htmlEscape;
+				res.escape = escapeHtml;
 				chunk.call( res );
 				this._ondata( res.join('') );
 				this._next(tpl, true);
@@ -244,6 +257,7 @@ Reader.prototype._read = function (tpl){
 
 Reader.prototype.read = function (tpl){
 //	this._chunks = this._chunks;
+	console.log('chunks:', this._chunks.length);
 	this._read(tpl);
 };
 
@@ -277,9 +291,18 @@ function _pull(tpl, name, tplPart, onEnd){
 
 module.exports = Tpl;
 
-function htmlEscape(text) {
-   return String(text).replace(/&/g,'&amp;').
-     replace(/</g,'&lt;').
-     replace(/"/g,'&quot;').
-     replace(/'/g, '&#039;');
+var HCHARS = /[&<>\"]/,
+    AMP    = /&/g,
+    LT     = /</g,
+    GT     = />/g,
+    QUOT   = /\"/g;
+
+ function escapeHtml(s) {
+	if (typeof s === "string") {
+		if (!HCHARS.test(s)) {
+			return s;
+		}
+		return s.replace(AMP,'&amp;').replace(LT,'&lt;').replace(GT,'&gt;').replace(QUOT,'&quot;');
+	}
+	return s;
 }
