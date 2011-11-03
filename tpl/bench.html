@@ -2,6 +2,7 @@
 	{{js}}
 		var array = [];
 		for( var i = 0; i < 100; i++) array.push(i);
+		__ctx.set('array', array);
 	{{/js}}
 	{{foreach array as i}}
 		{{foreach checknew.messages as message}}
