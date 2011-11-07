@@ -6,7 +6,7 @@
 	{{/js}}
 	{{foreach array as i}}
 		{{foreach checknew.messages as message}}
-			<a href="{{message.Id}}" style="display:block">{{message.Subject}}</a>
+			<a href="{{message.Id}}" style="display:block">{{i}}{{message.Subject}}</a>
 		{{/foreach}}
 	{{/foreach}}
 </div>
