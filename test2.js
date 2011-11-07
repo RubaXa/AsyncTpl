@@ -21,7 +21,7 @@ function func(__ctx, __buf, __utils) {
 	__buf.push(' 	');
 
 
-	if( 1 )
+	if( 0 )
 		__ctx.each(__ctx.getVal(["array"]), "i", function(__ctx) {
 			__buf.push(' 		');
 			__ctx.each(__ctx.getVal(["checknew","messages"]), "message", function(__ctx) {
