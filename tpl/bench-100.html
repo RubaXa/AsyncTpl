@@ -1,0 +1,17 @@
+<html>
+	<head>
+		<title>Fest bench</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	</head>
+	<body>
+		{{js}}
+			var array = (function(){var array=[]; for(var i=0;i<100;i++){array.push(i)}return array})();
+			__ctx.set('array', array);
+		{{/js}}
+		{{foreach array as i}}
+			{{foreach checknew.messages as message }}
+				<a href="{{message.Id}}" style="display:block">{{message.Subject}}</a>
+			{{/foreach}}
+		{{/foreach}}
+	</body>
+</html>
