@@ -41,11 +41,10 @@
 			</head>
 			<body>
 				{{js}}
-					var array = (function(){var array=[]; for(var i=0;i<100;i++){array.push(i)}return array})();
-					__ctx.set('array', array);
+					ctx.array = (function(){var array=[]; for(var i=0;i<100;i++){array.push(i)}return array})();
 				{{/js}}
-				{{foreach array as i}}
-					{{foreach checknew.messages as message }}
+				{{foreach ctx.array as i}}
+					{{foreach ctx.checknew.messages as message }}
 						<a href="{{message.Id}}" style="display:block">{{message.Subject}}</a>
 					{{/foreach}}
 				{{/foreach}}
