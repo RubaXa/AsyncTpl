@@ -11,6 +11,14 @@
 		var require = function (path){
 			return	__build[path];
 		};
+
+		var __timers = {};
+		console.time = function (name){
+			__timers[name]	= (new Date).getTime();
+		};
+		console.timeEnd = function (name){
+			console.log(name+':', (new Date).getTime() - __timers[name], 'ms');
+		};
 	</script>
 
 	<script src="./lib/utils.js" type="text/javascript"></script>
