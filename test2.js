@@ -15,13 +15,13 @@ function func(__ctx, __buf, __utils) {
 	__buf.push('<div> 	');
 
 	var array = [];
-	for (var i = 0; i < 100; i++) array.push(i);
+	for (var i = 0; i < 1000; i++) array.push(i);
 
 	__ctx.set('array', array);
 	__buf.push(' 	');
 
 
-	if( 1 ){
+	if( 0 ){
 		__ctx.each(__ctx.getVal(["array"]), "i", function(__ctx) {
 			__buf.push(' 		');
 			__ctx.each(__ctx.getVal(["checknew","messages"]), "message", function(__ctx) {
@@ -45,4 +45,29 @@ function func(__ctx, __buf, __utils) {
 	__buf.push(' </div> ');
 
 	return	__buf.join('');
+}
+
+
+
+
+function Buffer(){
+	var __res	= [];
+	var __idx	= 0;
+
+
+	this.push = function (a){
+		__res[__idx++]	= a;
+
+		if( arguments.length !== 1 ){
+			var args = arguments, i = 1, n = args.length;			
+			for( ; i < n; i++ ){
+				__res[__idx++]	= args[i];
+			}
+		}
+	};
+
+
+	this.join = function (glue){
+		return	__res.join(glue);
+	};
 }
