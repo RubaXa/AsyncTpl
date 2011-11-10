@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<fest:template xmlns:fest="http://fest.mail.ru" context="json">
+    <fest:include src="messagelist/content.xml"/>
+    <fest:doctype/>
+    <html>
+        <head>
+            <title>Список писем</title>
+            <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+            <link href="http://img.imgsmail.ru/mail/ru/css/neo/pages/main.css?3.95.2" rel="stylesheet" type="text/css"/>
+        </head>
+        <body>
+            <fest:get name="content"/>
+        </body>
+    </html>
+</fest:template>

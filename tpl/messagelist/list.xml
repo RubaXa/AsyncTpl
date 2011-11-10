@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<fest:template xmlns:fest="http://fest.mail.ru" context="json">
+    <fest:set name="list">
+        <div class="messagelist-wrapper">
+            <div class="messagelist messagelist_simple">
+                <fest:foreach iterate="ctx.messages" as="msg">
+                    <div id="fest:'msglist-' + msg.Id" class="js-msg messageline ">
+                        <label class="messageline__checkbox">
+                    		<input title="выбрать" type="checkbox" name="id" value="fest:msg.Id" id="chb13208443130000000461"/>
+                    	</label>
+                    	<span class="js-ico messageline__status">
+                            <i class="messageline__status__icon icon icon_message-status icon_message-status_0" title=""></i>
+                        </span>
+                    	<span class="js-flag messageline__flag">
+                    		<i class="js-flag-icon messageline__flag__icon icon icon_message-flag  " title="пометить флажком"></i>
+                    	</span>
+                    	<span class="js-attach messageline__attach">
+                            <span class="js-attach-icon messageline__attach__icon icon icon_attach"></span>
+                            <span class="messageline__attach__arrow"></span>
+                        </span>
+                    	<span class="messageline__body">
+                    		<span class="messageline__microformat-buttons"></span>
+                    		<a class="messageline__body__link" rel="history" href="fest:'/cgi-bin/readmsg?id=' + msg.Id + '&amp;folder=' + msg.FolderId" title="fest:msg.From">
+                    			<i class="messageline__picture"></i>
+                    			<span class="messageline__body__name" title="fest:msg.From">
+                                    <fest:value>msg.From</fest:value>
+                                </span>
+                    			<span class="messageline__body__subject" title="fest:msg.Subject">
+                                    <fest:value>msg.Subject</fest:value>
+                                </span>
+                    			<span class="messageline__body__text"></span>
+                    			<span class="messageline__date" title="fest:msg.Date">
+                                    <fest:value>msg.DateShort</fest:value>
+                                </span>
+                    			<i class="messageline__fade messageline__fade_name"></i>
+                    			<i class="messageline__fade messageline__fade_date"></i>
+                    		</a>
+                    	</span>
+                    </div>
+                </fest:foreach>
+            </div>
+        </div>
+    </fest:set>
+</fest:template>
