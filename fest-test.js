@@ -6,6 +6,7 @@ console.time('compile');
 
 var page = (new Tpl('./tpl/messagelist.xml', { stream: false }))
 	.set( data )
+	.preload()
 	.on('start', function (){
 //		console.timeEnd('compile');
 //		console.time('stream');
