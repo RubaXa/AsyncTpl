@@ -1,1 +1,0 @@
-{"includes":{"./xml/shorttag.xml":1321693585000},"template":"function anonymous(ctx, __this, __ondata, __utils) {\n'use strict';__ondata('<meta/>'); __ondata();\n}"}

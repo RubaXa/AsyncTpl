@@ -1,1 +1,0 @@
-{"includes":{"./xml/choose.xml":1321693585000},"template":"function anonymous(ctx, __this, __ondata, __utils) {\n'use strict';if(true){__ondata('true');} else if(false){__ondata('false');} else {__ondata('choose');}if(false){__ondata('true');} else if(false){__ondata('false');} else {__ondata('choose');} __ondata();\n}"}

@@ -1,1 +1,0 @@
-{"includes":{"./xml/attrs.xml":1321878836000},"template":"function anonymous(ctx, __this, __ondata, __utils) {\n'use strict';__ondata('<a href=\"', __utils.escape((function (){try{return ctx.href}catch(e){return\"\"}})()), '\" title=\"', __utils.escape((function (){try{return ctx.title}catch(e){return\"\"}})()), '\" class=\"link\">rubaxa.org</a>'); __ondata();\n}"}

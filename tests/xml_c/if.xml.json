@@ -1,1 +1,0 @@
-{"includes":{"./xml/if.xml":1321693585000},"template":"function anonymous(ctx, __this, __ondata, __utils) {\n'use strict';if(true){__ondata('true');}if(false){__ondata('false');} __ondata();\n}"}
