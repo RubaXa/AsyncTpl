@@ -5,10 +5,10 @@ Is a asynchronous template engine for nodejs or the browser.
 
 ## Features
 
-	* XML or Smarty syntaxis
-	* async/streaming operation
-	* browser/node compatibility
-	* fastest
+* XML or Smarty syntaxis
+* async/streaming operation
+* browser/node compatibility
+* fastest
 
 
 ## Usage
@@ -229,10 +229,10 @@ ctx = {
 ### script
 ```html
 <xtpl:script>
-	<![CDATA[
+<![CDATA[
 	ctx.script = 2 < 3;
 	var txt = 'global';
-	]]>
+]]>
 </xtpl:script>
 <div>
 	<xtpl:value>ctx.script</xtpl:value>
