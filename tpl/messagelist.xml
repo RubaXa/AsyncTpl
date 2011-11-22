@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
-<fest:template xmlns:fest="http://fest.mail.ru" context="json">
-    <fest:include src="messagelist/page.xml"/>
-    <fest:include src="messagelist/portal-headline.xml"/>
-    <fest:include src="messagelist/portal-menu.xml"/>
-    <fest:include src="messagelist/left-col.xml"/>
-    <fest:include src="messagelist/list.xml"/>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:include src="messagelist/page.xml"/>
+    <xtpl:include src="messagelist/portal-headline.xml"/>
+    <xtpl:include src="messagelist/portal-menu.xml"/>
+    <xtpl:include src="messagelist/left-col.xml"/>
+    <xtpl:include src="messagelist/list.xml"/>
 
-    <fest:set name="title">Message list</fest:set>
+    <xtpl:set name="title">Message list</xtpl:set>
 
-    <fest:set name="content">
-        <fest:get name="headline"/>
-        <fest:get name="headline-menu"/>
+    <xtpl:set name="content">
+        <xtpl:get name="headline"/>
+        <xtpl:get name="headline-menu"/>
         <div class="page minwidth">
-            <fest:get name="left-col"/>
+            <xtpl:get name="left-col"/>
             <div class="page__content">
                 <div class="page__content__wrapper">
-                    <fest:get name="list"/>
+                    <xtpl:get name="list"/>
                 </div>
             </div>
         </div>
-    </fest:set>
-</fest:template>
+    </xtpl:set>
+</xtpl:template>

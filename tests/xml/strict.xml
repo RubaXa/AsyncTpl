@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:script>
+        <![CDATA[
+        ctx.not_strict = true;
+        ]]>
+    </xtpl:script>
+    <xtpl:script>
+        <![CDATA[
+        g = true;
+        ctx.not_strict = false;
+        ]]>
+    </xtpl:script>
+    <xtpl:value>ctx.not_strict</xtpl:value>
+</xtpl:template>

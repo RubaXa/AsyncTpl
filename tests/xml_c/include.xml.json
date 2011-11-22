@@ -1,0 +1,1 @@
+{"includes":{"./xml/include.xml":1321693604000,"./xml/./text.xml":1321693585000},"template":"function anonymous(ctx, __this, __ondata, __utils) {\n'use strict';__ondata('json.variable'); __ondata();\n}"}

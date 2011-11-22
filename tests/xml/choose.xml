@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:choose>
+        <xtpl:when test="true">
+            <xtpl:text>true</xtpl:text>
+        </xtpl:when>
+        <xtpl:when test="false">
+            <xtpl:text>false</xtpl:text>
+        </xtpl:when>
+        <xtpl:otherwise>
+            <xtpl:text>choose</xtpl:text>
+        </xtpl:otherwise>
+    </xtpl:choose>
+    <xtpl:choose>
+        <xtpl:when test="false">
+            <xtpl:text>true</xtpl:text>
+        </xtpl:when>
+        <xtpl:when test="false">
+            <xtpl:text>false</xtpl:text>
+        </xtpl:when>
+        <xtpl:otherwise>
+            <xtpl:text>choose</xtpl:text>
+        </xtpl:otherwise>
+    </xtpl:choose>
+</xtpl:template>

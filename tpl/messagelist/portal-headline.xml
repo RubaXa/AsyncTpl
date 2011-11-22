@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<fest:template xmlns:fest="http://fest.mail.ru">
-    <fest:set name="headline">
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:set name="headline">
         <style type="text/css">
             .portal-headline {
               position: relative;
@@ -347,5 +347,5 @@
             document.write('<span id="portal-headline_logout"  class="portal-headline__login"><span id="portal-menu__user-email">ibn@rubaxa.org</span><a class="portal-headline__login__link" href="/cgi-bin/logout' + encodeURIComponent('') + '">выход</a> </span><span id="portal-headline_login" style="display:none;" class="portal-headline__login"><a class="portal-headline__login__link" href="/cgi-bin/login' + encodeURIComponent('') + '">Вход</a></span>');
             </script><span id="portal-headline_logout" class="portal-headline__login"><span id="portal-menu__user-email">ibn@rubaxa.org</span><a class="portal-headline__login__link" href="/cgi-bin/logout">выход</a> </span><span id="portal-headline_login" style="display:none;" class="portal-headline__login"><a class="portal-headline__login__link" href="/cgi-bin/login">Вход</a></span>
         </div>
-    </fest:set>
-</fest:template>
+    </xtpl:set>
+</xtpl:template>

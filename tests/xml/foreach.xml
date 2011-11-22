@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:foreach iterate="ctx.items" as="i">
+        <xtpl:value>i</xtpl:value>
+    </xtpl:foreach>
+    <xtpl:foreach iterate="ctx.subitems" index="i">
+        <xtpl:foreach iterate="ctx.subitems[i]" index="j">
+            <xtpl:value>i</xtpl:value><xtpl:value>ctx.subitems[i][j]</xtpl:value>
+        </xtpl:foreach>
+    </xtpl:foreach>
+</xtpl:template>

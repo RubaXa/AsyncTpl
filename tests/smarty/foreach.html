@@ -1,0 +1,11 @@
+<div>
+	{{foreach from=$items item=item}}
+		{{$item}}
+	{{/foreach}}
+
+	{{foreach from=$items key=i}}
+		{{foreach from=$subitems key=j}}
+			{{$i}}{{$subitems[$i][$j]}}
+		{{/foreach}}
+	{{/foreach}}
+</div>

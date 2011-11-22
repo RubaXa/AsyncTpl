@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:set name="one">1</xtpl:set>
+    <xtpl:set name="two">2</xtpl:set>
+    <xtpl:set name="three">3</xtpl:set>
+    <xtpl:set name="four" test="false">4</xtpl:set>
+    <xtpl:set name="six">5</xtpl:set>
+
+
+    <xtpl:get name="one"/>
+    <xtpl:get name="two"/>
+    <xtpl:get name="three"/>
+    <xtpl:get name="four"/>
+    <xtpl:get name="six"/>
+	<xtpl:get name="def">def</xtpl:get>
+</xtpl:template>

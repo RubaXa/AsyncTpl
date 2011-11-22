@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
-<fest:template xmlns:fest="http://fest.mail.ru" context="json">
-    <fest:doctype/>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:doctype/>
     <html>
         <head>
             <title>
-                <fest:get name="title"/>
-                <fest:set name="title">Mail.ru</fest:set>
+                <xtpl:get name="title"/>
+                <xtpl:set name="title">Mail.ru</xtpl:set>
             </title>
             <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
             <link href="http://img.imgsmail.ru/mail/ru/css/neo/pages/main.css?3.95.2" rel="stylesheet" type="text/css"/>
         </head>
         <body>
-            <fest:get name="content"/>
-            <fest:set name="content"></fest:set>
+            <xtpl:get name="content"/>
+            <xtpl:set name="content"></xtpl:set>
         </body>
     </html>
-</fest:template>
+</xtpl:template>
