@@ -67,6 +67,16 @@ vows.describe('Smarty tests').addBatch({
 		}
 	},
 
+	'functions': {
+		  'topic': function (){
+			return transform('functions.html', {
+			});
+		}
+		, 'result': function (result){
+			assert.equal(result, 'RubaXa|');
+		}
+	},
+
 /**/
 	'end': {
 		  'topic':	function(){ return true; }
