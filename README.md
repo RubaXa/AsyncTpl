@@ -89,7 +89,7 @@ http.createServer(function (req, res){
 	var xtpl = AsyncTpl.engine('XML');
 
 	xtpl.fetch('#MyTpl', { text: 'Yahooo!' }).then(function (result){
-		document.getElementById('#Result').inenrHTML = result;
+		document.getElementById('#Result').innerHTML = result;
 	});
 
 	// OR
