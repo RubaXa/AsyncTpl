@@ -8,4 +8,10 @@
 			{{$i}}{{$subitems[$i][$j]}}
 		{{/foreach}}
 	{{/foreach}}
+
+	{{foreach from=$undef}}
+		FAIL
+	{{foreachelse}}
+		OK
+	{{/foreach}}
 </div>

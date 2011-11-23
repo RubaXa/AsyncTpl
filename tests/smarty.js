@@ -1,5 +1,5 @@
 var
-	  xtpl		= require('../lib/AsyncTpl').extend(require('../lib/Smarty'))
+	  xtpl		= require('../lib/AsyncTpl').engine(require('../lib/Smarty'))
 	, vows		= require('../../vows/lib/vows.js')
 	, events	= require('events')
 	, assert	= require('assert')
@@ -22,7 +22,7 @@ vows.describe('Smarty tests').addBatch({
 		'topic':	function(){ return transform('value.html', { username: 'RubaXa' }); }
 	  , 'result':	function(result){ assert.equal(result, 'RubaXa'); }
 	},
-
+/**/
     'comment': {
 		  'topic':	function(){ return transform('comment.html'); }
 		, 'result':	function(result){ assert.equal(result, '---'); }
@@ -37,7 +37,7 @@ vows.describe('Smarty tests').addBatch({
 		  'topic':	function(){ return transform('foreach.html', { items: [1, 2], subitems: [[1, 2], [1, 2]]}); }
 		, 'result':	function(result){
 			assert.equal(result.substr(0, 2), '12');
-			assert.equal(result.substr(2, result.length - 1), '01021112');
+			assert.equal(result.substr(2, result.length - 1), '01021112OK');
 		}
     },
 
@@ -46,18 +46,26 @@ vows.describe('Smarty tests').addBatch({
 		, 'result':	function(result){ assert.equal(result, 'true'); }
     },
 
-	/*
-    'blocks': {
-		  'topic':	function(){ return transform('blocks.html'); }
-		, 'result':	function(result){
-			result = result.split('|');
-			assert.equal(result[1], 'one');
-			assert.equal(result[2], 'two2');
-			assert.equal(result[3], 'three1');
-			assert.equal(result[4], 'five');
-			assert.equal(result[5], 'six');
-		}
+    'extends': {
+		  'topic':	function(){ return transform('child.html'); }
+		, 'result':	function(result){ assert.equal(result, '1|second|three'); }
     },
+
+	'modifiers': {
+		  'topic':	function (){
+			  return transform('modifiers.html', {
+				    'upper': 'uPpER'
+				  , 'lower': 'LoWER'
+				  , 'capitalize': 'capitAlize'
+				  , 'nl2br': 'a\nb'
+				  , 'regex_replace': 'a b'
+				  , 'combining': 'cOmBiNI\nng'
+			  });
+		  }
+		, 'result':	function(result){
+			assert.equal(result, 'UPPER|lower|Capitalize|a<br/>b|a_b|Combini<br/>ng|');
+		}
+	},
 
 /**/
 	'end': {

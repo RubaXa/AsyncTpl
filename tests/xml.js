@@ -1,5 +1,5 @@
 var
-	  xtpl		= require('../lib/AsyncTpl').extend('XML')
+	  xtpl		= require('../lib/AsyncTpl').engine('XML')
 	, vows		= require('../../vows/lib/vows.js')
 	, events	= require('events')
 	, assert	= require('assert')
