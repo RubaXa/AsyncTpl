@@ -1,0 +1,82 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>AsynTpl :: XML :: tests</title>
+
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+	<script src="../lib/AsyncTpl.min.js"></script>
+
+</head>
+<body>
+
+	<div id="Result"></div>
+
+	<script id="text" type="text/xml">
+		<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+			<xtpl:text>my text</xtpl:text>
+		</xtpl:template>
+	</script>
+
+	<script id="value" type="text/xml">
+		<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+			<xtpl:value>ctx.val</xtpl:value>
+		</xtpl:template>
+	</script>
+
+	<script id="attrs" type="text/xml">
+		<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+			<a href="xtpl:ctx.href" title="xtpl:ctx.title" class="link">link.html</a>
+		</xtpl:template>
+	</script>
+
+
+	<script type="text/javascript">
+		var xtpl = AsyncTpl.engine('XML');
+
+		xtpl.ASYNC = false;
+		xtpl.ROOT_DIR = './xml/';
+
+		function equal(tpl, data, txt){
+			if( !txt ){
+				txt = data;
+				data = {};
+			}
+
+			var uid = String(Math.random()).replace('.', '');
+			var node = document.createElement('div');
+
+			node.id = uid;
+			node.style.color = 'white';
+			node.style.margin = '1px';
+			node.style.padding = '5px';
+
+			document.getElementById('Result').appendChild(node);
+
+			console.time(tpl);
+			xtpl.fetch(tpl, data).then(function (res){
+				console.timeEnd(tpl);
+				node.innerHTML = tpl +' -> '+ res;
+				if( typeof txt == 'string' ) res = res == txt; else res = txt(res);
+				node.style.backgroundColor = res ? 'green' : 'red';
+			});
+		}
+
+		equal('#text', 'my text');
+		equal('#value', { val: 'my value' }, 'my value');
+		equal('#attrs', { href: "http://rubaxa.org/", title: "home page" }, '<a href="http://rubaxa.org/" title="home page" class="link">link.html</a>');
+		equal('script.xml', 'trueglobal');
+		equal('strict.xml', 'true');
+		equal('blocks.xml', function (result){
+			result = result.split('|');
+			return (result[1] == 'one')
+			&& (result[2] == 'two2')
+			&& (result[3] == 'three1')
+			&& (result[4] == 'five')
+			&& (result[5] == 'six')
+			&& (result[6] == 'def');
+		});
+		equal('include.xml', 'my.text');
+		equal('htmlsafe.xml', { html: '<script>' }, '&lt;script&gt;');
+	</script>
+</body>
+</html>

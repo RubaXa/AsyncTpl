@@ -1,6 +1,6 @@
 var Tpl		= require('./lib/AsyncTpl');
 var http	= require('http');
-var xtpl	= require('./lib/AsyncTpl').extend('XML');
+var xtpl	= require('./lib/AsyncTpl').engine('XML');
 
 xtpl.ASYNC			= false;
 xtpl.STREAM			= false;

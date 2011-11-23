@@ -19,7 +19,7 @@ Is a asynchronous template engine for nodejs or the browser.
 ```js
 var xtpl = require('./lib/AsyncTpl').engine('XML');
 
-// Setup
+// Setup XML
 xtpl.NS = 'xtpl';
 xtpl.ASYNC = true;
 xtpl.STREAM = false;
@@ -85,8 +85,34 @@ http.createServer(function (req, res){
 </script>
 ```
 
+## Support Smarty
 
-## Support TAGS
+* comment `{{* ... *}}`
+* foreach + foreachelse
+* if, elseif and else
+* modifilers: upper, lower, capitalize, nl2br, regex_replace, combining
+* include (support only file-attr)
+* extends + block
+
+### Usage
+
+```js
+var smarty = require('AsyncTpl').engine('Smarty');
+
+smarty.LEFT = '{{';
+smarty.RIGHT = '}}';
+
+// Add custom modifiers
+smarty.addModifiers({
+	modName: function (val, arg1, arg2){ reutrn val.substr(arg1, arg2); }
+});
+
+smarty.fetch('my.tpl', {}).then(function (res){
+});
+```
+
+
+## Support XML
 
 ### text
 ```html
@@ -222,7 +248,7 @@ ctx = {
 </xtpl:pull>
 ```
 ```html
-<span id="1321961774452784">1</span><span id="132196177445222">FAIL</span><span id="1321961774452602">...</span>end<span id="success1321961774452602" style="display: none">Happy async text!</span><script>(function(a, b){try{a.parentNode.insertBefore(b,a);b.style.display="";a.parentNode.removeChild(a);}catch(er){}})(document.getElementById("1321961774452602"), document.getElementById("success1321961774452602"));</script>
+<span id="1321961774452784">OK</span><span id="132196177445222">FAIL</span><span id="1321961774452602">...</span>end<span id="success1321961774452602" style="display: none">Happy async text!</span><script>(function(a, b){try{a.parentNode.insertBefore(b,a);b.style.display="";a.parentNode.removeChild(a);}catch(er){}})(__utils.$("#1321961774452602"), __utils.$("#success1321961774452602"));</script>
 ```
 
 
