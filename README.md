@@ -30,7 +30,7 @@ xtpl.COMPILE_DIR = './tpl_c/';
 http.createServer(function (req, res){
 	res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
 	xtpl
-		.fetch('page.xml', { text: 'Yahoo!' })
+		.fetch('index.xml', { text: 'Yahoo!' })
 		.then(function (result){
 			res.end(result);
 		})
@@ -42,9 +42,29 @@ http.createServer(function (req, res){
 ```html
 <?xml version="1.0"?>
 <xtpl:template>
-	<xtpl:value>ctx.text</xtpl:value>
+	<xtpl:doctype />
+	<head>
+		<title><get name="title" /></title>
+	</head>
+	<body>
+		<get name="content">empty</get>
+		<xtpl:value>(new Date).toString()</xtpl:value>
+	</body>
 </xtpl:template>
 ```
+
+#### index.xml
+```html
+<?xml version="1.0"?>
+<xtpl:template>
+	<xtpl:include name="page.xml" />
+	<xtpl:set name="title">AsyncTpl :: XML</xtpl:set>
+	<xtpl:set name="content">
+		<xtpl:value>ctx.text</xtpl:value>
+	</xtpl:set>
+</xtpl:template>
+```
+
 
 ### Browser
 
@@ -88,12 +108,13 @@ http.createServer(function (req, res){
 
 ## Support Smarty
 
-* comment `{{* ... *}}`
-* foreach + foreachelse
-* if, elseif and else
-* modifilers: upper, lower, capitalize, nl2br, regex_replace, combining
-* include (support only file-attr)
-* extends + block
+* comment: `{{* ... *}}`
+* foreach: `foreach, foreachelse`
+* if statement: `if, elseif and else`
+* modifilers: `upper, lower, capitalize, nl2br, regex_replace, combining`
+* functions: `assign`
+* `include` (support only file-attr)
+* `extends + block`
 
 ### Usage
 
@@ -103,10 +124,14 @@ var smarty = require('AsyncTpl').engine('Smarty');
 smarty.LEFT = '{{';
 smarty.RIGHT = '}}';
 
-// Add custom modifiers
-smarty.addModifiers({
-	modName: function (val, arg1, arg2){ reutrn val.substr(arg1, arg2); }
-});
+smarty
+	// Add custom functions
+	.fn({ funcName: function (attrs, ctx){ return attrs['a']+attrs['b']; } })
+
+	// Add custom modifiers
+	.modifiers({ modName: function (val, arg1, arg2){ reutrn val.substr(arg1, arg2); } })
+;
+
 
 smarty.fetch('my.tpl', {}).then(function (res){
 });
@@ -114,6 +139,25 @@ smarty.fetch('my.tpl', {}).then(function (res){
 
 
 ## Support XML
+
+### doctype
+```html
+1. <xtpl:doctype />
+2. <xtpl:doctype mode="loose" />
+3. <xtpl:doctype mode="strict" />
+4. <xtpl:doctype mode="xstrict" />
+5. <xtpl:doctype mode="transitional" />
+6. <xtpl:doctype mode="xhtml" />
+```
+```html
+1. <!DOCTYPE html>
+2. <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+3. <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+4. <!DOCTYPE html PUBLIC  "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+5. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+6. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+```
+
 
 ### text
 ```html

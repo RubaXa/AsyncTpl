@@ -1,4 +1,9 @@
 <?xml version="1.0"?>
 <xtpl:template xmlns:xtpl="http://rubaxa.org/">
-    <xtpl:doctype/>
+	<xtpl:doctype />
+	<xtpl:doctype mode="loose" />
+	<xtpl:doctype mode="strict" />
+	<xtpl:doctype mode="xstrict" />
+	<xtpl:doctype mode="transitional" />
+	<xtpl:doctype mode="xhtml" />
 </xtpl:template>
