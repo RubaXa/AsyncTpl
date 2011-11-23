@@ -20,9 +20,10 @@ Is a asynchronous template engine for nodejs or the browser.
 var xtpl = require('./lib/AsyncTpl').engine('XML');
 
 // Setup XML
-xtpl.NS = 'xtpl';
-xtpl.ASYNC = true;
-xtpl.STREAM = false;
+xtpl.NS = 'xtpl';      // namespace
+xtpl.ASYNC = true;     // aync include templates
+xtpl.STREAM = false;   // sreaming
+xtpl.ESCAPE = true;    // html escape all variables
 xtpl.ROOT_DIR = './tpl/';
 xtpl.COMPILE_DIR = './tpl_c/';
 
