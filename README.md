@@ -21,7 +21,7 @@ var xtpl = require('./lib/AsyncTpl').engine('XML');
 
 // Setup XML
 xtpl.NS = 'xtpl';      // namespace
-xtpl.ASYNC = true;     // aync include templates
+xtpl.ASYNC = true;     // async include templates
 xtpl.STREAM = false;   // sreaming
 xtpl.ESCAPE = true;    // html escape all variables
 xtpl.ROOT_DIR = './tpl/';
