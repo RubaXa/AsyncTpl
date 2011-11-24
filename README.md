@@ -8,7 +8,7 @@ Is a asynchronous template engine for nodejs or the browser.
 * XML or Smarty syntaxis
 * async/streaming operation
 * browser/nodejs compatibility
-* [high performance](https://github.com/RubaXa/AsyncTpl/benchmark/index.html)
+* [high performance](http://rubaxa.github.com/AsyncTpl/benchmark/index.html)
 * 21KB (compressed code) 
 
 
