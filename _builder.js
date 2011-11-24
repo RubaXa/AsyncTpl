@@ -1,7 +1,7 @@
 var fs		= require('fs');
 var http	= require('http');
 var queryStr = require('querystring');
-var files	= ['Node', 'utils', 'Parser', 'Compiler', 'Buffer', 'AsyncTpl', 'XML'];
+var files	= ['Node', 'utils', 'Parser', 'Compiler', 'Buffer', 'AsyncTpl', 'XML', 'Smarty'];
 var source	= '';
 
 
@@ -15,7 +15,7 @@ source	= String(fs.readFileSync('./lib/_build.tpl.js')).replace('/*CODE*/', sour
 fs.writeFileSync('./lib/AsyncTpl.min.js', source);
 
 
-if( 0 ){
+if( 1 ){
 	var req = http.request({
 		  host:		'closure-compiler.appspot.com'
 		, port:		80
@@ -29,7 +29,7 @@ if( 0 ){
 			console.log(body);
 			console.timeEnd('build');
 			console.log('size:', body.length);
-			fs.writeFileSync('./AsyncTpl.min.js', body);
+			fs.writeFileSync('./lib/AsyncTpl.min.js', body);
 		});
 	});
 
