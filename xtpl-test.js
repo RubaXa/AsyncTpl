@@ -37,7 +37,7 @@ if( false ){
 			data	= JSON.parse(require('fs').readFileSync('checknew.json') + '').data;
 			start	= (new Date).getTime();
 
-			page = page
+			page
 				.set(data)
 				.on('data', function (chunk){ res.write(chunk); })
 				.on('end', function (result){

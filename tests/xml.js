@@ -8,7 +8,7 @@ var
 
 xtpl.NS				= 'xtpl';
 xtpl.ASYNC			= false;
-xtpl.STREAM			= true;
+xtpl.STREAM			= false;
 xtpl.ROOT_DIR		= './tests/xml/';
 //xtpl.COMPILE_DIR	= './tests/xml_c/';
 
