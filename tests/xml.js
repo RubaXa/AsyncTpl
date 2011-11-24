@@ -44,7 +44,7 @@ vows.describe('XML tests').addBatch({
 		  'topic':	function(){ return transform('shorttag.xml'); }
 		, 'result':	function(result){  assert.equal(result, '<meta/>'); }
     },
-	
+
     'comment': {
 		  'topic':	function(){ return transform('comment.xml'); }
 		, 'result':	function(result){ assert.equal(result, '<!--comment-->'); }
@@ -59,12 +59,12 @@ vows.describe('XML tests').addBatch({
 		  'topic':function(){ return transform('if.xml'); }
 		, 'result':function(result){ assert.equal(result, 'true'); }
     },
-	
+
     'choose':{
 		  'topic':	function(){ return transform('choose.xml'); }
 		, 'result':	function(result){ assert.equal(result, 'truechoose'); }
     },
-	
+
     'foreach': {
 		  'topic':	function(){ return transform('foreach.xml', {items: [1, 2], subitems: [[1, 2], [1, 2]]}); }
 		, 'result':	function(result){
@@ -94,17 +94,7 @@ vows.describe('XML tests').addBatch({
 			if( xtpl.STREAM ){
 				assert.equal(result, '1235def');
 			} else {
-				console.log( result );
-				result = result.split('|');
-				assert.equal(result[1], 'one');
-				assert.equal(result[2], 'two2');
-				assert.equal(result[3], 'three1');
-				assert.equal(result[4], 'five');
-				assert.equal(result[5], 'six');
-				assert.equal(result[6], 'def');
-				assert.equal(result[7], '9');
-				assert.equal(result[8], '7');
-				assert.equal(result[9], '8');
+				assert.equal(result, 'start|one|two2|three1|five|six|def|9|7|8|stop');
 			}
 		}
     },
