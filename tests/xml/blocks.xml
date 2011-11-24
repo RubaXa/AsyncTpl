@@ -26,6 +26,19 @@
 
 	<xtpl:get name="def">def|</xtpl:get>
 
+	<xtpl:set name="seven">7</xtpl:set>
+	<xtpl:set name="nine">9</xtpl:set>
+
+	<xtpl:foreach iterate="[0,1,2]" as="val">
+		<xtpl:choose>
+			<xtpl:when test="val == 1"><xtpl:get name="seven"/></xtpl:when>
+			<xtpl:when test="val == 2"><xtpl:get name="eight"/></xtpl:when>
+			<xtpl:otherwise><xtpl:get name="nine"/></xtpl:otherwise>
+		</xtpl:choose>
+		<xtpl:text>|</xtpl:text>
+	</xtpl:foreach>
+
+	<xtpl:set name="eight">8</xtpl:set>
 
     finish
 </xtpl:template>

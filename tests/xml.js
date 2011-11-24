@@ -9,7 +9,7 @@ var
 xtpl.NS				= 'xtpl';
 xtpl.ASYNC			= false;
 xtpl.STREAM			= false;
-xtpl.ROOT_DIR		= './xml/';
+xtpl.ROOT_DIR		= './tests/xml/';
 //xtpl.COMPILE_DIR	= './xml_c/';
 
 
@@ -102,6 +102,9 @@ vows.describe('XML tests').addBatch({
 				assert.equal(result[4], 'five');
 				assert.equal(result[5], 'six');
 				assert.equal(result[6], 'def');
+				assert.equal(result[7], '9');
+				assert.equal(result[8], '7');
+				assert.equal(result[9], '8');
 			}
 		}
     },
@@ -116,7 +119,6 @@ vows.describe('XML tests').addBatch({
 		, 'result':	function(result){ assert.equal(result, '&lt;script&gt;'); }
     },
 
-/**/
 	'pull': {
 		'topic': function (){
 			return transform('pull.xml', {
@@ -132,9 +134,25 @@ vows.describe('XML tests').addBatch({
 			assert.ok(/<script>/.test(result));
 		}
 	},
+/**/
+	'complex': {
+		'topic': function (){
+			return	 transform('complex.xml', {
+				header: "Colors",
+				items: [
+					{name: "red", current: true, url: "#Red"},
+					{name: "green", current: false, url: "#Green"},
+					{name: "blue", current: false, url: "#Blue"}
+				]
+			});
+		},
+		'result': function (result){
+			assert.equal(result, '<h1>Colors</h1><ul><li><strong>red</strong></li><li><a href="#Green">green</a></li><li><a href="#Blue">blue</a></li></ul>');
+		}
+	},
 
 	'end': {
 		  'topic':	function(){ return true; }
-		, 'topic':	function(result){ assert.equal(result, true); }
+		, 'result':	function(result){ assert.equal(result, true); }
 	}
 }).run();
