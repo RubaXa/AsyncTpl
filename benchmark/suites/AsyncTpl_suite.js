@@ -70,6 +70,8 @@
 
 	var xtpl = AsyncTpl.engine('XML');
 
+	xtpl.SAFE_MODE = false;
+
 	exports.xtplBench = function(suite, name, id) {
 		if( benches[name] ){
 			var
@@ -86,7 +88,7 @@
 				tpl
 					.set(ctx)
 					.on('end', function (){ next(); })
-					._fetch()
+					.fetch()
 				;
 			});
 		}
