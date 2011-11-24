@@ -7,7 +7,7 @@ var
 
 xtpl.ASYNC		= false;
 xtpl.STREAM		= false;
-xtpl.ROOT_DIR	= './smarty/';
+xtpl.ROOT_DIR	= './tests/smarty/';
 
 
 function transform(file, json, promise){

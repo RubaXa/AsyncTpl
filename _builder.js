@@ -1,7 +1,7 @@
 var fs		= require('fs');
 var http	= require('http');
 var queryStr = require('querystring');
-var files	= ['Node', 'utils', 'Parser', 'Compiler', 'AsyncTpl', 'XML'];
+var files	= ['Node', 'utils', 'Parser', 'Compiler', 'Buffer', 'AsyncTpl', 'XML'];
 var source	= '';
 
 

@@ -8,9 +8,9 @@ var
 
 xtpl.NS				= 'xtpl';
 xtpl.ASYNC			= false;
-xtpl.STREAM			= false;
+xtpl.STREAM			= true;
 xtpl.ROOT_DIR		= './tests/xml/';
-//xtpl.COMPILE_DIR	= './xml_c/';
+//xtpl.COMPILE_DIR	= './tests/xml_c/';
 
 
 function transform(file, json, promise){
@@ -35,7 +35,6 @@ vows.describe('XML tests').addBatch({
 		}
     },
 
-/**/
     'text': {
 		  'topic':	function(){ return transform('text.xml'); }
 		, 'result':	function(result){ assert.equal(result, 'my.text'); }
@@ -95,6 +94,7 @@ vows.describe('XML tests').addBatch({
 			if( xtpl.STREAM ){
 				assert.equal(result, '1235def');
 			} else {
+				console.log( result );
 				result = result.split('|');
 				assert.equal(result[1], 'one');
 				assert.equal(result[2], 'two2');
@@ -119,6 +119,7 @@ vows.describe('XML tests').addBatch({
 		, 'result':	function(result){ assert.equal(result, '&lt;script&gt;'); }
     },
 
+	/**/
 	'pull': {
 		'topic': function (){
 			return transform('pull.xml', {
@@ -134,7 +135,9 @@ vows.describe('XML tests').addBatch({
 			assert.ok(/<script>/.test(result));
 		}
 	},
-/**/
+
+	/**/
+
 	'complex': {
 		'topic': function (){
 			return	 transform('complex.xml', {
@@ -150,7 +153,7 @@ vows.describe('XML tests').addBatch({
 			assert.equal(result, '<h1>Colors</h1><ul><li><strong>red</strong></li><li><a href="#Green">green</a></li><li><a href="#Blue">blue</a></li></ul>');
 		}
 	},
-
+/**/
 	'end': {
 		  'topic':	function(){ return true; }
 		, 'result':	function(result){ assert.equal(result, true); }

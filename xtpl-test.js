@@ -11,10 +11,10 @@ var page	= new xtpl('messagelist.xml');
 
 
 if( false ){
-	for( var i = 0; i < 4; i++ ){
+	for( var i = 0; i < 2; i++ ){
 		var data	= JSON.parse(require('fs').readFileSync('checknew.json') + '').data;
 		console.time('all');
-		page
+		page = page
 			.set(data)
 			.on('data', function (chunk){ console.log(chunk); })
 			.on('end', function (res){
@@ -33,11 +33,11 @@ if( false ){
 
 		var html = '', total = 0, start, data;
 
-		for( var i = 0; i < 1; i++ ){
+		for( var i = 0; i < 1000; i++ ){
 			data	= JSON.parse(require('fs').readFileSync('checknew.json') + '').data;
 			start	= (new Date).getTime();
 
-			page
+			page = page
 				.set(data)
 				.on('data', function (chunk){ res.write(chunk); })
 				.on('end', function (result){
