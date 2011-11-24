@@ -1,3 +1,10 @@
+/**
+ * @preserve AsyncTpl — Asynchronous Templating engine for NodeJS/Browser
+ *
+ * Copyright (c) 2011, Lebedev Konstantin
+ * Released under the MIT License.
+ */
+
 'use strict';
 
 (function (window, undef){

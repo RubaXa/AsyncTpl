@@ -11,8 +11,8 @@ for( var key in files ){
 	source += fs.readFileSync('./lib/'+files[key]+'.js')+'';
 }
 
-source	= String(fs.readFileSync('./lib/_build.tpl.js')).replace('/*CODE*/', source);
-fs.writeFileSync('./lib/AsyncTpl.min.js', source);
+source	= String(fs.readFileSync('./dist/_build.tpl.js')).replace('/*CODE*/', source);
+fs.writeFileSync('./dist/AsyncTpl.js', source);
 
 
 if( 1 ){
@@ -26,10 +26,10 @@ if( 1 ){
 		var body = '';
 		res.on('data', function (data){ body += data; });
 		res.on('end', function (){
-			console.log(body);
+//			console.log(body);
 			console.timeEnd('build');
 			console.log('size:', body.length);
-			fs.writeFileSync('./lib/AsyncTpl.min.js', body);
+			fs.writeFileSync('./dist/AsyncTpl.min.js', body);
 		});
 	});
 
