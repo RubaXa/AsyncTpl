@@ -1,12 +1,61 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
-	<title>AsyncTpl</title>
-</head>
-<body>
 
-	<a href="benchmark/index.html">benchmark</a>
-	<a href="tests/xml.html">xml tests</a>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>AsyncTpl</title>
+
+	<style type="text/css">
+		.page { background-color: #f0f0f0; text-shadow: 0 1px 0 #fff; overflow: hidden; }
+		.h1 { margin: 20px; }
+		.list { list-style-type: none; padding: 20px 50px; margin: 0; line-height: 180%; }
+			.list_small { font-size: 90%; }
+			.list__item { }
+
+		.shadow {
+			width: 5000px;
+			height: 5000px;
+			top: -1500px;
+			left: -1500px;
+
+			background: #f7f7f7; /* Old browsers */
+			background: -moz-radial-gradient(center, ellipse cover,  #f7f7f7 3%, #c6c6c6 54%); /* FF3.6+ */
+			background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(3%,#f7f7f7), color-stop(54%,#c6c6c6)); /* Chrome,Safari4+ */
+			background: -webkit-radial-gradient(center, ellipse cover,  #f7f7f7 3%,#c6c6c6 54%); /* Chrome10+,Safari5.1+ */
+			background: -o-radial-gradient(center, ellipse cover,  #f7f7f7 3%,#c6c6c6 54%); /* Opera 12+ */
+			background: -ms-radial-gradient(center, ellipse cover,  #f7f7f7 3%,#c6c6c6 54%); /* IE10+ */
+			background: radial-gradient(center, ellipse cover,  #f7f7f7 3%,#c6c6c6 54%); /* W3C */
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#c6c6c6',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+			position: absolute;
+		}
+		.content { position: relative; z-index: 10; }
+	</style>
+
+</head>
+<body class="page">
+
+	<div class="shadow"></div>
+
+	<div class="content">
+		<h1 class="h1">AsyncTpl</h1>
+
+
+		<ul class="list" title="Мои работы: Архитектура/PHP/JS">
+			<li class="list__item"><a href="benchmark/index.html">benchmark</a></li>
+			<li class="list__item"><a href="tests/xml.html">XML tests (uncompleted)</a></li>
+		</ul>
+	</div>
+
+
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript">
+		var sh = $('.shadow')[0];
+		$(document).on('mousemove', function (evt){
+			sh.style.top	= (evt.pageY - sh.offsetHeight/2) +'px';
+			sh.style.left	= (evt.pageX - sh.offsetWidth/2) +'px';
+		});
+	</script>
 
 </body>
 </html>
