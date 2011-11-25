@@ -40,5 +40,12 @@
 
 	<xtpl:set name="eight">8</xtpl:set>
 
+	<xtpl:set name="context" context="val">
+		<xtpl:value>val[1]+1</xtpl:value>
+		<xtpl:text>|</xtpl:text>
+	</xtpl:set>
+	<xtpl:get name="context" context="ctx.items"/>
+
+
     <xtpl:text>stop</xtpl:text>
 </xtpl:template>
