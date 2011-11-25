@@ -233,7 +233,7 @@ var ctx { items: [5,10] }
 </div>
 ```
 ```html
-<div>1.1 second</div>9
+<div>1.1 second</div><b>9</b>
 ```
 
 
