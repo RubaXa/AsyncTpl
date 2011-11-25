@@ -31,8 +31,9 @@
 		, utils	= require('utils')
 	;
 
-	AsyncTpl['fetch'] = function (tplId, targetId, data){
+	AsyncTpl['fetch'] = function (tplId, targetId, data, fn){
 		if( typeof targetId != 'string' ){
+			fn = data;
 			data = targetId;
 			targetId = undef;
 		}
@@ -50,19 +51,16 @@
 
 		var df = utils.defer(), s = '';
 
-		_tpl[tplId]
-			.set(data || {})
-			.on('data', function (c){ s += c })
-			.on('end', function (r){ df.resolve(r === undef ? s : r); })
-			.fetch()
-		;
+		_tpl[tplId].fetch(data, function (r){
+			df.resolve(r === undef ? s : r);
+		});
 
 		if( targetId ) df.done(function (html){
 			var node = utils.$(targetId);
 			if( node ) node.innerHTML = html;
 		});
 
-		return	df.promise();
+		return	df.promise().done(fn);
 	};
 
 

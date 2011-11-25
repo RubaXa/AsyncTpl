@@ -1,4 +1,3 @@
-var Tpl		= require('./lib/AsyncTpl');
 var http	= require('http');
 var xtpl	= require('./lib/AsyncTpl').engine('XML');
 
@@ -10,20 +9,15 @@ xtpl.ROOT_DIR		= './tpl/';
 var page	= new xtpl('messagelist.xml');
 
 
-if( false ){
-	for( var i = 0; i < 2; i++ ){
+if( 0 ){
+	for( var i = 0; i < 3; i++ ){
 		var data	= JSON.parse(require('fs').readFileSync('checknew.json') + '').data;
 		console.time('all');
-		page = page
-			.set(data)
-			.on('data', function (chunk){ console.log(chunk); })
-			.on('end', function (res){
+		page.fetch(data, function (res){
 //				console.log(res);
 				console.timeEnd('all');
 				console.log('-------------');
-			})
-			.fetch()
-		;
+		});
 	}
 } else {
 	http.createServer(function (req, res){
@@ -33,21 +27,19 @@ if( false ){
 
 		var html = '', total = 0, start, data;
 
+		page.ESCAPE = false;
+		page.SAFE_MODE = false;
+
 		for( var i = 0; i < 1000; i++ ){
 			data	= JSON.parse(require('fs').readFileSync('checknew.json') + '').data;
 			start	= (new Date).getTime();
 
-			page
-				.set(data)
-				.on('data', function (chunk){ res.write(chunk); })
-				.on('end', function (result){
+			page.fetch(data, function (result){
 //					console.timeEnd('stream');
 					html = result;
 //					console.log(result);
 					total += (new Date).getTime() - start;
-				})
-				.fetch()
-			;
+			});
 		}
 
 		console.timeEnd('all');

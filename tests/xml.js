@@ -6,16 +6,15 @@ var
 ;
 
 
-xtpl.NS				= 'xtpl';
 xtpl.ASYNC			= false;
 xtpl.STREAM			= false;
 xtpl.ROOT_DIR		= './tests/xml/';
 //xtpl.COMPILE_DIR	= './tests/xml_c/';
 
 
-function transform(file, json, promise){
+function transform(file, ctx, promise){
 	if( !promise ) promise = new events.EventEmitter;
-    xtpl.fetch(file, json).then(function(result){ setTimeout(function(){ promise.emit('success', result); }, 0); });
+    (new xtpl(file)).fetch(ctx, function(result){ setTimeout(function(){ promise.emit('success', result); }, 0); });
 	return	promise;
 }
 
@@ -52,7 +51,7 @@ vows.describe('XML tests').addBatch({
 
     'value': {
 		  'topic':	function(){ return transform('value.xml', {"value":"value"}); }
-		, 'result':	function(result){ assert.equal(result, 'value'); }
+		, 'result':	function(result){ assert.equal(result, '<b>value</b>'); }
     },
 
     'if': {

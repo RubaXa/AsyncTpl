@@ -13,6 +13,7 @@ for( var key in files ){
 
 source	= String(fs.readFileSync('./dist/_build.tpl.js')).replace('/*CODE*/', source);
 fs.writeFileSync('./dist/AsyncTpl.js', source);
+fs.writeFileSync('./dist/AsyncTpl.min.js', source);
 
 
 if( 1 ){

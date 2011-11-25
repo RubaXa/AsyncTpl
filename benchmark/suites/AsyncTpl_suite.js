@@ -70,7 +70,7 @@
 
 	var xtpl = AsyncTpl.engine('XML');
 
-	xtpl.SAFE_MODE = false;
+//	xtpl.ESCAPE		= false;
 
 	exports.xtplBench = function(suite, name, id) {
 		if( benches[name] ){
@@ -79,17 +79,38 @@
 				, ctx = bench.context
 			;
 
+			xtpl.SAFE_MODE	= false;
+
 			var tpl = xtpl.fromString(bench.source);
 
 			xtpl.ASYNC = false;
 			xtpl.STREAM = false;
 
 			suite.bench(id || name, function(next){
-				tpl
-					.set(ctx)
-					.on('end', function (){ next(); })
-					.fetch()
-				;
+				tpl.fetch(ctx, function (){
+					next();
+				});
+			});
+		}
+	};
+
+	exports.xtplSafeBench = function(suite, name, id) {
+		if( benches[name] ){
+			var
+				  bench = benches[name]
+				, ctx = bench.context
+			;
+
+			xtpl.SAFE_MODE	= true;
+			var tpl = xtpl.fromString(bench.source);
+
+			xtpl.ASYNC = false;
+			xtpl.STREAM = false;
+
+			suite.bench(id || name, function(next){
+				tpl.fetch(ctx, function (){
+					next();
+				});
 			});
 		}
 	};
