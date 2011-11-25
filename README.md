@@ -117,6 +117,7 @@ http.createServer(function (req, res){
 * `include` (support only file-attr)
 * `extends + block`
 
+
 ### Usage
 
 ```js
@@ -127,89 +128,55 @@ smarty.RIGHT = '}}';
 
 smarty
 	// Add custom functions
-	.fn({ funcName: function (attrs, ctx){ return attrs['a']+attrs['b']; } })
+	.fn({
+		funcName: function (attrs, ctx){
+			return attrs['a']+attrs['b'];
+		}
+	})
 
 	// Add custom modifiers
-	.modifiers({ modName: function (val, arg1, arg2){ reutrn val.substr(arg1, arg2); } })
+	.modifiers({
+		modName: function (val, arg1, arg2){
+			reutrn val.substr(arg1, arg2);
+		}
+	})
 ;
 
 
-smarty.fetch('my.tpl', {}).then(function (res){
-});
+smarty.fetch('my.tpl', {}).then(function (res){  });
 ```
 
 
 ## Support XML
 
-### doctype
+* if
+* include
+* block: `get & set`
+* choose: `when & otherwise`
+* foreach: `iterate, as & index`
+* pull: `loading, fail & success`
+* script
+* text
+* value
+* comment
+* attributes
+* custom tags: `doctype`
+
+
+### if
 ```html
-1. <xtpl:doctype />
-2. <xtpl:doctype mode="loose" />
-3. <xtpl:doctype mode="strict" />
-4. <xtpl:doctype mode="xstrict" />
-5. <xtpl:doctype mode="transitional" />
-6. <xtpl:doctype mode="xhtml" />
+<xtpl:if test="true">
+	<xtpl:text>true</xtpl:text>
+</xtpl:if>
 ```
 ```html
-1. <!DOCTYPE html>
-2. <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-3. <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-4. <!DOCTYPE html PUBLIC  "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-5. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-6. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+true
 ```
 
 
-### text
+### include
 ```html
-<xtpl:text>Hello</xtpl:text>
-```
-```html
-<div>Hello</div>
-```
-
-
-### value
-```html
-<div><xtpl:value>ctx.value</xtpl:value></div>
-```
-```html
-<div>myValue</div>
-```
-
-### custom tags (draft)
-```js
-var xtpl = AsyncTpl.engine('XML').tags({
-				'menu': function (node){ return node.__close ? '</ul>' : '<ul>'; }
-			  , 'item': function (node, attrs){ return node.__close ? '</a></li>' : ['<li>'].concat(this._build('a', attrs)); }
-			});
-```
-```html
-<xtpl:menu>
-	<xtpl:item href="#0">0</xtpl:item>
-	<xtpl:item href="#1">1</xtpl:item>
-</xtpl:menu>
-```
-```html
-<ul><li><a href="#0">0</a></li><li><a href="#1">1</a></li></ul>
-```
-
-
-### comment
-```html
-<xtpl:comment>comment</xtpl:comment>
-```
-```html
-<!--comment-->
-```
-
-
-### attributes
-```html
-<a href="xtpl:ctx.href" title="xtpl:ctx.title" class="link">link.html</a>
-```
-```html
-<a href="http://site.org/link.html" title="click me" class="link">link.html</a>
+<xtpl:include src="./filename.xml"/>
 ```
 
 
@@ -277,22 +244,6 @@ ctx = { items: [1,2], colors: ['white', 'black'] };
 ```
 
 
-### if
-```html
-<xtpl:if test="true">
-	<xtpl:text>true</xtpl:text>
-</xtpl:if>
-```
-```html
-true
-```
-
-
-### include
-```html
-<xtpl:include src="./filename.xml"/>
-```
-
 
 ### pull
 ```js
@@ -341,3 +292,78 @@ ctx = {
 ```html
 <div>true</div><b>global</b>
 ```
+
+
+### text
+```html
+<xtpl:text>Hello</xtpl:text>
+```
+```html
+<div>Hello</div>
+```
+
+
+### value
+```html
+<div><xtpl:value>ctx.value</xtpl:value></div>
+```
+```html
+<div>myValue</div>
+```
+
+
+### comment
+```html
+<xtpl:comment>comment</xtpl:comment>
+```
+```html
+<!--comment-->
+```
+
+
+### attributes
+```html
+<a href="xtpl:ctx.href" title="xtpl:ctx.title" class="link">link.html</a>
+```
+```html
+<a href="http://site.org/link.html" title="click me" class="link">link.html</a>
+```
+
+
+### Custom tags (example)
+```js
+var xtpl = AsyncTpl.engine('XML').tags({
+				'menu': function (node){ return node.__close ? '</ul>' : '<ul>'; }
+			  , 'item': function (node, attrs){ return node.__close ? '</a></li>' : ['<li>'].concat(this._build('a', attrs)); }
+		});
+```
+```html
+<xtpl:menu>
+	<xtpl:item href="#0">0</xtpl:item>
+	<xtpl:item href="#1">1</xtpl:item>
+</xtpl:menu>
+```
+```html
+<ul><li><a href="#0">0</a></li><li><a href="#1">1</a></li></ul>
+```
+
+
+### doctype
+```html
+1. <xtpl:doctype />
+2. <xtpl:doctype mode="loose" />
+3. <xtpl:doctype mode="strict" />
+4. <xtpl:doctype mode="xstrict" />
+5. <xtpl:doctype mode="transitional" />
+6. <xtpl:doctype mode="xhtml" />
+```
+```html
+1. <!DOCTYPE html>
+2. <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+3. <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+4. <!DOCTYPE html PUBLIC  "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+5. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+6. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+```
+
+
