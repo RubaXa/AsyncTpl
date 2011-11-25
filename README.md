@@ -177,6 +177,23 @@ smarty.fetch('my.tpl', {}).then(function (res){
 <div>myValue</div>
 ```
 
+### custom tags (draft)
+```js
+var xtpl = AsyncTpl.engine('XML').tags({
+				'menu': function (node){ return node.__close ? '</ul>' : '<ul>'; }
+			  , 'item': function (node, attrs){ return node.__close ? '</a></li>' : ['<li>'].concat(this._build('a', attrs)); }
+			});
+```
+```html
+<xtpl:menu>
+	<xtpl:item href="#0">0</xtpl:item>
+	<xtpl:item href="#1">1</xtpl:item>
+</xtpl:menu>
+```
+```html
+<ul><li><a href="#0">0</a></li><li><a href="#1">1</a></li></ul>
+```
+
 
 ### comment
 ```html
@@ -197,18 +214,26 @@ smarty.fetch('my.tpl', {}).then(function (res){
 
 
 ### block
+```js
+var ctx { items: [5,10] }
+```
 ```html
 <div>
-	<get name="first"/>
-	<get name="second">
+	<xtpl:get name="first"/>
+	<xtpl:get name="second">
 		second
 	</get>
-	<set name="first" test="false">1</set>
-	<set name="first">1.1 </set>
+	<xtpl:set name="first" test="false">1</xtpl:set>
+	<xtpl:set name="first">1.1 </xtpl:set>
+
+	<xtpl:set name="context" context="val">
+		<b><xtpl:value>val[1]-1</xtpl:value></b>
+	</xtpl:set>
+	<xtpl:get name="context" context="ctx.items"/>
 </div>
 ```
 ```html
-<div>1.1 second</div>
+<div>1.1 second</div>9
 ```
 
 

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:menu>
+		<xtpl:item href="#0">0</xtpl:item>
+		<xtpl:item href="#1">1</xtpl:item>
+	</xtpl:menu>
+</xtpl:template>

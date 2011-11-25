@@ -88,12 +88,12 @@ vows.describe('XML tests').addBatch({
     },
 
     'blocks': {
-		  'topic':	function(){ return transform('blocks'+(xtpl.STREAM ? '-stream' : '')+'.xml'); }
+		  'topic':	function(){ return transform('blocks'+(xtpl.STREAM ? '-stream' : '')+'.xml', { items: [5,10] }); }
 		, 'result':	function(result){
 			if( xtpl.STREAM ){
 				assert.equal(result, '1235def');
 			} else {
-				assert.equal(result, 'start|one|two2|three1|five|six|def|9|7|8|stop');
+				assert.equal(result, 'start|one|two2|three1|five|six|def|9|7|8|11|stop');
 			}
 		}
     },
@@ -107,6 +107,19 @@ vows.describe('XML tests').addBatch({
 		  'topic':	function(){ return transform('htmlsafe.xml', { html: '<script>' }); }
 		, 'result':	function(result){ assert.equal(result, '&lt;script&gt;'); }
     },
+
+	'custom-tags': {
+		  'topic':	function(){
+			  xtpl.tags({
+				    'menu': function (node){ return node.__close ? '</ul>' : '<ul>'; }
+				  , 'item': function (node, attrs){ return node.__close ? '</a></li>' : ['<li>'].concat(this._build('a', attrs)); }
+			  });
+			  return transform('custom-tags.xml', { html: '<script>' });
+		  }
+		, 'result':	function(result){
+			assert.equal(result, '<ul><li><a href="#0">0</a></li><li><a href="#1">1</a></li></ul>');
+		}
+	},
 
 	/**/
 	'pull': {
