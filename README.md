@@ -140,7 +140,7 @@ smarty.fetch('my.tpl', {}).then(function (res){
 
 
 ## Support XML
-* [if][]
+* [if][] if
 * block: `get & set`
 * choose: `when & otherwise`
 * foreach: `iterate, as & index`
