@@ -1,24 +1,33 @@
+/** @namespace require */
+
 var http	= require('http');
 var xtpl	= require('./lib/AsyncTpl').engine('XML');
 
 xtpl.ASYNC			= false;
 xtpl.STREAM			= false;
+//xtpl.ESCAPE			= false;
+//xtpl.SAFE_MODE		= false;
 xtpl.ROOT_DIR		= './tpl/';
 //xtpl.COMPILE_DIR	= './tpl/';
 
 var page	= new xtpl('messagelist.xml');
 
 
-if( 0 ){
-	for( var i = 0; i < 3; i++ ){
-		var data	= JSON.parse(require('fs').readFileSync('checknew.json') + '').data;
-		console.time('all');
-		page.fetch(data, function (res){
+if( 1 ){
+	(function (){
+		var total = 0;
+		for( var i = 0; i < 1000; i++ ){
+			var data    = JSON.parse(require('fs').readFileSync('checknew.json') + '').data;
+			var start   = (new Date).getTime();
+
+			page.fetch(data, function (res){
 //				console.log(res);
-				console.timeEnd('all');
-				console.log('-------------');
-		});
-	}
+//				console.timeEnd('all');
+				total += (new Date).getTime() - start;
+			});
+		}
+		console.log('total:', total+'ms');
+	})();
 } else {
 	http.createServer(function (req, res){
 		if (req.url == '/favicon.ico') return;
@@ -26,9 +35,6 @@ if( 0 ){
 		console.time('all');
 
 		var html = '', total = 0, start, data;
-
-		page.ESCAPE = false;
-		page.SAFE_MODE = false;
 
 		for( var i = 0; i < 1000; i++ ){
 			data	= JSON.parse(require('fs').readFileSync('checknew.json') + '').data;
