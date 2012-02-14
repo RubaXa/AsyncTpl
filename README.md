@@ -154,6 +154,7 @@ smarty.fetch('my.tpl', {}).then(function (res){  });
 * block: `get & set`
 * choose: `when & otherwise`
 * foreach: `iterate, as & index`
+* part
 * pull: `loading, fail & success`
 * script
 * text
@@ -243,6 +244,25 @@ ctx = { items: [1,2], colors: ['white', 'black'] };
 12<ul><li>1. white</li><li>2. black</li></ul>
 ```
 
+
+### part
+```js
+ctx = { __part: 'first-part' };
+```
+```html
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:set name="second">second</xtpl:set>
+	<xtpl:text>[</xtpl:text>
+	<xtpl:part name="first-part">
+		<xtpl:get name="first"/><xtpl:text>-</xtpl:text><xtpl:get name="second"/>
+	</xtpl:part>
+	<xtpl:set name="first">first</xtpl:set>
+	<xtpl:text>]</xtpl:text>
+</xtpl:template>
+```
+```html
+first-second
+```
 
 
 ### pull
