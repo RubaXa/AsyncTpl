@@ -121,7 +121,6 @@ vows.describe('XML tests').addBatch({
 		}
 	},
 
-	/**/
 	'pull': {
 		'topic': function (){
 			return transform('pull.xml', {
@@ -137,8 +136,6 @@ vows.describe('XML tests').addBatch({
 			assert.ok(/<script>/.test(result));
 		}
 	},
-
-	/**/
 
 	'complex': {
 		'topic': function (){
@@ -156,6 +153,22 @@ vows.describe('XML tests').addBatch({
 		}
 	},
 /**/
+
+	'non-part': {
+		  'topic':	function(){ return transform('part.xml'); }
+		, 'result':	function(result){ assert.equal(result, '[first-second]-[first-second-three]'); }
+	},
+
+	'part-first': {
+		  'topic':	function(){ return transform('part.xml', { __part: 'first-part' }); }
+		, 'result':	function(result){ assert.equal(result, 'first-second'); }
+	},
+
+	'part-second': {
+		  'topic':	function(){ return transform('part.xml', { __part: 'second-part' }); }
+		, 'result':	function(result){ assert.equal(result, 'first-second-three'); }
+	},
+
 	'end': {
 		  'topic':	function(){ return true; }
 		, 'result':	function(result){ assert.equal(result, true); }
