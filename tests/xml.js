@@ -38,9 +38,7 @@ vows.describe('XML tests').addBatch({
 
 	'error': {
 		  'topic':  function(){ return transform('error.xml'); }
-		, 'result': function(result){
-			assert.equal(result, './tests/xml/error.xml\nAt line 4: tag "foreach", attribute "iterate" is missing');
-		}
+		, 'result': function(result){ assert.equal(result, 'Error: Tag "foreach", attribute "iterate" is missing in ./tests/xml/error.xml on line 4'); }
 	},
 
 	'closure': {
