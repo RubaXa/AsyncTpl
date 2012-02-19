@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <input>
+        <xtpl:attrs>
+            <xtpl:if test="false">
+                <xtpl:attribute name="checked">checked</xtpl:attribute>
+            </xtpl:if>
+        </xtpl:attrs>
+    </input>
+    <div>
+        <xtpl:choose>
+            <xtpl:when test="false">foo</xtpl:when>
+            <xtpl:otherwise>foo</xtpl:otherwise>
+        </xtpl:choose>
+        <xtpl:text>bar</xtpl:text>
+    </div>
+    <div>
+        <xtpl:attributes>
+            <xtpl:attribute name="class">
+	            <xtpl:text>foo</xtpl:text>
+	            <xtpl:if test="true"><xtpl:space/>bar</xtpl:if>
+            </xtpl:attribute>
+        </xtpl:attributes>
+    </div>
+    <div>
+        <xtpl:attributes>
+            <xtpl:attribute name="class">
+                <xtpl:get name="class"/>
+            </xtpl:attribute>
+        </xtpl:attributes>
+    </div>
+    <div>
+        <xtpl:attributes>
+            <xtpl:choose>
+                <xtpl:when test="true">
+                    <xtpl:attribute name="when">true</xtpl:attribute>
+                </xtpl:when>
+                <xtpl:otherwise>
+                    <xtpl:attribute name="when">false</xtpl:attribute>
+                </xtpl:otherwise>
+            </xtpl:choose>
+            <xtpl:choose>
+                <xtpl:when test="false">
+                    <xtpl:attribute name="otherwise">false</xtpl:attribute>
+                </xtpl:when>
+                <xtpl:otherwise>
+                    <xtpl:attribute name="otherwise">true</xtpl:attribute>
+                </xtpl:otherwise>
+            </xtpl:choose>
+        </xtpl:attributes>
+    </div>
+    <xtpl:set name="class">foo</xtpl:set>
+    <div>foo</div>
+</xtpl:template>

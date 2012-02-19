@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://fest.mail.ru" context_name="ctx">
+	<xtpl:assign name="protocol" value="http:" />
+
+	<xtpl:part name="title">
+        <h3><xtpl:get name="title"/></h3>
+	</xtpl:part>
+
+	<h3>
+		<xtpl:get name="messages">
+			<xtpl:text value="messages: "/>
+			<xtpl:value>ctx.messages.length</xtpl:value>
+		</xtpl:get>
+	</h3>
+
+	<table>
+	<xtpl:foreach iterate="ctx.messages" as="msg">
+		<tr>
+			<td><xtpl:get name="message" attrs="msg" /></td>
+		</tr>
+	</xtpl:foreach>
+	</table>
+
+	<xtpl:set name="title">
+		<xtpl:text>title:</xtpl:text>
+		<xtpl:get name="msg-folder" folderId="0"/>
+	</xtpl:set>
+
+	<xtpl:set name="message" attrs-name="msg">
+		<a>
+			<xtpl:attrs>
+				<xtpl:attr name="href">
+					<xtpl:value>ctx.protocol</xtpl:value>
+					<xtpl:text>//e.mail.ru/msglist?id=</xtpl:text>
+					<xtpl:value>msg.Id</xtpl:value>
+				</xtpl:attr>
+				<xtpl:attr name="title"><xtpl:value>msg.FromList</xtpl:value></xtpl:attr>
+			</xtpl:attrs>
+			<xtpl:value>msg.Subject</xtpl:value>
+		</a>
+		<xtpl:text>:</xtpl:text>
+		<xtpl:space/>
+		<xtpl:get name="msg-folder" attrs="msg.FolderId" />
+		<xtpl:space/>
+		<xtpl:text>(</xtpl:text>
+		<xtpl:value>msg.DateShort</xtpl:value>
+		<xtpl:text>,</xtpl:text><xtpl:space/>
+		<xtpl:value>msg.Size</xtpl:value>
+		<xtpl:text>)</xtpl:text>
+	</xtpl:set>
+
+	<xtpl:set name="msg-folder" attrs-name="folderId">
+		<xtpl:foreach iterate="ctx.folders" as="folder">
+			<xtpl:if test="folder.Id == folderId">
+				<xtpl:value>folder.Name</xtpl:value>
+			</xtpl:if>
+		</xtpl:foreach>
+	</xtpl:set>
+
+</xtpl:template>

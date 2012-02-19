@@ -10,9 +10,9 @@
     <xtpl:set name="two">two2|</xtpl:set>
 
 
-    <xtpl:get name="three"/>
     <xtpl:set name="three">three1|</xtpl:set>
     <xtpl:set name="three" test="false">three2|</xtpl:set>
+	<xtpl:get name="three">3</xtpl:get>
 
 
     <xtpl:get name="four"/>
@@ -40,12 +40,18 @@
 
 	<xtpl:set name="eight">8</xtpl:set>
 
-	<xtpl:set name="context" context="val">
-		<xtpl:value>val[1]+1</xtpl:value>
-		<xtpl:text>|</xtpl:text>
+	<xtpl:set name="context" attrs-name="params">
+		<xtpl:if test="!params.varA">
+			<xtpl:value>params[0]+params[1]</xtpl:value>
+		</xtpl:if>
+		<xtpl:if test="params.varA">
+			<xtpl:value>params.varA + params.varB</xtpl:value>
+		</xtpl:if>
 	</xtpl:set>
-	<xtpl:get name="context" context="ctx.items"/>
 
+	<xtpl:get name="context" attrs="ctx.items" />
+	<xtpl:text>|</xtpl:text>
+	<xtpl:get name="context" varA="-5" varB="ctx.items[0]" />
 
-    <xtpl:text>stop</xtpl:text>
+    <xtpl:text>|stop</xtpl:text>
 </xtpl:template>

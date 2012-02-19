@@ -1,11 +1,24 @@
 <?xml version="1.0"?>
 <xtpl:template xmlns:xtpl="http://rubaxa.org/">
-    <xtpl:foreach iterate="ctx.items" as="i">
-        <xtpl:value>i</xtpl:value>
+	<xtpl:foreach from="1" to="3" as="i">
+		<xtpl:value>i</xtpl:value>
     </xtpl:foreach>
+
+	<xtpl:text value=":"/>
+
+    <xtpl:foreach iterate="ctx.items" as="val">
+        <xtpl:value>val</xtpl:value>
+    </xtpl:foreach>
+
+	<xtpl:text value=":"/>
+
     <xtpl:foreach iterate="ctx.subitems" index="i">
+	    <xtpl:text value="["/>
+	    <xtpl:value>i</xtpl:value>
         <xtpl:foreach iterate="ctx.subitems[i]" index="j">
-            <xtpl:value>i</xtpl:value><xtpl:value>ctx.subitems[i][j]</xtpl:value>
+	        <xtpl:text value="-"/>
+	        <xtpl:value>ctx.subitems[i][j]</xtpl:value>
         </xtpl:foreach>
+	    <xtpl:text value="]"/>
     </xtpl:foreach>
 </xtpl:template>

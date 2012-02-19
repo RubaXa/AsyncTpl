@@ -161,6 +161,7 @@ smarty.fetch('my.tpl', {}).then(function (res){  });
 * value
 * comment
 * attributes
+* closure
 * custom tags: `doctype`
 
 
@@ -186,22 +187,36 @@ true
 var ctx { items: [5,10] }
 ```
 ```html
-<div>
-	<xtpl:get name="first"/>
-	<xtpl:get name="second">
-		second
-	</get>
-	<xtpl:set name="first" test="false">1</xtpl:set>
-	<xtpl:set name="first">1.1 </xtpl:set>
+<xtpl:get name="first"/>
+<xtpl:get name="second">
+	second
+</get>
 
-	<xtpl:set name="context" context="val">
-		<b><xtpl:value>val[1]-1</xtpl:value></b>
-	</xtpl:set>
-	<xtpl:get name="context" context="ctx.items"/>
-</div>
+<xtpl:set name="first" test="false">1</xtpl:set>
+<xtpl:set name="first">1.1</xtpl:set>
+
+<xtpl:set name="attrs" >
+	<xtpl:value>attrs[0]+attrs[1]</xtpl:value>
+</xtpl:set>
+
+<xtpl:space/>
+<xtpl:get name="attrs" attrs="ctx.items"/>
+<xtpl:text value="-"/>
+
+<xtpl:set name="attrs-name" attrs-name="val">
+	<xtpl:value>val</xtpl:value>
+</xtpl:set>
+<xtpl:get name="attrs-name" attrs="5"/>
+
+<xtpl:text value="="/>
+
+<xtpl:get name="attrs-attrs" result="10"/>
+<xtpl:set name="attrs-attrs">
+	<xtpl:value>result</xtpl:value>
+</xtpl:set>
 ```
 ```html
-<div>1.1 second</div><b>9</b>
+1.1 second 15-5=10
 ```
 
 
@@ -226,6 +241,10 @@ ctx = { items: [1,2], colors: ['white', 'black'] };
 ```
 ```html
 <div>
+	<xtpl:foreach from="1" to="3" as="idx">
+		<xtpl:value>idx</xtpl:value>
+	</xtpl:foreach>
+	<xtpl:text value=":"/>
 	<xtpl:foreach iterate="ctx.items" as="val">
 		<xtpl:value>val</xtpl:value>
 	</xtpl:foreach>
@@ -241,7 +260,7 @@ ctx = { items: [1,2], colors: ['white', 'black'] };
 </div>
 ```
 ```html
-12<ul><li>1. white</li><li>2. black</li></ul>
+123:12<ul><li>1. white</li><li>2. black</li></ul>
 ```
 
 
@@ -342,11 +361,49 @@ ctx = {
 
 
 ### attributes
-```html
-<a href="xtpl:ctx.href" title="xtpl:ctx.title" class="link">link.html</a>
+```js
+ctx = {
+	  href: 'http://site.org/link.html'
+	, title: 'click me'
+	, protocol: 'http:'
+	, hostname: 'rubaxa.org'
+}
 ```
 ```html
-<a href="http://site.org/link.html" title="click me" class="link">link.html</a>
+<a href="xtpl:ctx.href" title="xtpl:ctx.title" class="link">link.html</a>
+
+<a>
+	<xtpl:attrs>
+		<xtpl:attr name="href">
+			<xtpl:value>ctx.protocol</xtpl:value>
+			<xtpl:value>ctx.domain</xtpl:value>
+			<xtpl:get name="page" />
+		</xtpl:attr>
+		<xtpl:attr name="class">link</xtpl:attr>
+	</xtpl:attrs>
+	<xtpl:text>test</xtpl:text>
+</a>
+<xtpl:set name="page">inde.html</xtpl:set>
+```
+```html
+<a href="http://site.org/link.html" title="click me" class="link">link.html</a><a href="http://rubaxa.org/index.html" class="link">test</a>
+```
+
+### closure
+```js
+ctx = { first: 1, second: 2 };
+```
+```html
+<xtpl:closure a="ctx.first" b="ctx.second">
+	<xtpl:value>a</xtpl:value>
+	<xtpl:text>+</xtpl:text>
+	<xtpl:value>b</xtpl:value>
+	<xtpl:text>=</xtpl:text>
+	<xtpl:value>a+b</xtpl:value>
+</xtpl:closure>
+```
+```html
+1+2=3
 ```
 
 

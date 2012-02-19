@@ -36,10 +36,10 @@
 		xtpl.ASYNC = false;
 		xtpl.ROOT_DIR = './xml/';
 
-		function equal(tpl, data, txt){
+		function equal(tpl, ctx, txt){
 			if( !txt ){
-				txt = data;
-				data = {};
+				txt = ctx;
+				ctx = {};
 			}
 
 			var uid = String(Math.random()).replace('.', '');
@@ -53,11 +53,13 @@
 			document.getElementById('Result').appendChild(node);
 
 			console.time(tpl);
-			xtpl.fetch(tpl, data, function (res){
+			xtpl.fetch(tpl, ctx, function (out){
 				console.timeEnd(tpl);
-				node.innerHTML = tpl +' -> '+ res;
-				if( typeof txt == 'string' ) res = res == txt; else res = txt(res);
+				if( typeof txt != 'string' ) txt = txt(out);
+				var res = out == txt;
+				node.innerHTML = tpl +' -> ['+ out +'] == ['+txt+']';
 				node.style.backgroundColor = res ? 'green' : 'red';
+//				console.log(out, ' == ', txt);
 			});
 		}
 
@@ -67,15 +69,7 @@
 		equal('#attrs', { href: "http://rubaxa.org/", title: "home page" }, '<a href="http://rubaxa.org/" title="home page" class="link">link.html</a>');
 		equal('script.xml', 'trueglobal');
 		equal('strict.xml', 'true');
-		equal('blocks.xml', function (result){
-			result = result.split('|');
-			return (result[1] == 'one')
-			&& (result[2] == 'two2')
-			&& (result[3] == 'three1')
-			&& (result[4] == 'five')
-			&& (result[5] == 'six')
-			&& (result[6] == 'def');
-		});
+		equal('blocks.xml', { items: [5,10] }, 'start|one|two2|three1|five|six|def|9|7|8|15|0|stop');
 		equal('include.xml', 'my.text');
 		equal('htmlsafe.xml', { html: '<script>' }, '&lt;script&gt;');
 	</script>

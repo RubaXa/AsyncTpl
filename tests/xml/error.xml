@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:space/>
+	<xtpl:foreach as="i">
+        <xtpl:value>i</xtpl:value>
+    </xtpl:foreach>
+</xtpl:template>
