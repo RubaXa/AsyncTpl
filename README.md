@@ -45,10 +45,10 @@ http.createServer(function (req, res){
 <xtpl:template>
 	<xtpl:doctype />
 	<head>
-		<title><get name="title" /></title>
+		<title><xtpl:get name="title" /></title>
 	</head>
 	<body>
-		<get name="content">empty</get>
+		<xtpl:get name="content">empty</xtpl:get>
 		<xtpl:value>(new Date).toString()</xtpl:value>
 	</body>
 </xtpl:template>
@@ -184,7 +184,7 @@ true
 
 ### block
 ```js
-var ctx { items: [5,10] }
+var ctx = { items: [5,10] }
 ```
 ```html
 <xtpl:get name="first"/>
@@ -195,7 +195,7 @@ var ctx { items: [5,10] }
 <xtpl:set name="first" test="false">1</xtpl:set>
 <xtpl:set name="first">1.1</xtpl:set>
 
-<xtpl:set name="attrs" >
+<xtpl:set name="attrs">
 	<xtpl:value>attrs[0]+attrs[1]</xtpl:value>
 </xtpl:set>
 
