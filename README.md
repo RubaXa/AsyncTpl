@@ -9,7 +9,7 @@ Is a asynchronous template engine for nodejs or the browser.
 * async/streaming operation
 * browser/nodejs compatibility
 * [high performance](http://rubaxa.github.com/AsyncTpl/benchmark/index.html)
-* 21KB (compressed code) 
+* 25KB (compressed code)
 
 
 ## Usage
@@ -21,21 +21,18 @@ Is a asynchronous template engine for nodejs or the browser.
 var xtpl = require('./lib/AsyncTpl').engine('XML');
 
 // Setup XML
-xtpl.NS = 'xtpl';      // namespace
-xtpl.ASYNC = true;     // async include templates
-xtpl.STREAM = false;   // sreaming
+xtpl.NS     = 'xtpl';  // namespace
+xtpl.ASYNC  = true;    // async include templates
+xtpl.STREAM = false;   // streaming
 xtpl.ESCAPE = true;    // html escape all variables
-xtpl.ROOT_DIR = './tpl/';
-xtpl.COMPILE_DIR = './tpl_c/';
+xtpl.ROOT_DIR       = './tpl/';
+xtpl.COMPILE_DIR    = './tpl_c/';
 
 http.createServer(function (req, res){
 	res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-	xtpl
-		.fetch('index.xml', { text: 'Yahoo!' })
-		.then(function (result){
-			res.end(result);
-		})
-	;
+	xtpl.fetch('index.xml', { text: 'Yahoo!' }, function (result){
+		res.end(result);
+	});
 }).listen(8082);
 ```
 
@@ -143,7 +140,7 @@ smarty
 ;
 
 
-smarty.fetch('my.tpl', {}).then(function (res){  });
+smarty.fetch('my.tpl', {}, function (res){  });
 ```
 
 
