@@ -1,12 +1,16 @@
 <div>
+	[
 	{{foreach from=$items item=item}}
 		{{$item}}
 	{{/foreach}}
+	]
 
 	{{foreach from=$items key=i}}
+		[{{$i}}:
 		{{foreach from=$subitems key=j}}
-			{{$i}}{{$subitems[$i][$j]}}
+			{{$subitems[$i][$j]}}
 		{{/foreach}}
+		]
 	{{/foreach}}
 
 	{{foreach from=$undef}}
