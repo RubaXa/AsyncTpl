@@ -21,10 +21,11 @@ Is a asynchronous template engine for nodejs or the browser.
 var xtpl = require('./lib/AsyncTpl').engine('XML');
 
 // Setup XML
-xtpl.NS     = 'xtpl';  // namespace
-xtpl.ASYNC  = true;    // async include templates
-xtpl.STREAM = false;   // streaming
-xtpl.ESCAPE = true;    // html escape all variables
+xtpl.NS     = 'xtpl';   // namespace
+xtpl.ASYNC  = true;     // async include templates
+xtpl.STREAM = false;    // streaming
+xtpl.ESCAPE = true;     // html escape all variables
+xtpl.DEBUG  = true;     // compile & run-time errors (console.log)
 xtpl.ROOT_DIR       = './tpl/';
 xtpl.COMPILE_DIR    = './tpl_c/';
 
@@ -160,6 +161,7 @@ smarty.fetch('my.tpl', {}, function (res){  });
 * comment
 * attributes
 * closure
+* compile & run-time errors
 * custom tags: `doctype`
 
 
@@ -418,6 +420,36 @@ ctx = { first: 1, second: 2 };
 ```
 ```html
 1+2=3
+```
+
+
+### Compile errors
+```html
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:space/>
+	<xtpl:foreach as="i">
+        <xtpl:value>i</xtpl:value>
+    </xtpl:foreach>
+</xtpl:template>
+```
+```html
+Error: Tag "foreach", attribute "iterate" is missing in /my/template.xml on line 4
+```
+
+### Run-time errors
+```html
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:script>
+	    <![CDATA[
+	    variable = true;
+	    ]]>
+	</xtpl:script>
+</xtpl:template>
+```
+```html
+Error: variable is not defined in /my/template.xml on line 3
 ```
 
 
