@@ -23,14 +23,14 @@
 
 	<xtpl:set name="title">
 		<xtpl:text>title:</xtpl:text>
-		<xtpl:get name="msg-folder" folderId="0"/>
+		<xtpl:get name="msg-folder" attrs="0"/>
 	</xtpl:set>
 
 	<xtpl:set name="message" attrs-name="msg">
 		<a>
 			<xtpl:attrs>
 				<xtpl:attr name="href">
-					<xtpl:value>ctx.protocol</xtpl:value>
+					<xtpl:value>protocol</xtpl:value>
 					<xtpl:text>//e.mail.ru/msglist?id=</xtpl:text>
 					<xtpl:value>msg.Id</xtpl:value>
 				</xtpl:attr>

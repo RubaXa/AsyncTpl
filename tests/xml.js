@@ -46,6 +46,11 @@ vows.describe('XML tests').addBatch({
 		, 'result': function(result){ assert.equal(result, 'bar|1,2,3'); }
 	},
 
+	'assign': {
+		  'topic':  function(){ return transform('assign.xml', { }); }
+		, 'result': function(result){ assert.equal(result, 'http://rubaxa.org/'); }
+	},
+
 	'attribute': {
 		  'topic':  function(){ return transform('attribute.xml'); }
 		, 'result': function(result){

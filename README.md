@@ -148,6 +148,7 @@ smarty.fetch('my.tpl', {}, function (res){  });
 
 * if
 * include
+* assign
 * block: `get & set`
 * choose: `when & otherwise`
 * foreach: `iterate, as & index`
@@ -176,6 +177,22 @@ true
 ### include
 ```html
 <xtpl:include src="./filename.xml"/>
+```
+
+### assign
+```html
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:assign name="slash" value="/" />
+	<xtpl:assign name="ctx.double.slashes" value="//" />
+	<xtpl:assign name="url.protocol" value="http:" />
+	<xtpl:assign name="url.hostname" value="rubaxa.org" />
+
+	<xtpl:value>url.protocol</xtpl:value>
+	<xtpl:value>ctx.double.slashes</xtpl:value>
+	<xtpl:value>url.hostname</xtpl:value>
+	<xtpl:value>slash</xtpl:value>
+</xtpl:template>
 ```
 
 
