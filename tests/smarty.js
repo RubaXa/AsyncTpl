@@ -1,3 +1,5 @@
+/*global require */
+
 var
 	  xtpl		= require('../lib/AsyncTpl').engine(require('../lib/Smarty'))
 	, vows		= require('../../vows/lib/vows.js')
@@ -18,7 +20,6 @@ function transform(file, json, promise){
 
 
 vows.describe('Smarty tests').addBatch({
-/**
 	'value': {
 		'topic':	function(){ return transform('value.html', { username: 'RubaXa' }); }
 	  , 'result':	function(result){ assert.equal(result, 'RubaXa'); }
@@ -47,7 +48,6 @@ vows.describe('Smarty tests').addBatch({
 		, 'result':	function(result){ assert.equal(result, '1|second|three'); }
     },
 
- */
 	'modifiers': {
 		  'topic':	function (){
 			  return transform('modifiers.html', {
