@@ -456,7 +456,7 @@ Error: variable is not defined in /my/template.xml on line 3
 ```
 
 
-### Custom tags (example)
+### Custom tags (draft)
 ```js
 var xtpl = AsyncTpl.engine('XML').tags({
 				'menu': function (node){ return node.__close ? '</ul>' : '<ul>'; }
