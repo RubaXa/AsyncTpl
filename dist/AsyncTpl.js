@@ -20,9 +20,9 @@
 	});
 
 
-	/*global __build*/
+	/*global require, __build*/
 
-(function (){
+(function (utils){
 	var
 		  _rns = /(\w+):(\w+)/
 
@@ -34,6 +34,7 @@
 			, COMMENT_NODE: 8
 			, CUSTOM_NODE: 20
 			, COMPILER_NODE: 21
+			, VAR_NODE: 22
 		}
 
 		, _short = { area: true, base: true, br: true, col: true, command: true, embed: true, hr: true, img: true, input: true, keygen: true, link: true, meta: true, param: true, source: true, wbr: true }
@@ -83,7 +84,7 @@
 			if( this.attributes[name] ){
 				return  this.attributes[name].value;
 			} else {
-				throw   new Error('At line '+this.__line+': tag "'+ this.name +'", attribute "' + (txt || name) + '" is missing');
+				utils.exception('Tag "'+ this.name +'", attribute "' + (txt || name) + '" is missing', this.__line, this.__file);
 			}
 		},
 
@@ -132,7 +133,7 @@
 		__build('./Node', Node);
 	else
 		module.exports = Node;
-})();
+})(require('./utils'));
 /*global require, __build*/
 
 (function (fs, undef){
@@ -182,6 +183,15 @@
 			return	(new Date).getTime()+''+Math.round(Math.random()*1000);
 		},
 
+		ns: function (ctx, ns, val){
+			var ns = ns.split('.'), last = ns.pop();
+			utils.each(ns, function (key){
+				if( !ctx[key] ) ctx[key] = {};
+				ctx = ctx[key];
+			});
+			ctx[last] = val;
+		},
+
 		escape: function (str){
 			if( typeof str === "string" ){
 				if( _rhtml.test(str) ){
@@ -200,8 +210,14 @@
 			: function (){ if( _console ) _console.log.apply(_console, arguments); }
 		,
 
+		exception: function (msg, line, file){
+			throw { message: msg, line: line, file: file };
+		},
+
 		error: function (err, line, file){
-			this.log((line ? 'Error in '+file+'\nAt line '+line+': ' : '')+err.toString());
+			var str = 'Error: '+err.message + ' in '+(err.file || file)+' on line '+(err.line || line);
+			this.log(str);
+			return  str;
 		},
 
 		// Get object keys
@@ -517,7 +533,7 @@
 
 				if( res.length ){
 					node    = res[res.length-1];
-					if( !node.__line && (!node.__close || node.__empty) ){
+					if( !node.__line ){
 						node.__line = input.line() + _line;
 						node.__file = this._file;
 					}
@@ -746,10 +762,14 @@
 		constructor: Compiler,
 
 		compile: function (input){
-			var source = ['',''], chunk = [], val, node;
+			var source = ['','',''], chunk = [], val, node, vars = ['undef','undefined'];
 
 			while( node = input.shift() ){
-				if( node.__break ){
+				if( node.type && node.type == node.VAR_NODE ){
+					if( !~utils.indexOf(vars, node.name) )
+						vars.push(node.name);
+				}
+				else if( node.__break ){
 					_flush();
 					source.push( node.value );
 				} else if( node.name == 'value' ){
@@ -773,17 +793,18 @@
 				source[0]	= "with( ctx ){ ";
 				source.push(' } ');
 			} else {
-				source[0]	= "'use strict';/*global __buf*/";
+				source[0]	= "'use strict';/*global __buf, __this, utils, ctx*/";
 			}
 
-			source[1]   = 'var undef;if(ctx.__part!==undef)__buf.off();';
+			source[1]   = 'var '+vars.join(',');
+			source[2]   = ';if(ctx.__part!==undef)__buf.off();';
 			source      = source.join('') + ' __buf.end();';
 
 //			require('fs').writeFileSync('out.js', source);
 //			console.log( source );
 //			console.log('------------------');
 			
-			return	new Function('ctx, __buf, __utils', source);
+			return	new Function('ctx, __buf, __utils, __this', source);
 
 			function _flush(){
 				var str = '', i = 0, n = chunk.length, prev, type;
@@ -1016,7 +1037,7 @@
 })(require('./utils'));
 /*global require, __build, __utils*/
 
-(function (utils, Parser, Compiler, Buffer, undef){
+(function (utils, Node, Parser, Compiler, Buffer, undef){
 	'use strict';
 
 	var
@@ -1164,7 +1185,7 @@
 						}
 					} catch( err ){
 						inc     = [];
-						stack   = [node.__file+'\n'+err.message];
+						stack   = [utils.error(err)];
 					}
 
 					this.__node = undef;
@@ -1235,7 +1256,7 @@
 
 		_try: function (val, info, ret){
 			if( !info ){
-				if( val && val.__line  ){
+				if( val && val.__line ){
 					info    = val;
 					val     = val.value;
 				} else {
@@ -1260,7 +1281,7 @@
 
 			if( this._opts.ns == node.ns || !node.ns ) switch( node.name ){
 				case 'script':
-						val	= ' '+this._try(input.shift())+' ';
+						val	= ' '+this._try( input.shift().value, node )+' ';
 						input.shift();
 					break;
 
@@ -1312,12 +1333,27 @@
 					break;
 
 				case 'assign':
-						val = ' ctx[\''+utils.addslashes(node.attr('value'))+'\']=';
+						var name = node.attr('name').split('.'), first = name.shift();
+
+						if( first == 'ctx' ){
+							val = '__utils.ns(ctx,"'+name.join('.')+'",';
+						} else {
+							input.push(Node(first, Node.VAR_NODE));
+							if( name.length > 0 ){
+								val  = 'if('+first+'===undef)'+first+'={};';
+								val += '__utils.ns('+first+',"'+name.join('.')+'",';
+							} else {
+								val = first+'=(';
+							}
+						}
+
 						if( attrs.type && attrs.type != 'string' ){
 							val += node.attr('value');
 						} else {
-							val += "'"+utils.addslashes(node.attr('value'))+"';"
+							val += "'"+utils.addslashes(node.attr('value'))+"'";
 						}
+
+						val += ');';
 					break;
 
 				case 'get':
@@ -1432,7 +1468,7 @@
 						}
 						else {
 							if( !node.prev || node.prev.type != node.ELEMENT_NODE || node.prev.__close ){
-								throw   new Error('At line '+node.__line+': <'+this._opts.ns+':'+node.name+'/> must be the first child');
+								utils.exception('<'+this._opts.ns+':'+node.name+'/> must be the first child', node.__line, node.__file);
 							}
 							return null;
 						}
@@ -1501,7 +1537,7 @@
 				this._compile(this._filename, this.fetch.bind(this, ctx, fn));
 			}
 			else {
-				this._tpl(ctx || {}, new Buffer(fn, this._opts.stream), utils);
+				this._tpl(ctx || {}, new Buffer(fn, this._opts.stream), utils, this);
 			}
 		},
 
@@ -1637,7 +1673,7 @@
 		__build('./AsyncTpl', Template);
 	else
 		module.exports = Template;
-})(require('./utils'), require('./Parser'), require('./Compiler'), require('./Buffer'));
+})(require('./utils'), require('./Node'), require('./Parser'), require('./Compiler'), require('./Buffer'));
 /*global require, __build*/
 
 (function (utils, undef){
@@ -1761,13 +1797,13 @@
 
 	Smarty.fn = {
 		_defaults: function (opts){
-			opts			= utils.extend({ left: '{{', right: '}}' }, opts, { tags: tags });
+			opts			= utils.extend({ left: '{{', right: '}}' }, opts, { tags: tags, ns: undef, escape: false });
 			opts.c_open		= opts.left + '*';
 			opts.c_close	= '*' + opts.right;
 			return this._super._defaults.call(this, opts);
 		},
 
-		_trans: function (node, input){
+		_trans: function (node, input, stack){
 			var res = [], val, attrs = node.attributes;
 
 			if( node.type == node.ELEMENT_NODE || node.type == node.CUSTOM_NODE ) switch( node.name ){
@@ -1775,15 +1811,19 @@
 				case 'else':
 				case 'elseif': val = attrs; break;
 
+				case 'for':
+				case 'cycle':
 				case 'script':
-				case 'cycle': break;
+					break;
 
 				case 'foreach':
 						node.__break = true;
-						if( !this.__foreach ){
+
+					if( !this.__foreach ){
 							this.__foreach = [];
 							this.__foreachelse = [];
 						}
+
 						if( node.__open ){
 							this.__foreach.push(attrs.from.value);
 						} else if( this.__foreachelse.length ){
@@ -1800,7 +1840,7 @@
 					break;
 
 				case 'block':
-						var name = node.attr('name');
+						var name = !node.__close && node.attr('name');
 
 						if( !this.__blocks ){
 							this.__blocks = {};
@@ -1820,7 +1860,7 @@
 				case 'extends':
 				case 'include':
 						node.name = 'include';
-						val = attrs.file.value;
+						val = node.attr('file');
 					break;
 
 				default:
@@ -1845,23 +1885,23 @@
 				node.value = val;
 			}
 
-			return	res.length  ? res : this._super._trans.call(this, node, input);
+			return	res.length  ? res : this._super._trans.call(this, node, input, stack);
 		},
 
-		escape: function (expr){
+		escape: function (expr, node){
 			var mods = expr.split('|');
-			expr = this._super.escape.call(this, this.safe(mods[0]));
+			expr = mods[0];
 			utils.each(mods.splice(1), function (mod){
 				mod = mod.split(':');
 				expr = '__this.mods.'+ mod[0] +'('+ expr + (mod.length>1 ? ','+mod.splice(1).join(',') : '') +')';
 			});
-			return	expr;
+			return	this._super.escape.call(this, expr, node);
 		},
 
-		safe: function (expr){
+		safe: function (expr, node){
 			return this._super.safe.call(this, expr.replace(/\$([a-z][a-z0-9_]*)/ig, function (a, b){
 				return '(typeof '+b+'==="undefined"?ctx.'+b+':'+b+')';
-			}));
+			}), node);
 		}
 
 	};
@@ -1893,10 +1933,7 @@
 
 	Smarty.statics
 		.fn({
-			assign: function (attrs, ctx){
-				ctx[attrs['var']] = attrs['value'];
-				return '';
-			}
+			assign: function (attrs, ctx){ ctx[attrs['var']] = attrs['value']; return ''; }
 		})
 		.modifiers({
 			  'upper': function (str){ return str.toUpperCase(); }
