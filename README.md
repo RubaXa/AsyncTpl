@@ -196,6 +196,9 @@ true
 	<xtpl:value>slash</xtpl:value>
 </xtpl:template>
 ```
+```html
+http://rubaxa.org/
+```
 
 
 ### block
