@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:set name="second">second</xtpl:set>
+
+	<xtpl:text>[</xtpl:text>
+
+	<xtpl:part name="first-part">
+		<xtpl:get name="first"/>
+		<xtpl:text>-</xtpl:text>
+		<xtpl:get name="second"/>
+		<xtpl:set name="three">three</xtpl:set>
+	</xtpl:part>
+
+	<xtpl:set name="first">first</xtpl:set>
+	<xtpl:text>]-[</xtpl:text>
+
+	<xtpl:part name="second-part">
+		<xtpl:get name="first"/>
+		<xtpl:text>-</xtpl:text>
+		<xtpl:get name="second"/>
+		<xtpl:text>-</xtpl:text>
+		<xtpl:get name="three"/>
+	</xtpl:part>
+
+	<xtpl:text>]</xtpl:text>
+
+</xtpl:template>

@@ -1,5 +1,5 @@
-/**
- * @preserve AsyncTpl — Asynchronous Templating engine for NodeJS/Browser
+/*!
+ * AsyncTpl — Asynchronous Templating engine for NodeJS/Browser
  *
  * Copyright (c) 2011, Lebedev Konstantin
  * Released under the MIT License.
@@ -24,14 +24,14 @@
 	
 
 	// GLOBALIZE
-	window['AsyncTpl'] = require('AsyncTpl');
+	window.AsyncTpl = require('AsyncTpl');
 
 	var
 		  _tpl	= {}
 		, utils	= require('utils')
 	;
 
-	AsyncTpl['fetch'] = function (tplId, targetId, data, fn){
+	AsyncTpl.fetch = function (tplId, targetId, data, fn){
 		if( typeof targetId != 'string' ){
 			fn = data;
 			data = targetId;
@@ -40,7 +40,7 @@
 
 		if( _tpl[tplId] === undef ){
 			if( tplId.charAt(0) == '#' ){
-				var node	= utils.$(tplId) || { innerHTML: '[['+tplId+' — not found]]' };
+				var node	= utils.$(tplId) || { innerHTML: '[[#'+tplId+' — not found]]' };
 				_tpl[tplId]	= new this;
 				_tpl[tplId].loadString(node.innerHTML);
 			} else {
@@ -69,13 +69,13 @@
 		 * @public
 		 * @return	AsyncTpl
 		 */
-		jQuery['tpl'] = function (engine){
+		jQuery.tpl = function (engine){
 			AsyncTpl.engine(engine);
-			jQuery['tpl'] = function (){ return this; };
+			jQuery.tpl = function (){ return this; };
 			return	this;
 		};
-		jQuery['fn']['tpl'] = function (tplId, data){
-			jQuery['tpl']('XML')['fetch'](tplId, this[0], data);
+		jQuery.fn.tpl = function (tplId, data){
+			jQuery.tpl('XML').fetch(tplId, this[0], data);
 			return	this;
 		};
 	}

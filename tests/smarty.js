@@ -1,3 +1,5 @@
+/*global require */
+
 var
 	  xtpl		= require('../lib/AsyncTpl').engine(require('../lib/Smarty'))
 	, vows		= require('../../vows/lib/vows.js')
@@ -22,7 +24,6 @@ vows.describe('Smarty tests').addBatch({
 		'topic':	function(){ return transform('value.html', { username: 'RubaXa' }); }
 	  , 'result':	function(result){ assert.equal(result, 'RubaXa'); }
 	},
-/**/
     'comment': {
 		  'topic':	function(){ return transform('comment.html'); }
 		, 'result':	function(result){ assert.equal(result, '---'); }
@@ -34,18 +35,14 @@ vows.describe('Smarty tests').addBatch({
     },
 
     'foreach': {
-		  'topic':	function(){ return transform('foreach.html', { items: [1, 2], subitems: [[1, 2], [1, 2]]}); }
-		, 'result':	function(result){
-			assert.equal(result.substr(0, 2), '12');
-			assert.equal(result.substr(2, result.length - 1), '01021112OK');
-		}
+		  'topic':	function(){ return transform('foreach.html', { items: [1, 2], subitems: [[1, 2], [3, 4]]}); }
+		, 'result':	function(result){ assert.equal(result, '[12][0:12][1:34]OK'); }
     },
 
     'script': {
 		  'topic':	function(){ return transform('script.html'); }
 		, 'result':	function(result){ assert.equal(result, 'true'); }
     },
-
     'extends': {
 		  'topic':	function(){ return transform('child.html'); }
 		, 'result':	function(result){ assert.equal(result, '1|second|three'); }
@@ -58,7 +55,7 @@ vows.describe('Smarty tests').addBatch({
 				  , 'lower': 'LoWER'
 				  , 'capitalize': 'capitAlize'
 				  , 'nl2br': 'a\nb'
-				  , 'regex_replace': 'a b'
+				  , 'regexp_replace': 'a b'
 				  , 'combining': 'cOmBiNI\nng'
 			  });
 		  }
@@ -68,13 +65,8 @@ vows.describe('Smarty tests').addBatch({
 	},
 
 	'functions': {
-		  'topic': function (){
-			return transform('functions.html', {
-			});
-		}
-		, 'result': function (result){
-			assert.equal(result, 'RubaXa|');
-		}
+		  'topic': function (){ return transform('functions.html', { }); }
+		, 'result': function (result){ assert.equal(result, 'RubaXa|'); }
 	},
 
 /**/

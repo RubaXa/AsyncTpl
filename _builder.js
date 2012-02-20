@@ -1,3 +1,5 @@
+/*global require */
+
 var fs		= require('fs');
 var http	= require('http');
 var queryStr = require('querystring');

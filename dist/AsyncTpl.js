@@ -1,5 +1,5 @@
-/**
- * @preserve AsyncTpl — Asynchronous Templating engine for NodeJS/Browser
+/*!
+ * AsyncTpl — Asynchronous Templating engine for NodeJS/Browser
  *
  * Copyright (c) 2011, Lebedev Konstantin
  * Released under the MIT License.
@@ -20,16 +20,25 @@
 	});
 
 
-	(function (){
-	var _rns = /(\w+):(\w+)/, TYPE = {
-		  ELEMENT_NODE: 1
-		, ATTRIBUTE_NODE: 2
-		, TEXT_NODE: 3
-		, CDATA_NODE: 4
-		, COMMENT_NODE: 8
-		, CUSTOM_NODE: 20
-		, COMPILER_NODE: 21
-	};
+	/*global require, __build*/
+
+(function (utils){
+	var
+		  _rns = /(\w+):(\w+)/
+
+		, TYPE = {
+			  ELEMENT_NODE: 1
+			, ATTRIBUTE_NODE: 2
+			, TEXT_NODE: 3
+			, CDATA_NODE: 4
+			, COMMENT_NODE: 8
+			, CUSTOM_NODE: 20
+			, COMPILER_NODE: 21
+			, VAR_NODE: 22
+		}
+
+		, _short = { area: true, base: true, br: true, col: true, command: true, embed: true, hr: true, img: true, input: true, keygen: true, link: true, meta: true, param: true, source: true, wbr: true }
+	;
 
 	/**
 	 * @constructor
@@ -71,6 +80,14 @@
 	Node.prototype = {
 		constructor: Node,
 
+		attr: function (name, txt){
+			if( this.attributes[name] ){
+				return  this.attributes[name].value;
+			} else {
+				utils.exception('Tag "'+ this.name +'", attribute "' + (txt || name) + '" is missing', this.__line, this.__file);
+			}
+		},
+
 		replace: function (node){
 			this.name	= node.name;
 			this.type	= node.type;
@@ -98,6 +115,10 @@
 
 		hasChildNodes: function (){
 			return	!!this.childNodes.length;
+		},
+
+		isShort: function (){
+			return  _short[this.name] === true;
 		}
 	};
 
@@ -112,22 +133,28 @@
 		__build('./Node', Node);
 	else
 		module.exports = Node;
-})();
+})(require('./utils'));
+/*global require, __build*/
+
 (function (fs, undef){
 	'use strict';
 
 	var
-		  _ptrim	= String.prototype.trim
+		  _toStr	= Object.prototype.toString
+		, _ptrim	= String.prototype.trim
 		, _rid		= /^#/
 		, _slice	= [].slice
 		, _ltrim	= /^\s+/
 		, _rtrim	= /\s+$/
-		, _rhtml	= /[&<>"]/
-		, _rhtmlg	= /[&<>"]/g
+		, _rhtml	= /[&<>"]/g
 		, _roquote	= /'/g
 		, _rspecial	= { '&': '&amp;', '<': '&lt;',  '>': '&gt;', '"': '&quot;' }
+		, _console  = (typeof console !== 'undefined' && console)
 	;
 
+	function _replaceTag(a){
+		return _rspecial[a];
+	}
 
 	var utils = {
 
@@ -140,22 +167,35 @@
 		},
 
 		sizeof: function (val){
-			var len = 0, key;
-			if( val && (typeof val == 'object' || typeof val == 'object') ){
+			var len = 0;
+			if( val && (utils.isArray(val) || typeof val == 'object') ){
 				if( 'length' in val ) len = val.length;
-				else for( key in val ) len++;
+				else utils.each(val, function (){ len++; });
 			}
 			return	len;
+		},
+
+		isArray: function (val){
+			return	_toStr.call(val) == '[object Array]';
 		},
 
 		uniqId: function (){
 			return	(new Date).getTime()+''+Math.round(Math.random()*1000);
 		},
 
+		ns: function (ctx, ns, val){
+			var ns = ns.split('.'), last = ns.pop();
+			utils.each(ns, function (key){
+				if( !ctx[key] ) ctx[key] = {};
+				ctx = ctx[key];
+			});
+			ctx[last] = val;
+		},
+
 		escape: function (str){
 			if( typeof str === "string" ){
 				if( _rhtml.test(str) ){
-					return	str.replace(_rhtmlg, function (a){ return _rspecial[a]; });
+					return	str.replace(_rhtml, _replaceTag);
 				}
 			}
 			return	str;
@@ -163,6 +203,21 @@
 
 		addslashes: function (str){
 			return	str.replace(_roquote, '\\\'');
+		},
+
+		log: _console && (typeof _console.log == 'object')
+			?  Function.prototype.call.bind(_console.log, _console)
+			: function (){ if( _console ) _console.log.apply(_console, arguments); }
+		,
+
+		exception: function (msg, line, file){
+			throw { message: msg, line: line, file: file };
+		},
+
+		error: function (err, line, file){
+			var str = 'Error: '+err.message + ' in '+(err.file || file)+' on line '+(err.line || line);
+			this.log(str);
+			return  str;
 		},
 
 		// Get object keys
@@ -196,8 +251,8 @@
 		},
 
 		cycle: function (a, b, fn){
-			for( var i = a; i < b; i++ ){
-				fn();
+			for( var i = a; i <= b; i++ ){
+				fn(i);
 			}
 		},
 
@@ -259,6 +314,7 @@
 		},
 
 		mtime: function (filename){
+			/** @namespace  fs.lstatSync */
 			return	fs ? +Date.parse(fs.lstatSync(filename).mtime) : 0;
 		},
 
@@ -364,20 +420,24 @@
 	else
 		module.exports = utils;
 })(require('fs'));
+/*global require, __build*/
+
 (function (Node, utils, undef){
 	'use strict';
 
 	var
-		  _rqa = /['"]/
-		, _rspace = /^[\s\r\n\t]+$/
-		, _rnode = /^([$a-z][\da-z\s:>]|\/\w)$/i
-		, _rnodeName = /[a-z\d:]/i
+		  _rqa          = /['"]/
+		, _rlf          = /\n/g
+		, _rspace       = /^[\s\r\n\t]+$/
+		, _rnode        = /^([$a-z][\da-z\s:>]|\/\w)$/i
+		, _rnodeName    = /[a-z\d:]/i
 	;
 
 
 
-	function Parser(opts){
-		this._opts = utils.extend({
+	function Parser(opts, file){
+		this._file  = file;
+		this._opts  = utils.extend({
 			  tags:		false
 			, left:		'<'
 			, right:	'>'
@@ -404,7 +464,10 @@
 			var
 				  ch
 				, lex = ''
+				, _lex
 				, res = []
+				, node
+				, _close
 				, opts = this._opts
 				, tags = opts.tags
 				, left = opts.left
@@ -412,10 +475,13 @@
 				, c_open = opts.c_open
 				, c_close = opts.c_close
 				, len = left.length
+				, _line = 0
 			;
+
 
 			if( !opts.firstLine && /^\s*<\?xml/.test(input) ){
 				input	= utils.trim(input.replace(/^[^\n]+\n/, ''));
+				_line   = 1;
 			}
 
 			input	= new Input(input);
@@ -424,17 +490,17 @@
 			while( ch = input.peek() ){
 				if( input.match(c_open) ){
 					// comment
-					var _lex = input.extract(c_close, input.lastMatchLength);
+					_lex = input.extract(c_close, input.lastMatchLength);
 					if( _lex !== null ) res.push(Node(Node.COMMENT_NODE, _lex));
 				} else if( input.match('<![CDATA[') ){
 					// cdata
-					var _lex = input.extract(']]>', input.lastMatchLength);
+					_lex = input.extract(']]>', input.lastMatchLength);
 					if( _lex !== null ) res.push(Node(Node.CDATA_NODE, _lex));
 				} else if( input.match(left) ){
 					// open tag
 					if( _rnode.test(input.peek(len) + input.peek(len+1)) ){
-						var close = input.next(left).peek() == '/' ? (input.next(),true) : false;
-						var node = _node(input, tags, right);
+						_close = input.next(left).peek() == '/' ? (input.next(),true) : false;
+						node = _node(input, tags, right);
 
 						if( opts.trim && _rspace.test(lex) ){
 							lex	= '';
@@ -446,8 +512,8 @@
 						if( node.type ==  Node.TEXT_NODE ){
 							res.push(node);
 						} else {
-							node.__open		= !close;
-							node.__close	= node.__close || close;
+							node.__open		= !_close;
+							node.__close	= node.__close || _close;
 							node.__empty	= node.__open && node.__close;
 							res.push(node);
 						}
@@ -462,7 +528,15 @@
 				}
 
 				if( input.length() == 0 && lex != '' ){
-					res.push(Node(Node.TEXT_NODE, lex));
+					res.push(node = Node(Node.TEXT_NODE, lex));
+				}
+
+				if( res.length ){
+					node    = res[res.length-1];
+					if( !node.__line ){
+						node.__line = input.line() + _line;
+						node.__file = this._file;
+					}
 				}
 			}
 
@@ -591,13 +665,26 @@
 	}
 
 	function Input(str){
-		var input	= (str + '').split('');
-		var index	= 0;
-		var label	= {};
+		var
+			  input = (str + '').split('')
+			, index = 0
+			, label = {}
+		;
 
-		this.peek = function (offset){ return input[index+(offset||0)]; };
-		this.lex = function (len){ return input.slice(index, index + len).join(''); };
-		this.match = function (str){
+		this.pos    = function (){
+			for( var i = index; i--; ) if( input[i] == '\n' ) break;
+			return index - i + 1;
+		};
+
+		this.line   = function (){
+			var line = 1;
+			for( var i = index; i--; ) if( input[i] == '\n' ) line++;
+			return  line;
+		};
+
+		this.peek   = function (offset){ return input[index+(offset||0)]; };
+		this.lex    = function (len){ return input.slice(index, index + len).join(''); };
+		this.match  = function (str){
 			var res = this.lex(str.length) === str;
 			this.lastMatch	= res ? str : null;
 			this.lastMatchLength = res ? str.length : 0;
@@ -632,6 +719,8 @@
 			}
 		};
 
+		this.substr = function (offset, length){ return input.slice(offset, length || index).join(''); };
+
 		this.extract = function (close, offset){
 			this.save('extract');
 			if( offset !== undef ) this.next(offset);
@@ -660,6 +749,8 @@
 	else
 		module.exports = Parser;	
 })(require('./Node'), require('./utils'));
+/*global require, __build*/
+
 (function (utils, undef){
 	'use strict';
 
@@ -671,15 +762,23 @@
 		constructor: Compiler,
 
 		compile: function (input){
-			var source = [''], chunk = [], val, node;
+			var source = ['','',''], chunk = [], val, node, vars = ['undef','undefined'];
 
 			while( node = input.shift() ){
-				if( node.__break ){
+				if( node.type && node.type == node.VAR_NODE ){
+					if( !~utils.indexOf(vars, node.name) )
+						vars.push(node.name);
+				}
+				else if( node.__break ){
 					_flush();
 					source.push( node.value );
-				}
-				else if( node.name == 'value' ){
-					chunk.push( [node.value] );
+				} else if( node.name == 'value' ){
+					if( node.__escape ){
+						_flush();
+						source.push(' try{__buf.v('+node.value+')}catch(e){} ');
+					} else {
+						chunk.push( [node.value] );
+					}
 				} else if( typeof node == 'string' || node.type == node.TEXT_NODE || node.type == node.CDATA_NODE ){
 					chunk.push(node.value || node);
 				} else {
@@ -694,19 +793,25 @@
 				source[0]	= "with( ctx ){ ";
 				source.push(' } ');
 			} else {
-				source[0]	= "'use strict';";
+				source[0]	= "'use strict';/*global __buf, __this, utils, ctx*/";
 			}
 
-//			console.log( source.join('') );
+			source[1]   = 'var '+vars.join(',');
+			source[2]   = ';if(ctx.__part!==undef)__buf.off();';
+			source      = source.join('') + ' __buf.end();';
+
+//			require('fs').writeFileSync('out.js', source);
+//			console.log( source );
 //			console.log('------------------');
 			
-			return	new Function('ctx, __buf, __utils', source.join('') + ' __buf.end();');
+			return	new Function('ctx, __buf, __utils, __this', source);
 
 			function _flush(){
 				var str = '', i = 0, n = chunk.length, prev, type;
 				if( n ){
 					for( ; i < n; i++ ){
 						type = typeof chunk[i];
+
 						if( prev != type || type != 'string' ){
 							if( prev ){
 								str += prev == 'string' ? "'," : ",";
@@ -718,28 +823,7 @@
 						prev = type;
 					}
 					if( type == 'string' ) str += "'";
-					source.push('__buf.write('+str.replace(/\r/g, '').replace(/\n/g, '\\n')+');');
-					chunk	= [];
-				}
-			}
-			
-			function _flushX(){
-				var str = '', i = 0, n = chunk.length, prev, type;
-				if( n ){
-					for( ; i < n; i++ ){
-						type = typeof chunk[i];
-						if( prev != type || type != 'string' ){
-							if( prev ){
-								str += prev == 'string' ? "')" : ")";
-							}
-							str += type == 'string' ? ".s('" : '.v(';
-						}
-
-						str += type == 'string' ? utils.addslashes(chunk[i]) : chunk[i][0];
-						prev = type;
-					}
-					if( type == 'string' ) str += "'";
-					source.push('__buf'+str.replace(/\r/g, '').replace(/\n/g, '\\n')+');');
+					source.push('__buf.w('+str.replace(/\r/g, '').replace(/\n/g, '\\n')+');');
 					chunk	= [];
 				}
 			}
@@ -753,12 +837,15 @@
 	else
 		module.exports = Compiler;
 })(require('./utils'));
+/*global require, __build*/
+
 (function (utils, undef){
 	'use strict';
 
 	function Buffer(fn, stream){
 		this._data		= '';
 		this._pullLen	= 0;
+		this._active    = true;
 
 		this._stream	= stream;
 		this._callback	= fn;
@@ -767,53 +854,100 @@
 	Buffer.prototype = {
 		constructor: Buffer,
 
-		s: function (str){
-			this._data	+= str;
-			return	this;
+		on: function (){
+			this._active    = true;
+		},
+
+		off: function (){
+			this._active    = false;
 		},
 
 		v: function (val){
-			if( val === undef ) val = '';
-			this._data += val;
+			if( this._active ) if( val !== undef ){
+				this._data += utils.escape(val);
+			}
 			return	this;
 		},
 
-		write: function (){
-			var n = arguments.length, i = 0;
-			if( n === 1 ) this._data += arguments[0];
-			else for( ; i < n; i++ ){
-				this._data += arguments[i];
+		w: function (s){
+			if( this._active ){
+				if( arguments.length > 1 ){
+			        var tmp = '', l = arguments.length, i = 0;
+			        switch( l ){
+			            case 9: tmp = arguments[8] + tmp;
+			            case 8: tmp = arguments[7] + tmp;
+			            case 7: tmp = arguments[6] + tmp;
+			            case 6: tmp = arguments[5] + tmp;
+			            case 5: tmp = arguments[4] + tmp;
+			            case 4: tmp = arguments[3] + tmp;
+			            case 3: tmp = arguments[2] + tmp;
+			            case 2: {
+			                this._data  += arguments[0] + arguments[1] + tmp;
+			                break;
+			            }
+			            default: {
+				            l = arguments.length;
+			                while( i < l ){
+			                    this._data += arguments[i++];
+			                }
+			            }
+			        }
+			    } else {
+			        this._data  += s;
+			    }
+			}
+		    return this;
+		},
+
+		cycle: function (){
+			if( this._active ) utils.cycle.apply(utils, arguments);
+		},
+
+		each: function (){
+			if( this._active ) utils.each.apply(utils, arguments);
+		},
+
+		block: function (name, attrs, fn){
+			this.w(this.getBlock(name, attrs, fn));
+		},
+
+		blockLabel: function (name, attrs, fn){
+			if( this._active ){
+				if( fn !== undef ) this.setBlock(name, fn, true);
+
+				if( this._blocks === undef ){
+					this._chunks	= [];
+					this._blocks	= [];
+					this._attrs	    = [];
+				}
+
+				var idx = this._chunks.push(this._data, name) - 1;
+				this._blocks.push(idx);
+
+				if( attrs !== undef ){
+					this._attrs[idx]  = attrs;
+				}
+
+				this._data = '';
 			}
 		},
 
-		block: function (name, fn){
-			this.write(this.getBlock(name, fn));
-		},
-
-		blockLabel: function (name, fn){
-			if( fn !== undef ) this.setBlock(name, fn);
-			if( this._blocks === undef ){
-				this._chunks	= [];
-				this._blocks	= [];
-			}
-			
-			this._chunks.push(this._data, name);
-			this._blocks.push(this._chunks.length-1);
-			
-			this._data = '';
-		},
-
-		setBlock: function (name, fn){
+		setBlock: function (name, fn, soft){
 			if( this._block === undef ) this._block = {};
-			this._block[name]	= fn;
+			if( soft !== true || this._block[name] === undef )
+				this._block[name]	= fn;
 		},
 
-		getBlock: function (name, fn){
-			if( this._block[name] !== undef ) fn = this._block[name];
+		getBlock: function (name, attrs, fn){
+			if( this._block[name] !== undef ){
+				fn = this._block[name];
+			}
+
 			if( fn !== undef ) {
 				var _buf = new Buffer();
 				_buf._block = this._block;
-				fn(_buf);
+
+				fn(_buf, attrs);
 				return	_buf.toStr();
 			} else {
 				return	'';
@@ -854,20 +988,31 @@
 
 			if( this._pullLen === 0 ){
 				if( this._blocks !== undef ){
-					var blocks = this._blocks, n = this._chunks.length, i = blocks.length, idx, res = '';
+					var
+						  blocks = this._blocks
+						, chunks = this._chunks
+						, attrs  = this._attrs
+						, n = chunks.length
+						, i = blocks.length
+						, idx
+						, res
+					;
 
 					for( ; i--; ){
-						idx	= this._blocks[i];
-						this._chunks[idx] = this.getBlock(this._chunks[idx]);
+						idx	= blocks[i];
+						chunks[idx] = this.getBlock(chunks[idx], attrs[idx]);
 					}
 
-					for( i = 0; i < n; i++ ) res += this._chunks[i];
+					res = chunks[--n];
+					for( i = n; i--; ) res = chunks[i] + res;
 
 					this._data	= res + this._data;
 				}
 
-				if( !this._stream ){
-					this._callback(this._data);
+				this._callback(this._data);
+
+				if( this._stream ){
+					this._callback(null);
 				}
 			}
 		},
@@ -890,12 +1035,14 @@
 	else
 		module.exports = Buffer;
 })(require('./utils'));
-(function (utils, Parser, Compiler, Buffer, undef){
+/*global require, __build, __utils*/
+
+(function (utils, Node, Parser, Compiler, Buffer, undef){
 	'use strict';
 
 	var
 		  _files = {}
-		, uid = utils.uniqId()
+		, _tags = {}
 		, _doctype = {
 			  def: '<!DOCTYPE html>'
 			, strict: '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">'
@@ -911,6 +1058,7 @@
 		this.__lego(filename, opts);
 	}
 
+	Template.fn =
 	Template.prototype = {
 		self: Template,
 		constructor: Template,
@@ -951,29 +1099,34 @@
 				, escape:		this.self.ESCAPE
 				, safeMode:		this.self.SAFE_MODE
 				, encoding:		this.self.ENCODING
+				, blockMode:    this.self.BLOCK_MODE
+				, debug:        this.self.DEBUG
 			}, opts);
 		},
 
 		_uniqKey: function (x){
 			var o = this._opts;
-			return	o.LEFT + o.RIGHT + o.TRIM + o.stream + x;
+			return	o.left + o.right + o.trim + o.stream + x;
 		},
  		
 		_compile: function (filename, fn){
-			var key = this._uniqKey(filename);
+			var key = filename === undef ? Math.random() : this._uniqKey(filename);
 
-			if( this._tpl ){
-				//fn(this._tpl);
-			} else if( filename === undef || _files[key] === undef ){
+			if( _files[key] !== undef ){
+				_files[key].done(function (tpl){ this._tpl = tpl; }.bind(this));
+			}
+			else if( !this._tpl && (filename === undef || _files[key] === undef) ){
 				var
 					  df	= utils.defer()
 					, incs	= {}
 				;
 
 				_files[key]	= df.promise();
+
 				this._load(filename, function (tpl){
 					if( tpl ){
-						df.resolve(tpl);
+						this._tpl = tpl;
+						df.resolve(this._tpl);
 					} else {
 						if( !this._compiler ){
 							this._compiler	= new Compiler(this._opts);
@@ -982,7 +1135,7 @@
 						this._parse(this._opts.rootDir + filename, incs, function (input){
 							this._tpl = this._compiler.compile(input);
 							this._save(filename, incs);
-							df.resolve();
+							df.resolve(this._tpl);
 						}.bind(this), incs);
 					}
 				}.bind(this));
@@ -994,7 +1147,7 @@
 
 		_parse: function (filename, incs, fn){
 			if( this._parser === undef ){
-				this._parser = new Parser(this._opts);
+				this._parser = new Parser(this._opts, filename);
 			}
 
 			var
@@ -1012,19 +1165,30 @@
 
 					input = this._parser.parse(input);
 
-					while( node = input.shift() ){
-						res = this._trans(node, input);
+					try {
+						while( node = input.shift() ){
+							this._prepare(node, input, stack);
 
-						if( res !== null && node.type != node.COMMENT_NODE ){
-							stack.push(res);
-						}
+							node.prev   = this.__node;
+							res         = this._trans(node, input, stack);
+							this.__node = node;
 
-						if( node.name == 'include' ){
-							inc.push(this._parse(path + node.value, incs).done(function (idx, entry){
-								stack[idx-1] = entry;
-							}.bind(this, stack.length)));
+							if( res !== null && node.type != node.COMMENT_NODE ){
+								stack.push(res);
+							}
+
+							if( node.name == 'include' ){
+								inc.push(this._parse(path + node.value, incs).done(function (idx, entry){
+									stack[idx-1] = entry;
+								}.bind(this, stack.length)));
+							}
 						}
+					} catch( err ){
+						inc     = [];
+						stack   = [utils.error(err)];
 					}
+
+					this.__node = undef;
 
 					utils.defer.when(inc).done(function (){ df.resolve(this._normalizeStack(stack)); }.bind(this));
 				}.bind(this)
@@ -1079,6 +1243,7 @@
 							if( utils.mtime(filename) != mtime )
 								ok	= false;
 						});
+
 						df.resolve(ok && (new Function('return '+json.template))());
 					}
 				});
@@ -1089,26 +1254,43 @@
 			return	df.done(fn).promise();
 		},
 
+		_try: function (val, info, ret){
+			if( !info ){
+				if( val && val.__line ){
+					info    = val;
+					val     = val.value;
+				} else {
+					info    = {};
+				}
+			}
+			return    'try{'+ val +'}catch(_){'
+					+ (this._opts.debug ? '__utils.error(_,'+info.__line+',"'+info.__file+'");' : '')
+					+ (ret !== undef ? 'return '+ret : '')
+					+ '}';
+		},
 
-		_trans: function (node, input){
+		_prepare: function (node, input, stack){
+			var next    = input[0] && input[0].name;
+			if( next == 'attrs' || next == 'attributes' ){
+				node.__openTag  = true;
+			}
+		},
+
+		_trans: function (node, input, stack){
 			var res = [], val, attrs = node.attributes;
 
 			if( this._opts.ns == node.ns || !node.ns ) switch( node.name ){
-				case 'doctype':
-						val	= _doctype[attrs.mode && attrs.mode.value] || _doctype.def;
-						node.type = node.TEXT_NODE;
-					break;
-
 				case 'script':
-						val	= ' try{ '+ input.shift().value +' } catch(e){} ';
+						val	= ' '+this._try( input.shift().value, node )+' ';
 						input.shift();
 					break;
 
-				case 'if': val = node.__close ? '}' : 'if('+this.safe(node.value)+'){'; break;
+				case 'if': val = node.__close ? '}' : 'if('+this.safe(node.value, node)+'){'; break;
 				case 'else': val = '}'+ node.name +'{'; break;
 				case 'elseif':
-				case 'else if': val = '}else if('+ this.safe(node.value) +'){'; break;
+				case 'else if': val = '}else if('+ this.safe(node.value, node) +'){'; break;
 
+				case 'for':
 				case 'cycle':
 				case 'foreach':
 						node.__break = true;
@@ -1116,59 +1298,114 @@
 							node.value	= '});';
 						} else {
 							var args	= '';
-							if( node.name == 'cycle' ){
-								node.value	= '__utils.cycle('+attrs.from.value+', '+attrs['to'].value+', function (){';
+							if( attrs['to'] ){
+								val	= '__buf.cycle('
+									+ node.attr('from')
+									+ ', '+node.attr('to')
+									+', function ('
+									+ (attrs.key || attrs.item || {value:''}).value
+									+ '){';
 							} else {
-								if( attrs.item ) args = attrs.item.value;
-								if( attrs.key ) args += (args == '' ? '__v,' : ',') + attrs.key.value;
-								node.value	= '__utils.each('+this.safe(attrs.from.value)+', function ('+args+'){';
+								if( attrs.item ) args  = attrs.item.value;
+								if( attrs.key )  args += (args == '' ? '__v,' : ',') + attrs.key.value;
+								val	= '__buf.each('+this.safe(node.attr('from', attrs._from), node)+', function ('+args+'){';
 							}
 						}
 					break;
 
 				case 'pull':
 						if( !node.__close ){
-							var pull = { id: utils.uniqId(), name: attrs.name.value, as: attrs.as && attrs.as.value || attrs.name.value,  async: !!attrs.async, error: attrs.error && attrs.error.value || 'err' };
+							var pull = { id: utils.uniqId(), name: node.attr('name'), as: attrs.as && node.attr('value') || node.attr('name'),  async: !!attrs.async, error: attrs.error && node.attr('error') || 'err' };
 							if( !this._pullStack ) this._pullStack = [];
 							this._pullStack.push(pull);
 
-							val = '__buf.write(\'<span id="'+pull.id+'">\');';
+							val = '__buf.w(\'<span id="'+pull.id+'">\');';
 
 							if( attrs.async ){
-								val += '__buf.pull(ctx,"'+attrs.name.value+'");';
+								val += '__buf.pull(ctx,"'+ pull.name +'");';
 							} else {
 								val += '__buf.pullSync(ctx,"'+pull.name+'",function('+pull.error+','+pull.as+'){';
 								input.push({ value: '});', type: node.ELEMENT_NODE });
 							}
 						} else {
-							val	= '__buf.write(\'</span>\');';
+							val	= '__buf.w(\'</span>\');';
 						}
+					break;
+
+				case 'assign':
+						var name = node.attr('name').split('.'), first = name.shift();
+
+						if( first == 'ctx' ){
+							val = '__utils.ns(ctx,"'+name.join('.')+'",';
+						} else {
+							input.push(Node(first, Node.VAR_NODE));
+							if( name.length > 0 ){
+								val  = 'if('+first+'===undef)'+first+'={};';
+								val += '__utils.ns('+first+',"'+name.join('.')+'",';
+							} else {
+								val = first+'=(';
+							}
+						}
+
+						if( attrs.type && attrs.type != 'string' ){
+							val += node.attr('value');
+						} else {
+							val += "'"+utils.addslashes(node.attr('value'))+"'";
+						}
+
+						val += ');';
 					break;
 
 				case 'get':
-						if( this._opts.stream || this.blockLevel ){
-							node.name	= 'value';
-							if( node.__empty ){
-								val	=  '__buf.getBlock("'+attrs.name.value+'")';
-							} else {
-								val	=  node.__close ? '});' : '__buf.block("'+attrs.name.value+'", function (__buf){';
-								node.__break = true;
-							}
+						var _attrs = [], key, _attr;
+
+						if( attrs.attrs ){
+							_attr   = attrs.attrs.value;
+						} else for( key in attrs ) if( key != 'name' && key != 'attrs-name' ){
+							_attrs.push(this._try('a.'+key+'='+node.attr(key), node));
+						}
+
+						if( node.__empty ){
+							val = '__buf.#method#("'+node.attr('name')+'",#attrs#);';
+						}
+						else if( node.__close ){
+							val = '});';
 						} else {
-							if( node.__empty ){
-								val	=  '__buf.blockLabel("'+attrs.name.value+'");';
+							if( this._opts.blockMode == 1 ){
+								val = '__buf.#method#("'+node.attr('name')+'",#attrs#,function (__buf,'+(attrs['attrs-name'] && attrs['attrs-name'].value || 'attrs')+'){'
 							} else {
-								val	=  node.__close ? '});' : '__buf.blockLabel("'+attrs.name.value+'", function (__buf){';
+								val     = '__buf.#method#("'+node.attr('name')+'",#attrs#)';
+								_attr   = input.shift().value;
+								input.shift();
 							}
 						}
+
+						if( _attr ){
+							if( _attrs.length ) console.log('WARNING: Can\'t use block attributes at block mode == 2');
+							_attrs  = this.safe(_attr, node);
+						}
+						else {
+							_attrs  = _attrs.length ? '(function(a){'+ _attrs.join('') +' return a})({})' : 'undef';
+						}
+
+						val = val.replace('#attrs#', _attrs).replace('#method#', this._opts.stream || this.blockLevel ? 'block' : 'blockLabel');
 					break;
 
 				case 'set':
-						this.blockLevel	= (this.blockLevel>>0) + (node.__close ? -1 : 1);
-						val	= node.__close
-								? '});'
-								: (attrs.test ? 'if('+this.safe(attrs.test.value)+')' : '') + '__buf.setBlock("'+attrs.name.value+'",function(__buf){'
-							;
+						if( input[0].name == 'set' && input[0].__close ){
+							input.shift();
+							return	null;
+						}
+
+						this.blockLevel	= (this.blockLevel|0) + (node.__close ? -1 : 1);
+
+						if( node.__close ){
+							val = '});'
+						} else {
+							val = '';
+							if( attrs.test ) val += 'if('+this.safe(node.attr('test'), node)+')';
+							val += '__buf.setBlock("'+node.attr('name')+'",function(__buf,'+(attrs['attrs-name'] && node.attr('attrs-name') || 'attrs')+'){';
+						}
 					break;
 
 				case 'fail':
@@ -1182,12 +1419,90 @@
 							val	= node.__close ? '}' : 'if(' + (node.name == 'fail' ? '' : '!') +pull.error+ '){';
 							if( pull.async ){
 								if( node.__close ){
-									val += '__buf.write(\'</span><script>(function(a,b){try{a.parentNode.insertBefore(b,a);b.style.display="";a.parentNode.removeChild(a);}catch(er){}})(__utils.$("#%id"),__utils.$("#%name%id"));</script>'.replace(/%id/g, pull.id).replace('%name', node.name)+'\'); });'
+									val += '__buf.w(\'</span><script>(function(a,b){try{a.parentNode.insertBefore(b,a);b.style.display="";a.parentNode.removeChild(a);}catch(er){}})(__utils.$("#%id"),__utils.$("#%name%id"));</script>'.replace(/%id/g, pull.id).replace('%name', node.name)+'\'); });'
 								} else {
 									val = '__buf.pull(ctx,"'+pull.name+'",function('+pull.error+','+pull.as+'){'
-										+ '__buf.write(\'<span id="'+node.name+pull.id+'" style="display: none">\');'
+										+ '__buf.w(\'<span id="'+node.name+pull.id+'" style="display: none">\');'
 										+ val;
 								}
+							}
+						}
+					break;
+
+				case 'part':
+						if( node.__close ){
+							val = 'if(ctx.__part=="'+ this.__parts.pop() +'")__buf.off();';
+						}
+						else {
+							val = 'if(ctx.__part=="'+node.attr('name')+'")__buf.on();';
+							if( !this.__parts ) this.__parts = [];
+							this.__parts.push(node.attr('name'));
+						}
+					break;
+
+				case 'space':
+						node.type = node.TEXT_NODE;
+						val = ' ';
+					break;
+
+				case 'text':
+						node.type	= node.TEXT_NODE;
+						if( attrs.value ){
+							val = node.attr('value');
+						} else {
+							val	= input.shift().value;
+							input.shift();
+						}
+					break;
+
+				case 'attrs':
+				case 'attributes':
+						if( node.__close ){
+							val = '';
+							node.type = node.TEXT_NODE;
+							if( input[0].__close && !input[0].__empty && input[0].isShort() ){
+								input.shift();
+								val += '/';
+							}
+							val += this._opts.right;
+						}
+						else {
+							if( !node.prev || node.prev.type != node.ELEMENT_NODE || node.prev.__close ){
+								utils.exception('<'+this._opts.ns+':'+node.name+'/> must be the first child', node.__line, node.__file);
+							}
+							return null;
+						}
+					break;
+
+				case 'attr':
+				case 'attribute':
+						node.type = node.TEXT_NODE;
+						val = node.__close ? '"' : ' '+node.attr('name')+'="';
+					break;
+
+				case 'closure':
+						if( node.__close ){
+							val = '})('+this.__closure.shift().join(',')+');';
+						} else {
+							var _attrs = [], key, _vars = [];
+							val = '(function(';
+							this.__closure = this.__closure || [];
+							for( key in attrs ){
+								_vars.push(key);
+								_attrs.push(this.safe(node.attr(key), node));
+							}
+							val += _vars.join(',')+'){';
+							this.__closure.push(_attrs);
+						}
+					break;
+
+				default:
+						val = this._myNode(node.name, node, attrs);
+						if( val !== undef ){
+							node.type = node.TEXT_NODE;
+							if( utils.isArray(val) ){
+								res = val;
+								val = undef;
 							}
 						}
 					break;
@@ -1201,15 +1516,29 @@
 		},
 
 
+		_myNode: function (name, node, attrs){
+			if( _tags[name] ){
+				return	_tags[name].call(this, node, attrs)
+			} else if( _tags['_'] ){
+				return	_tags._.call(this, node, attrs);
+			}
+		},
+
+
 
 	// @public
 		fetch: function (ctx, fn){
-			if( this._tpl === undef ){
-				this._compile(this._filename, this.fetch.bind(this, ctx, fn));
-				return	this;
+			if( fn === undef ){
+				fn  = ctx;
+				ctx = undef;
 			}
 
-			this._tpl(ctx||{}, new Buffer(fn, this._opts.stream), utils);
+			if( this._tpl === undef ){
+				this._compile(this._filename, this.fetch.bind(this, ctx, fn));
+			}
+			else {
+				this._tpl(ctx || {}, new Buffer(fn, this._opts.stream), utils, this);
+			}
 		},
 
 
@@ -1236,12 +1565,18 @@
 			return	this;
 		},
 
-		safe: function (expr){
-			return	this._opts.safeMode ? '(function(){try{return '+expr+'}catch(e){return""}})()' : expr;
+		safe: function (expr, node, noExec){
+			if( !node || !node.__line ){
+				noExec  = node;
+				node    = undef;
+			}
+			return	this._opts.safeMode
+						? '(function(){'+this._try('return '+expr, node, '""')+'})'+(noExec ? '' : '()')
+						: expr;
 		},
 
-		escape: function (expr){
-			return	this._opts.escape ? '__utils.escape('+this.safe(expr)+')' : this.safe(expr);
+		escape: function (expr, node){
+			return	this._opts.escape ? '__utils.escape('+this.safe(expr, node)+')' : this.safe(expr, node);
 		}
 		
 	};
@@ -1266,20 +1601,24 @@
 	Template.ESCAPE			= true;
 	Template.SAFE_MODE		= true;
 	Template.ENCODING		= 'utf-8';
+	Template.BLOCK_MODE		= 1;
+	Template.DEBUG	    	= true;
 	Template.ROOT_DIR		= '';
 	Template.COMPILE_DIR	= '';
 
 
 
 	// @static public
-	Template.fetch = function (filename, data){
+	Template.fetch = function (filename, ctx, fn){
 		var tpl = new this(filename), df = utils.defer(), _res = '';
-		tpl
-			.set(data)
-			.on('data', function (chunk){ _res += chunk; })
-			.on('end', function (res){ df.resolve(res === undef ? _res : res); })
-			.fetch()
-		;
+		tpl.fetch(ctx, function (chunk){
+			if( chunk === null || !tpl._opts.stream ){
+				df.resolve(tpl._opts.stream ? _res : chunk);
+			} else {
+				_res += chunk;
+			}
+		});
+		if( fn ) df.done(fn);
 		return	df.promise();
 	};
 
@@ -1288,13 +1627,28 @@
 		return (new this(opts)).loadString(str);
 	};
 
+
+	Template.tags = function (tags){
+		utils.each(tags, function (fn, name){
+			_tags[name] = fn;
+		});
+		return	this;
+	};
+
+	
+	Template.tags({
+		'doctype': function (node, attrs){
+			return	_doctype[attrs.mode && attrs.mode.value] || _doctype.def;
+		}
+	});
+	
 	
 	Template.engine	= function (obj){
 		if( typeof obj == 'string' ){
 			obj	= require('./'+obj);
 		}
 
-		var proto = this.prototype;
+		var proto = this.fn;
 		proto._super = {};
 
 		utils.each(obj.statics, function (method, name){ this[name] = method; }, this);
@@ -1319,7 +1673,9 @@
 		__build('./AsyncTpl', Template);
 	else
 		module.exports = Template;
-})(require('./utils'), require('./Parser'), require('./Compiler'), require('./Buffer'));
+})(require('./utils'), require('./Node'), require('./Parser'), require('./Compiler'), require('./Buffer'));
+/*global require, __build*/
+
 (function (utils, undef){
 	'use strict';
 
@@ -1330,54 +1686,68 @@
 			return	this._super._defaults.call(this, utils.extend(opts || {}, { firstLine: false }));
 		},
 
+		_build: function (node, attrs){
+			var res = [];
 
-		_trans: function(node, input){
+			if( typeof node == 'string' ){
+				node = { name: 'a' };
+			}
+
+			if( !node.__empty && node.__close ){
+				res.push('</'+ node.name +'>');
+			} else {
+				res.push('<'+node.name);
+				var _rns = new RegExp(this._opts.ns+':');
+
+				utils.each(attrs, function (attr){
+					if( _rns.test(attr.value) ){
+						res.push(
+							  ' '+attr.name+'="'
+							, { name: 'value', value: attr.value.replace(_rns, ''), __escape: true }
+							, '"'
+						);
+					} else {
+						res.push(' '+attr.name+'="'+attr.value+'"');
+					}
+				}, this);
+
+				if( !node.__openTag ){
+					res.push(node.__empty ? '/>' : '>');
+				}
+			}
+
+			return	res;
+		},
+
+
+		_trans: function(node, input, stack){
 			var res = [], val, attrs = node.attributes;
 
 			if( node.ns != this._opts.ns ){
 				if( node.type == node.ELEMENT_NODE ){
-					if( !node.__empty && node.__close ){
-						res.push('</'+ node.name +'>');
-					} else {
-						res.push('<'+node.name);
-						var _rns = new RegExp(this._opts.ns+':');
-						utils.each(attrs, function (attr){
-							if( _rns.test(attr.value) ){
-								res.push(
-									  ' '+attr.name+'="'
-									, { name: 'value', value: this.escape(attr.value.replace(_rns, '')) }
-									, '"'
-								);
-							} else {
-								res.push(' '+attr.name+'="'+attr.value+'"');
-							}
-						}, this);
-						res.push(node.__empty ? '/>' : '>');
-
-//						if( res.length == 2 ){
-//							res	= [res.join('')];
-//						}
-					}
+					res = this._build(node, attrs);
 				}
 			} else {
 				switch( node.name ){
-					case 'if': val = attrs.test && attrs.test.value; break;
+					case 'if': val = node.__close ? '' : node.attr('test'); break;
 					case 'choose': this.__choose = node.__open ? 1 : 0; break;
 					case 'when':
-							val = node.__close ? '}' : (this.__choose == 1 ? '' : ' else ') + 'if('+ this.safe(attrs.test.value) +'){';
+							val = node.__close ? '}' : (this.__choose == 1 ? '' : ' else ') + 'if('+ this.safe(node.attr('test'), node) +'){';
 							this.__choose++;
 						break;
 
 					case 'otherwise': val = node.__close ? '}' : ' else {'; break;
 
-					case 'foreach': attrs = { from: attrs.iterate, key: attrs.index, item: attrs.as }; break;
+					case 'foreach':
+							attrs = { _from: 'iterate', from: attrs.iterate || attrs.from, key: attrs.index, item: attrs.as, 'to': attrs['to'] };
+						break;
 
 					case 'value':
-							val = this.escape(input.shift().value);
+							val = this.escape(input.shift().value, node);
 							input.shift();
 						break;
 
-					case 'include': val = attrs.src.value; break;
+					case 'include': val = node.attr('src'); break;
 
 					case 'comment':
 							node.type = node.TEXT_NODE;
@@ -1389,22 +1759,19 @@
 							}
 						break;
 
-					case 'text':
-							node.type	= node.TEXT_NODE;
-							val	= input.shift().value;
-							input.shift();
-						break;
-
-					case 'template': return null; break; 
+					case 'template': return null; break;
 				}
 			}
 
+
 			if( val !== undef ){
-				node.value	= val;
+				if( utils.isArray(val) ) res = val;
+				else node.value = val;
 			}
+
 			node.attributes = attrs;
 
-			return	res.length  ? res : this._super._trans.call(this, node, input);
+			return	res.length  ? res : this._super._trans.call(this, node, input, stack);
 		}
 	};
 
@@ -1415,6 +1782,8 @@
 	else
 		module.exports = XML;
 })(require('./utils'));
+/*global require, __build*/
+
 (function (utils, undef){
 	'use strict';
 
@@ -1428,13 +1797,13 @@
 
 	Smarty.fn = {
 		_defaults: function (opts){
-			opts			= utils.extend({ left: '{{', right: '}}' }, opts, { tags: tags });
+			opts			= utils.extend({ left: '{{', right: '}}' }, opts, { tags: tags, ns: undef, escape: false });
 			opts.c_open		= opts.left + '*';
 			opts.c_close	= '*' + opts.right;
 			return this._super._defaults.call(this, opts);
 		},
 
-		_trans: function (node, input){
+		_trans: function (node, input, stack){
 			var res = [], val, attrs = node.attributes;
 
 			if( node.type == node.ELEMENT_NODE || node.type == node.CUSTOM_NODE ) switch( node.name ){
@@ -1442,15 +1811,19 @@
 				case 'else':
 				case 'elseif': val = attrs; break;
 
+				case 'for':
+				case 'cycle':
 				case 'script':
-				case 'cycle': break;
+					break;
 
 				case 'foreach':
 						node.__break = true;
-						if( !this.__foreach ){
+
+					if( !this.__foreach ){
 							this.__foreach = [];
 							this.__foreachelse = [];
 						}
+
 						if( node.__open ){
 							this.__foreach.push(attrs.from.value);
 						} else if( this.__foreachelse.length ){
@@ -1463,11 +1836,12 @@
 				case 'foreachelse':
 						var name = this.__foreach.pop();
 						this.__foreachelse.push(name);
-						val = '}); if(!__utils.sizeof('+this.safe(name)+')){';
+						val = '}); if(!__utils.sizeof('+this.safe(name, node)+')){';
 					break;
 
 				case 'block':
-						var name = attrs.name && attrs.name.value;
+						var name = !node.__close && node.attr('name');
+
 						if( !this.__blocks ){
 							this.__blocks = {};
 							this.___blocks = [];
@@ -1486,7 +1860,7 @@
 				case 'extends':
 				case 'include':
 						node.name = 'include';
-						val = attrs.file.value;
+						val = node.attr('file');
 					break;
 
 				default:
@@ -1494,14 +1868,14 @@
 							var xattr = [];
 							utils.each(attrs, function (a, k, v){
 								v = a.value;
-								if( /$\$/.test(v) ) v = this.safe(v); else v = '"'+v+'"';
+								if( /$\$/.test(v) ) v = this.safe(v, node); else v = '"'+v+'"';
 								xattr.push(k +':'+ v);
 							});
 							node.value = '__this.fns.'+node.name+'({'+xattr.join(',')+'},ctx)';
 							node.name = 'value';
 							return	node;
 						} else {
-							val	= this.escape(node.name + attrs);
+							val	= this.escape(node.name + attrs, node);
 							node.name = 'value';
 						}
 					break;
@@ -1511,23 +1885,23 @@
 				node.value = val;
 			}
 
-			return	res.length  ? res : this._super._trans.call(this, node, input);
+			return	res.length  ? res : this._super._trans.call(this, node, input, stack);
 		},
 
-		escape: function (expr){
+		escape: function (expr, node){
 			var mods = expr.split('|');
-			expr = this._super.escape.call(this, this.safe(mods[0]));
+			expr = mods[0];
 			utils.each(mods.splice(1), function (mod){
 				mod = mod.split(':');
 				expr = '__this.mods.'+ mod[0] +'('+ expr + (mod.length>1 ? ','+mod.splice(1).join(',') : '') +')';
 			});
-			return	expr;
+			return	this._super.escape.call(this, expr, node);
 		},
 
-		safe: function (expr){
+		safe: function (expr, node){
 			return this._super.safe.call(this, expr.replace(/\$([a-z][a-z0-9_]*)/ig, function (a, b){
 				return '(typeof '+b+'==="undefined"?ctx.'+b+':'+b+')';
-			}));
+			}), node);
 		}
 
 	};
@@ -1559,17 +1933,14 @@
 
 	Smarty.statics
 		.fn({
-			assign: function (attrs, ctx){
-				ctx[attrs['var']] = attrs['value'];
-				return '';
-			}
+			assign: function (attrs, ctx){ ctx[attrs['var']] = attrs['value']; return ''; }
 		})
 		.modifiers({
 			  'upper': function (str){ return str.toUpperCase(); }
 			, 'lower': function (str){ return str.toLowerCase(); }
 			, 'capitalize': function (str){ return str.charAt(0).toUpperCase()+str.substr(1).toLowerCase(); }
 			, 'nl2br': function (str){ return str.replace(_rr, '').replace(_rn, '<br/>'); }
-			, 'regex_replace': function (str, search, replace){
+			, 'regexp_replace': function (str, search, replace){
 				search = search.match(_rre);
 				return str.replace(new RegExp(search[1], search[2]), replace);
 			}
@@ -1587,14 +1958,14 @@
 	
 
 	// GLOBALIZE
-	window['AsyncTpl'] = require('AsyncTpl');
+	window.AsyncTpl = require('AsyncTpl');
 
 	var
 		  _tpl	= {}
 		, utils	= require('utils')
 	;
 
-	AsyncTpl['fetch'] = function (tplId, targetId, data, fn){
+	AsyncTpl.fetch = function (tplId, targetId, data, fn){
 		if( typeof targetId != 'string' ){
 			fn = data;
 			data = targetId;
@@ -1603,7 +1974,7 @@
 
 		if( _tpl[tplId] === undef ){
 			if( tplId.charAt(0) == '#' ){
-				var node	= utils.$(tplId) || { innerHTML: '[['+tplId+' — not found]]' };
+				var node	= utils.$(tplId) || { innerHTML: '[[#'+tplId+' — not found]]' };
 				_tpl[tplId]	= new this;
 				_tpl[tplId].loadString(node.innerHTML);
 			} else {
@@ -1632,13 +2003,13 @@
 		 * @public
 		 * @return	AsyncTpl
 		 */
-		jQuery['tpl'] = function (engine){
+		jQuery.tpl = function (engine){
 			AsyncTpl.engine(engine);
-			jQuery['tpl'] = function (){ return this; };
+			jQuery.tpl = function (){ return this; };
 			return	this;
 		};
-		jQuery['fn']['tpl'] = function (tplId, data){
-			jQuery['tpl']('XML')['fetch'](tplId, this[0], data);
+		jQuery.fn.tpl = function (tplId, data){
+			jQuery.tpl('XML').fetch(tplId, this[0], data);
 			return	this;
 		};
 	}

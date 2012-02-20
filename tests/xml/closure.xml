@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:closure foo="ctx.foo" items="ctx.items">
+		<xtpl:value>foo</xtpl:value>
+		<xtpl:text>|</xtpl:text>
+		<xtpl:value>items</xtpl:value>
+	</xtpl:closure>
+</xtpl:template>

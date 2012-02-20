@@ -1,3 +1,5 @@
+/*global require */
+
 var
 	  xtpl		= require('../lib/AsyncTpl').engine('XML')
 	, vows		= require('../../vows/lib/vows.js')
@@ -14,7 +16,7 @@ xtpl.ROOT_DIR		= './tests/xml/';
 
 function transform(file, ctx, promise){
 	if( !promise ) promise = new events.EventEmitter;
-    (new xtpl(file)).fetch(ctx, function(result){ setTimeout(function(){ promise.emit('success', result); }, 0); });
+    xtpl.fetch(file, ctx, function(result){ setTimeout(function(){ promise.emit('success', result); }, 0); });
 	return	promise;
 }
 
@@ -33,6 +35,28 @@ vows.describe('XML tests').addBatch({
 			'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">');
 		}
     },
+
+	'error': {
+		  'topic':  function(){ return transform('error.xml'); }
+		, 'result': function(result){ assert.equal(result, 'Error: Tag "foreach", attribute "iterate" is missing in ./tests/xml/error.xml on line 4'); }
+	},
+
+	'closure': {
+		  'topic':  function(){ return transform('closure.xml', { foo: 'bar', items: [1,2,3] }); }
+		, 'result': function(result){ assert.equal(result, 'bar|1,2,3'); }
+	},
+
+	'assign': {
+		  'topic':  function(){ return transform('assign.xml', { }); }
+		, 'result': function(result){ assert.equal(result, 'http://rubaxa.org/'); }
+	},
+
+	'attribute': {
+		  'topic':  function(){ return transform('attribute.xml'); }
+		, 'result': function(result){
+			assert.equal(result, '<input/><div>foobar</div><div class="foo bar"></div><div class="foo"></div><div when="true" otherwise="true"></div><div>foo</div>');
+		}
+	},
 
     'text': {
 		  'topic':	function(){ return transform('text.xml'); }
@@ -65,11 +89,8 @@ vows.describe('XML tests').addBatch({
     },
 
     'foreach': {
-		  'topic':	function(){ return transform('foreach.xml', {items: [1, 2], subitems: [[1, 2], [1, 2]]}); }
-		, 'result':	function(result){
-			assert.equal(result.substr(0, 2), '12');
-			assert.equal(result.substr(2, result.length - 1), '01021112');
-		}
+		  'topic':	function(){ return transform('foreach.xml', {items: [6, -1], subitems: [[1, 2], [3, 4]]}); }
+		, 'result':	function(result){ assert.equal(result, '123:6-1:[0-1-2][1-3-4]'); }
     },
 
     'attrs': {
@@ -93,10 +114,11 @@ vows.describe('XML tests').addBatch({
 			if( xtpl.STREAM ){
 				assert.equal(result, '1235def');
 			} else {
-				assert.equal(result, 'start|one|two2|three1|five|six|def|9|7|8|11|stop');
+				assert.equal(result, 'start|one|two2|three1|five|six|def|9|7|8|15|0|stop');
 			}
 		}
     },
+
 
     'include': {
 		  'topic':	function(){ return transform('include.xml'); }
@@ -121,7 +143,6 @@ vows.describe('XML tests').addBatch({
 		}
 	},
 
-	/**/
 	'pull': {
 		'topic': function (){
 			return transform('pull.xml', {
@@ -138,8 +159,6 @@ vows.describe('XML tests').addBatch({
 		}
 	},
 
-	/**/
-
 	'complex': {
 		'topic': function (){
 			return	 transform('complex.xml', {
@@ -155,7 +174,23 @@ vows.describe('XML tests').addBatch({
 			assert.equal(result, '<h1>Colors</h1><ul><li><strong>red</strong></li><li><a href="#Green">green</a></li><li><a href="#Blue">blue</a></li></ul>');
 		}
 	},
+
+	'non-part': {
+		  'topic':	function(){ return transform('part.xml'); }
+		, 'result':	function(result){ assert.equal(result, '[first-second]-[first-second-three]'); }
+	},
+
+	'part-first': {
+		  'topic':	function(){ return transform('part.xml', { __part: 'first-part' }); }
+		, 'result':	function(result){ assert.equal(result, 'first-second'); }
+	},
+
+	'part-second': {
+		  'topic':	function(){ return transform('part.xml', { __part: 'second-part' }); }
+		, 'result':	function(result){ assert.equal(result, 'first-second-three'); }
+	},
 /**/
+
 	'end': {
 		  'topic':	function(){ return true; }
 		, 'result':	function(result){ assert.equal(result, true); }
