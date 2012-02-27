@@ -480,7 +480,7 @@
 
 
 			if( !opts.firstLine && /^\s*<\?xml/.test(input) ){
-				input	= utils.trim(input.replace(/^[^\n]+\n/, ''));
+				input	= utils.trim(input.replace(/^[^>]+>\n?/, ''));
 				_line   = 1;
 			}
 
