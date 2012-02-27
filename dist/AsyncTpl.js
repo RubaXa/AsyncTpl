@@ -238,8 +238,8 @@
 			if( obj ){
 				if( obj.forEach ){
 					obj.forEach(fn, context);
-				} else if( ('length' in obj) && (0 in obj) ){
-					for( var i = 0, n = obj.length; i < n; i++ ) if( i in obj ){
+				} else if( 'length' in obj && (0 in obj) ){
+					for( var i = 0, n = obj.length, r; i < n; i++ ){
 						fn.call(context, obj[i], i, obj);
 					}
 				} else {

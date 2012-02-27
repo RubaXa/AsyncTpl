@@ -5,11 +5,12 @@ Is a asynchronous template engine for nodejs or the browser.
 
 ## Features
 
-* XML or Smarty syntaxis
+* XML, Smarty or custom syntaxis
 * async/streaming operation
+* compile & run-time errors
 * browser/nodejs compatibility
 * [high performance](http://rubaxa.github.com/AsyncTpl/benchmark/index.html)
-* 25KB (compressed code)
+* 10KB (minified + gzipped)
 
 
 ## Usage
@@ -161,7 +162,6 @@ smarty.fetch('my.tpl', {}, function (res){  });
 * comment
 * attributes
 * closure
-* compile & run-time errors
 * custom tags: `doctype`
 
 
@@ -195,6 +195,9 @@ true
 	<xtpl:value>url.hostname</xtpl:value>
 	<xtpl:value>slash</xtpl:value>
 </xtpl:template>
+```
+```html
+http://rubaxa.org/
 ```
 
 
@@ -423,37 +426,7 @@ ctx = { first: 1, second: 2 };
 ```
 
 
-### Compile errors
-```html
-<?xml version="1.0"?>
-<xtpl:template xmlns:xtpl="http://rubaxa.org/">
-    <xtpl:space/>
-	<xtpl:foreach as="i">
-        <xtpl:value>i</xtpl:value>
-    </xtpl:foreach>
-</xtpl:template>
-```
-```html
-Error: Tag "foreach", attribute "iterate" is missing in /my/template.xml on line 4
-```
-
-### Run-time errors
-```html
-<?xml version="1.0"?>
-<xtpl:template xmlns:xtpl="http://rubaxa.org/">
-	<xtpl:script>
-	    <![CDATA[
-	    variable = true;
-	    ]]>
-	</xtpl:script>
-</xtpl:template>
-```
-```html
-Error: variable is not defined in /my/template.xml on line 3
-```
-
-
-### Custom tags (example)
+### Custom tags (draft)
 ```js
 var xtpl = AsyncTpl.engine('XML').tags({
 				'menu': function (node){ return node.__close ? '</ul>' : '<ul>'; }
@@ -489,4 +462,33 @@ var xtpl = AsyncTpl.engine('XML').tags({
 6. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 ```
 
+
+### Compile errors
+```html
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:space/>
+	<xtpl:foreach as="i">
+        <xtpl:value>i</xtpl:value>
+    </xtpl:foreach>
+</xtpl:template>
+```
+```html
+Error: Tag "foreach", attribute "iterate" is missing in /my/template.xml on line 4
+```
+
+### Run-time errors
+```html
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:script>
+	    <![CDATA[
+	    variable = true;
+	    ]]>
+	</xtpl:script>
+</xtpl:template>
+```
+```html
+Error: variable is not defined in /my/template.xml on line 3
+```
 
