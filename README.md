@@ -93,7 +93,7 @@ http.createServer(function (req, res){
 	});
 
 	// OR
-	
+
 	xtpl.fetch('#MyTpl', '#Result', { text: 'Yahooo!' });
 
 	// jQuery
@@ -209,7 +209,7 @@ var ctx = { items: [5,10] }
 <xtpl:get name="first"/>
 <xtpl:get name="second">
 	second
-</get>
+</xtpl:get>
 
 <xtpl:set name="first" test="false">1</xtpl:set>
 <xtpl:set name="first">1.1</xtpl:set>
