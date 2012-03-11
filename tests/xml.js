@@ -2,7 +2,7 @@
 
 var
 	  xtpl		= require('../lib/AsyncTpl').engine('XML')
-	, vows		= require('../../vows/lib/vows.js')
+	, vows		= require('vows')
 	, events	= require('events')
 	, assert	= require('assert')
 ;
@@ -51,13 +51,19 @@ vows.describe('XML tests').addBatch({
 		, 'result': function(result){ assert.equal(result, 'http://rubaxa.org/'); }
 	},
 
+	'tag-attrs': {
+		'topic':  function(){ return transform('tag-attrs.xml'); }
+		, 'result': function(result){
+			assert.equal(result, '<div><div>true</div><p>index</p><p><a href="/">index</a></p><div><span><u>u</u></span></div></div>');
+		}
+	},
+
 	'attribute': {
 		  'topic':  function(){ return transform('attribute.xml'); }
 		, 'result': function(result){
 			assert.equal(result, '<input/><div>foobar</div><div class="foo bar"></div><div class="foo"></div><div when="true" otherwise="true"></div><div>foo</div>');
 		}
 	},
-
     'text': {
 		  'topic':	function(){ return transform('text.xml'); }
 		, 'result':	function(result){ assert.equal(result, 'my.text'); }
