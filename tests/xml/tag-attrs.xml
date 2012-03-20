@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<div>
+		<div xtpl:if="true">true</div>
+		<div xtpl:if="false">false</div>
+
+		<p><a href="/" xtpl:tag-if="false">index</a></p>
+		<p><a href="/" xtpl:tag-if="true">index</a></p>
+
+		<div xtpl:if="true">
+			<p xtpl:tag-if="false" xtpl:get="inner-block">fail</p>
+		</div>
+
+		<span xtpl:set="inner-block">
+			<b xtpl:tag-if="false">
+				<u>u</u>
+			</b>
+		</span>
+	</div>
+</xtpl:template>
