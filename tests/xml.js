@@ -51,12 +51,12 @@ vows.describe('XML tests').addBatch({
 		, 'result': function(result){ assert.equal(result, 'http://rubaxa.org/'); }
 	},
 
-	'tag-attrs': {
-		'topic':  function(){ return transform('tag-attrs.xml'); }
-		, 'result': function(result){
-			assert.equal(result, '<div><div>true</div><p>index</p><p><a href="/">index</a></p><div><span><u>u</u></span></div></div>');
-		}
-	},
+//	'tag-attrs': {
+//		'topic':  function(){ return transform('tag-attrs.xml'); }
+//		, 'result': function(result){
+//			assert.equal(result, '<div><div>true</div><p>index</p><p><a href="/">index</a></p><div><span><u>u</u></span></div></div>');
+//		}
+//	},
 
 	'attribute': {
 		  'topic':  function(){ return transform('attribute.xml'); }

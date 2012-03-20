@@ -10,21 +10,28 @@
 (function (window, undef){
 	var __rmname = /^.+\//, __modules = {};
 
-	function __build(name, Module){ __modules[name.replace(__rmname, '')] = Module; }
-	function require(name){ return __modules[name.replace(__rmname, '')]; }
+	function __export(name, Module){
+		__modules[name.replace(__rmname, '')] = Module;
+	}
 
-	__build('fs', {
+
+	function require(name){
+		return __modules[name.replace(__rmname, '')];
+	}
+
+
+	__export('fs', {
 		readFile: function (filename, encoding, fn){ jQuery.ajax({ url: filename, type: 'get', dataType: 'text', isLocal: true, success: function (txt){ fn(null, txt); } }); },
 		readFileSync: function (filename){ return jQuery.ajax({ url: filename, type: 'get', async: false, dataType: 'text', isLocal: true }).responseText; },
 		lstatSync: function(){ return  { mtime: 0 }; }
 	});
 
 
-	/*global require, __build*/
+	/*global require, __export*/
 
 (function (utils){
 	var
-		  _rns = /(\w+):(\w+)/
+		  _rns = /^([^:]+):(.+)/
 
 		, TYPE = {
 			  ELEMENT_NODE: 1
@@ -52,7 +59,7 @@
 			attrs	= val;
 			val		= type;
 			type	= name;
-			
+
 			switch( type ){
 				case Node.TEXT_NODE: name = '<text>'; break;
 				case Node.CDATA_NODE: name = '<cdata>'; break;
@@ -72,11 +79,11 @@
 
 		this.type		= type;
 		this.value		= val;
-		this.attributes	= attrs || [];
+		this.attributes	= attrs || {};
 		this.childNodes	= [];
 	}
 
-	
+
 	Node.prototype = {
 		constructor: Node,
 
@@ -88,33 +95,20 @@
 			}
 		},
 
-		replace: function (node){
-			this.name	= node.name;
-			this.type	= node.type;
-			this.value	= node.value;
-			this.attributes	= node.attributes;
-			return	this;
+		removeAttr: function (name){
+			delete this.attributes[name];
 		},
 
-		addTextNode: function (value){
-			return	this.addChild(Node.TEXT_NODE, value);
-		},
-
-		addChild: function (node, type, val, attrs){
-			if( !(node instanceof Node) ){
-				node	= Node(node, type, val, attrs);
-			}
-			this.childNodes.push(node);
-			return	this;
-		},
-
-		addChilds: function (list){
-			this.childNodes.push.apply(this.childNodes, list); 
-			return	this;
-		},
-
-		hasChildNodes: function (){
-			return	!!this.childNodes.length;
+		clone: function (ns, node, attrs, closed){
+			node = Node(node, this.type, node.value);
+			node.ns			= ns;
+			node.__line		= this.__line;
+			node.__file		= this.__file;
+			node.__close	= !!closed;
+			utils.each(attrs, function (val, name){
+				node.attributes[name] = Node(name, Node.ATTRIBUTE_NODE, val);
+			});
+			return	node;
 		},
 
 		isShort: function (){
@@ -127,14 +121,25 @@
 		Node[k] = Node.prototype[k] = TYPE[k];
 	}
 
+	Node.findClosureIdx = function (stack, node){
+		if( !node.__close ) for( var i = 0, n = stack.length, c = 0, next; i < n; i++ ){
+			next = stack[i];
+			if( node.name == next.name ){
+				c += next.__close ? -1 : 1;
+				if( next.__close && c < 1 ){
+					return	i;
+				}
+			}
+		}
+	};
 
 	// @export
-	if( typeof __build !== 'undefined' )
-		__build('./Node', Node);
+	if( typeof __export !== 'undefined' )
+		__export('./Node', Node);
 	else
 		module.exports = Node;
 })(require('./utils'));
-/*global require, __build*/
+/*global require, __export*/
 
 (function (fs, undef){
 	'use strict';
@@ -332,7 +337,7 @@
 					df.reject();
 				}
 			} else {
-				
+
 			}
 
 			return	df.fail(function (){ fn(true); }).done(function (json){ fn(false, json); }).promise();
@@ -415,22 +420,21 @@
 
 
 	// @export
-	if( typeof __build !== 'undefined' )
-		__build('./utils', utils);
+	if( typeof __export !== 'undefined' )
+		__export('./utils', utils);
 	else
 		module.exports = utils;
 })(require('fs'));
-/*global require, __build*/
+/*global require, __export*/
 
 (function (Node, utils, undef){
 	'use strict';
 
 	var
 		  _rqa          = /['"]/
-		, _rlf          = /\n/g
 		, _rspace       = /^[\s\r\n\t]+$/
 		, _rnode        = /^([$a-z][\da-z\s:>]|\/\w)$/i
-		, _rnodeName    = /[a-z\d:]/i
+		, _rnodeName    = /[a-z\d:-]/i
 	;
 
 
@@ -540,6 +544,13 @@
 				}
 			}
 
+			res.add = function (item, idx){
+				if( idx === undef ) this.push(item);
+				else if( idx == 0 ) this.unshift(item);
+				else this.splice(idx, 0, item);
+				return	this;
+			};
+
 			return	res;
 		},
 
@@ -603,7 +614,7 @@
 				attr = '';
 				while( ch = input.peek() ){
 					if( input.match(right) || _rspace.test(ch) ){
-						attrs[attr] = { name: attr, value: undef };
+						attrs[attr] = Node(attr, Node.ATTRIBUTE_NODE);
 						continue _attr_;
 					} else if( ch == '=' ){
 						if( _rqa.test(input.peek(1)) ){
@@ -735,27 +746,27 @@
 					this.next();
 				}
 			}
-			
+
 			this.load('extract');
-			return	null;	
+			return	null;
 		};
 	}
 
 
 
 	// @export
-	if( typeof __build !== 'undefined' )
-		__build('./Parser', Parser);
+	if( typeof __export !== 'undefined' )
+		__export('./Parser', Parser);
 	else
-		module.exports = Parser;	
+		module.exports = Parser;
 })(require('./Node'), require('./utils'));
-/*global require, __build*/
+/*global require, __export*/
 
 (function (utils, undef){
 	'use strict';
 
 	function Compiler(opts){
-		this._opts	= opts || { useWith: false }; 
+		this._opts	= opts || { useWith: false };
 	}
 
 	Compiler.prototype = {
@@ -788,7 +799,7 @@
 			}
 			_flush();
 
-			
+
 			if( this._opts.useWith ){
 				source[0]	= "with( ctx ){ ";
 				source.push(' } ');
@@ -800,10 +811,10 @@
 			source[2]   = ';if(ctx.__part!==undef)__buf.off();';
 			source      = source.join('') + ' __buf.end();';
 
-//			require('fs').writeFileSync('out.js', source);
+			require('fs').writeFileSync('out.js', source);
 //			console.log( source );
 //			console.log('------------------');
-			
+
 			return	new Function('ctx, __buf, __utils, __this', source);
 
 			function _flush(){
@@ -832,12 +843,12 @@
 	};
 
 	// @export
-	if( typeof __build !== 'undefined' )
-		__build('./Compiler', Compiler);
+	if( typeof __export !== 'undefined' )
+		__export('./Compiler', Compiler);
 	else
 		module.exports = Compiler;
 })(require('./utils'));
-/*global require, __build*/
+/*global require, __export*/
 
 (function (utils, undef){
 	'use strict';
@@ -958,7 +969,7 @@
 		pullSync: function (ctx, name, next){
 			this.pull(ctx, name, next);
 		},
-		
+
 
 		pull: function (ctx, name, fn){
 			if( this._pull === undef ) this._pull = {};
@@ -1030,12 +1041,12 @@
 
 
 	// @export
-	if( typeof __build !== 'undefined' )
-		__build('./Buffer', Buffer);
+	if( typeof __export !== 'undefined' )
+		__export('./Buffer', Buffer);
 	else
 		module.exports = Buffer;
 })(require('./utils'));
-/*global require, __build, __utils*/
+/*global require, __export, __utils*/
 
 (function (utils, Node, Parser, Compiler, Buffer, undef){
 	'use strict';
@@ -1108,7 +1119,7 @@
 			var o = this._opts;
 			return	o.left + o.right + o.trim + o.stream + x;
 		},
- 		
+
 		_compile: function (filename, fn){
 			var key = filename === undef ? Math.random() : this._uniqKey(filename);
 
@@ -1143,7 +1154,7 @@
 
 			_files[key].done(fn);
 		},
-		
+
 
 		_parse: function (filename, incs, fn){
 			if( this._parser === undef ){
@@ -1264,16 +1275,62 @@
 				}
 			}
 			return    'try{'+ val +'}catch(_){'
-					+ (this._opts.debug ? '__utils.error(_,'+info.__line+',"'+info.__file+'");' : '')
+					+ (this._opts.debug && info.__line ? '__utils.error(_,'+info.__line+',"'+info.__file+'");' : '')
 					+ (ret !== undef ? 'return '+ret : '')
 					+ '}';
 		},
 
 		_prepare: function (node, input, stack){
-			var next    = input[0] && input[0].name;
-			if( next == 'attrs' || next == 'attributes' ){
-				node.__openTag  = true;
+			var next = input[0], name = next && next.name;
+
+			if( next ){
+				if( name == 'attrs' || name == 'attributes' ){
+					node.__openTag  = true;
+				}
+
+				utils.each(next.attributes, function (attr){
+					if( attr.ns == this._opts.ns ){
+						this._attr(next, attr, input);
+					}
+				}, this);
 			}
+		},
+
+		_attr: function (node, attr, input){
+			/*
+			var
+				  idx	= Node.findClosureIdx(input, node)+1
+				, ns	= this._opts.ns
+				, name	= attr.name
+			;
+
+			node.removeAttr(ns+':'+attr.name);
+
+			switch( name ){
+				case 'if':
+				case 'tag-if':
+						var _if = node.clone(ns, 'if', { test: attr.value }), _fi = node.clone(ns, 'if', 0, 1);
+						input.add(_if, 0);
+						if( name == 'if' ){
+							input.add(_fi, idx+1);
+						} else {
+							input
+								.add(_fi, 2)
+								.add(_if, idx + 1)
+								.add(_fi, idx + 3)
+							;
+						}
+					break;
+
+				case 'get':
+//				case 'set':
+						input
+							.add(node.clone(ns, name, { name: attr.value }), 3)
+							.add(node.clone(ns, name, 0, 1), idx + 1)
+						;
+					break;
+			}
+			*/
 		},
 
 		_trans: function (node, input, stack){
@@ -1548,12 +1605,12 @@
 			return	this;
 		},
 
-		
+
 		on: function (event, fn){
 			this._listeners[event] = fn;
 			return	this;
 		},
-		
+
 
 		set: function (data, val){
 			if( typeof data == 'string' ){
@@ -1578,7 +1635,7 @@
 		escape: function (expr, node){
 			return	this._opts.escape ? '__utils.escape('+this.safe(expr, node)+')' : this.safe(expr, node);
 		}
-		
+
 	};
 
 
@@ -1635,14 +1692,14 @@
 		return	this;
 	};
 
-	
+
 	Template.tags({
 		'doctype': function (node, attrs){
 			return	_doctype[attrs.mode && attrs.mode.value] || _doctype.def;
 		}
 	});
-	
-	
+
+
 	Template.engine	= function (obj){
 		if( typeof obj == 'string' ){
 			obj	= require('./'+obj);
@@ -1669,18 +1726,18 @@
 
 
 	// @export
-	if( typeof __build !== 'undefined' )
-		__build('./AsyncTpl', Template);
+	if( typeof __export !== 'undefined' )
+		__export('./AsyncTpl', Template);
 	else
 		module.exports = Template;
 })(require('./utils'), require('./Node'), require('./Parser'), require('./Compiler'), require('./Buffer'));
-/*global require, __build*/
+/*global require, __export*/
 
 (function (utils, undef){
 	'use strict';
 
 	var XML = {};
-	
+
 	XML.fn = {
 		_defaults: function (opts){
 			return	this._super._defaults.call(this, utils.extend(opts || {}, { firstLine: false }));
@@ -1777,12 +1834,12 @@
 
 
 	// @export
-	if( typeof __build !== 'undefined' )
-		__build('./XML', XML);
+	if( typeof __export !== 'undefined' )
+		__export('./XML', XML);
 	else
 		module.exports = XML;
 })(require('./utils'));
-/*global require, __build*/
+/*global require, __export*/
 
 (function (utils, undef){
 	'use strict';
@@ -1926,7 +1983,7 @@
 		}
 	};
 
-	
+
 	Smarty.fn.fns = Smarty.statics.fns = {};
 	Smarty.fn.mods = Smarty.statics.mods = {};
 
@@ -1949,13 +2006,13 @@
 
 
 	// @export
-	if( typeof __build !== 'undefined' )
-		__build('./Smarty', Smarty);
+	if( typeof __export !== 'undefined' )
+		__export('./Smarty', Smarty);
 	else
 		module.exports = Smarty;
 })(require('./utils'));
 
-	
+
 
 	// GLOBALIZE
 	window.AsyncTpl = require('AsyncTpl');
