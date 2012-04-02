@@ -1,20 +1,35 @@
 <?xml version="1.0"?>
 <xtpl:template xmlns:xtpl="http://rubaxa.org/">
 	<div>
-		<div xtpl:if="true">true</div>
-		<div xtpl:if="false">false</div>
+		<xtpl:text>|</xtpl:text>
+		<b xtpl:if="true">1</b>
+		<xtpl:text>|</xtpl:text>
 
-		<p><a href="/" xtpl:tag-if="false">index</a></p>
-		<p><a href="/" xtpl:tag-if="true">index</a></p>
+		<b xtpl:if="false">2</b>
 
-		<div xtpl:if="true">
-			<p xtpl:tag-if="false" xtpl:get="inner-block">fail</p>
-		</div>
+		<xtpl:text>|</xtpl:text>
+		<b xtpl:if="true">3</b>
+		<xtpl:text>|</xtpl:text>
 
-		<span xtpl:set="inner-block">
-			<b xtpl:tag-if="false">
-				<u>u</u>
-			</b>
-		</span>
+		<b xtpl:tag-if="false">4</b>
+		<b xtpl:if="true" xtpl:tag-if="true">5</b>
+		<b xtpl:tag-if="false" xtpl:if="true">6</b>
+
+		<p><a xtpl:tag-if="false" href="/">index</a></p>
+		<p><a xtpl:tag-if="true" href="/">index</a></p>
+
+		<p xtpl:tag-if="true" xtpl:get="def1">|def1</p>
+		<p xtpl:if="true" xtpl:tag-if="true" xtpl:get="def2">|def2</p>
+		<p xtpl:tag-if="false" xtpl:if="true" xtpl:get="def3">|def3</p>
+		<p xtpl:tag-if="true" xtpl:get="def4" xtpl:if="true">|def4</p>
+		<p xtpl:tag-if="true" xtpl:get="def5" xtpl:if="false">|def5</p>
+
+		<p xtpl:tag-if="false" xtpl:get="cont1" xtpl:if="true"></p>
+		<p xtpl:tag-if="true" xtpl:get="cont2" xtpl:if="true"></p>
+		<p xtpl:get="cont2" xtpl:if="true" xtpl:tag-if="false"></p>
+		<p xtpl:get="cont3" xtpl:if="false" xtpl:tag-if="false">fail</p>
+
+		<div xtpl:set="cont1">|cont1</div>
+		<div xtpl:set="cont2" xtpl:tag-if="false">|cont2</div>
 	</div>
 </xtpl:template>

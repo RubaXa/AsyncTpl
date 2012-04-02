@@ -10,7 +10,7 @@
 							<li><strong><xtpl:value>item.name</xtpl:value></strong></li>
 						</xtpl:when>
 						<xtpl:otherwise>
-							<li><a href="xtpl:item.url"><xtpl:value>item.name</xtpl:value></a></li>
+							<li><a href="{*item.url*}"><xtpl:value>item.name</xtpl:value></a></li>
 						</xtpl:otherwise>
 					</xtpl:choose>
 				</xtpl:foreach>

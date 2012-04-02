@@ -51,12 +51,28 @@ vows.describe('XML tests').addBatch({
 		, 'result': function(result){ assert.equal(result, 'http://rubaxa.org/'); }
 	},
 
-//	'tag-attrs': {
-//		'topic':  function(){ return transform('tag-attrs.xml'); }
-//		, 'result': function(result){
-//			assert.equal(result, '<div><div>true</div><p>index</p><p><a href="/">index</a></p><div><span><u>u</u></span></div></div>');
-//		}
-//	},
+	'tag-attrs': {
+		'topic':  function(){ return transform('tag-attrs.xml'); }
+		, 'result': function(result){
+			assert.equal(result,
+				'<div>|<b>1</b>||<b>3</b>|4<b>5</b>6' +
+				'<p>index</p><p><a href="/">index</a></p>' +
+				'<p>|def1</p>' +
+				'<p>|def2</p>' +
+				'|def3' +
+				'<p>|def4</p>' +
+				'<div>|cont1</div>' +
+				'<p>|cont2</p>' +
+				'|cont2' +
+				'</div>'
+			);
+		}
+	},
+
+    'attrs': {
+		  'topic':	function(){ return transform('attrs.xml', { protocol: "http:", domain: 'rubaxa.org', search: '?test', title: "home page" }); }
+		, 'result':	function(result){ assert.equal(result, '<a href="http://rubaxa.org/path?test" title="home page" class="link">link.html</a>'); }
+    },
 
 	'attribute': {
 		  'topic':  function(){ return transform('attribute.xml'); }
@@ -64,6 +80,7 @@ vows.describe('XML tests').addBatch({
 			assert.equal(result, '<input/><div>foobar</div><div class="foo bar"></div><div class="foo"></div><div when="true" otherwise="true"></div><div>foo</div>');
 		}
 	},
+
     'text': {
 		  'topic':	function(){ return transform('text.xml'); }
 		, 'result':	function(result){ assert.equal(result, 'my.text'); }
@@ -97,11 +114,6 @@ vows.describe('XML tests').addBatch({
     'foreach': {
 		  'topic':	function(){ return transform('foreach.xml', {items: [6, -1], subitems: [[1, 2], [3, 4]]}); }
 		, 'result':	function(result){ assert.equal(result, '123:6-1:[0-1-2][1-3-4]'); }
-    },
-
-    'attrs': {
-		  'topic':	function(){ return transform('attrs.xml', { href: "http://rubaxa.org/", title: "home page" }); }
-		, 'result':	function(result){ assert.equal(result, '<a href="http://rubaxa.org/" title="home page" class="link">link.html</a>'); }
     },
 
     'script': {

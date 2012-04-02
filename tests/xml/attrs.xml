@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
 <xtpl:template xmlns:xtpl="http://rubaxa.org/">
-	<a href="xtpl:ctx.href" title="xtpl:ctx.title" class="link">link.html</a>
+	<a href="{*ctx.protocol*}//{*ctx.domain*}/path{*ctx.search*}" title="{*ctx.title*}" class="link">link.html</a>
 </xtpl:template>
