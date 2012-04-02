@@ -154,6 +154,7 @@ smarty.fetch('my.tpl', {}, function (res){  });
 * block: `get & set`
 * choose: `when & otherwise`
 * foreach: `iterate, as & index`
+* node xtpl:attrs
 * part
 * pull: `loading, fail & success`
 * script
@@ -280,6 +281,38 @@ ctx = { items: [1,2], colors: ['white', 'black'] };
 ```
 ```html
 123:12<ul><li>1. white</li><li>2. black</li></ul>
+```
+
+
+### node xtpl:attrs
+```js
+ctx = {
+	  hasNav:	true
+	, hasPrev:	false
+	, hasNext:	true
+};
+```
+```html
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<div>
+		<p xtpl:if="ctx.hasNav"><a href="#prev" xtpl:tag-if="ctx.hasBack">prev</a> | <a xtpl:tag-if="ctx.hasNext" href="#next">next</a></p>
+		<div xtpl:if="!ctx.hasNav">nav:disabled</div>
+		<div class="sidebar" xtpl:get="sidebar"></div>
+		<ul xtpl:set="sidebar">
+			<li>item</li>
+		</ul>
+	</div>
+</xtpl:template>
+```
+```html
+<div>
+	<p>prev | <a href="#next">next</a></p>
+	<div class="sidebar">
+		<ul xtpl:set="sidebar">
+			<li>item</li>
+		</ul>
+	</div>
+</div>
 ```
 
 
