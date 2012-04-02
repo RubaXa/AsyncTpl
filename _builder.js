@@ -3,22 +3,22 @@
 var fs		= require('fs');
 var http	= require('http');
 var queryStr = require('querystring');
-var files	= ['Node', 'utils', 'Parser', 'Compiler', 'Buffer', 'AsyncTpl', 'XML', 'Smarty'];
-var source	= '';
 
 
-console.time('build');
+minMe('AsyncTpl', '_all', ['Node', 'utils', 'Parser', 'Compiler', 'Buffer', 'AsyncTpl', 'XML', 'Smarty']);
+minMe('AsyncTpl.core', '_all', ['Node', 'utils', 'Buffer', 'XML', 'Smarty']);
 
-for( var key in files ){
-	source += fs.readFileSync('./lib/'+files[key]+'.js')+'';
-}
+function minMe(name, base, files){
+	var source = '';
 
-source	= String(fs.readFileSync('./dist/_build.tpl.js')).replace('/*CODE*/', source);
-fs.writeFileSync('./dist/AsyncTpl.js', source);
-fs.writeFileSync('./dist/AsyncTpl.min.js', source);
+	console.time(name);
 
+	for( var key in files ){
+		source += fs.readFileSync('./lib/'+files[key]+'.js')+'';
+	}
 
-if( 1 ){
+	source = String(fs.readFileSync('./dist/'+base+'.tpl.js')).replace('/*CODE*/', source);
+
 	var req = http.request({
 		  host:		'closure-compiler.appspot.com'
 		, port:		80
@@ -29,10 +29,9 @@ if( 1 ){
 		var body = '';
 		res.on('data', function (data){ body += data; });
 		res.on('end', function (){
-//			console.log(body);
-			console.timeEnd('build');
+			console.timeEnd(name);
 			console.log('size:', body.length);
-			fs.writeFileSync('./dist/AsyncTpl.min.js', body);
+			fs.writeFileSync('./dist/'+name+'.min.js', body);
 		});
 	});
 

@@ -1,7 +1,7 @@
 /*!
  * AsyncTpl — Asynchronous Templating engine for NodeJS/Browser
  *
- * Copyright (c) 2011, Lebedev Konstantin
+ * Copyright (c) 2011-2012, Lebedev Konstantin
  * Released under the MIT License.
  */
 
@@ -31,17 +31,19 @@
 
 
 	// GLOBALIZE
-	window.AsyncTpl = require('AsyncTpl');
+	var api = require('AsyncTpl');
+	api.get = require;
+	window.AsyncTpl = api;
 
 	var
 		  _tpl	= {}
 		, utils	= require('utils')
 	;
 
-	AsyncTpl.fetch = function (tplId, targetId, data, fn){
+	AsyncTpl.fetch = function (tplId, targetId, ctx, fn){
 		if( typeof targetId != 'string' ){
-			fn = data;
-			data = targetId;
+			fn = ctx;
+			ctx = targetId;
 			targetId = undef;
 		}
 
@@ -58,7 +60,7 @@
 
 		var df = utils.defer(), s = '';
 
-		_tpl[tplId].fetch(data, function (r){
+		_tpl[tplId].fetch(ctx, function (r){
 			df.resolve(r === undef ? s : r);
 		});
 
