@@ -260,27 +260,33 @@ var ctx = { items: [5,10] }
 ctx = { items: [1,2], colors: ['white', 'black'] };
 ```
 ```html
-<div>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
 	<xtpl:foreach from="1" to="3" as="idx">
 		<xtpl:value>idx</xtpl:value>
 	</xtpl:foreach>
 	<xtpl:text value=":"/>
+
 	<xtpl:foreach iterate="ctx.items" as="val">
 		<xtpl:value>val</xtpl:value>
 	</xtpl:foreach>
+
 	<ul>
-	<xtpl:foreach iterate="ctx.colors" as="color" index="idx">
-		<li>
-			<xtpl:value>idx+1</xtpl:value>
-			<xtpl:text>. </xtpl:value>
-			<xtpl:value>color</xtpl:value>
-		</li>
-	</xtpl:foreach>
+		<xtpl:foreach iterate="ctx.colors" as="color" index="idx">
+			<li>
+				<xtpl:value>idx+1</xtpl:value>
+				<xtpl:text>. </xtpl:value>
+				<xtpl:value>color</xtpl:value>
+			</li>
+		</xtpl:foreach>
 	</ul>
-</div>
+
+	<ul xtpl:inner-foreach="[2,8] as val">
+		<li><xtpl:value>val</xtpl:value></li>
+	</ul>
+</xtpl:template>
 ```
 ```html
-123:12<ul><li>1. white</li><li>2. black</li></ul>
+123:12<ul><li>1. white</li><li>2. black</li></ul><ul><li>2</li><li>8</li></ul>
 ```
 
 
@@ -298,9 +304,12 @@ ctx = {
 		<p xtpl:if="ctx.hasNav"><a href="#prev" xtpl:tag-if="ctx.hasBack">prev</a> | <a xtpl:tag-if="ctx.hasNext" href="#next">next</a></p>
 		<div xtpl:if="!ctx.hasNav">nav:disabled</div>
 		<div class="sidebar" xtpl:get="sidebar"></div>
-		<ul xtpl:set="sidebar">
-			<li>item</li>
+		<ul xtpl:set="sidebar" xtpl:inner-foreach="{a:1,b:2} as key => val"">
+			<li><xtpl:value>key</xtpl:value>. <xtpl:value>val</xtpl:value></li>
 		</ul>
+		<b xtpl:foreach="[1,2,3,4] as val" xtpl:tag-if="val%2">
+			<xtpl:value>val</xtpl:value>
+		</b>
 	</div>
 </xtpl:template>
 ```
@@ -309,9 +318,11 @@ ctx = {
 	<p>prev | <a href="#next">next</a></p>
 	<div class="sidebar">
 		<ul xtpl:set="sidebar">
-			<li>item</li>
+			<li>a. 1</li>
+			<li>b. 2</li>
 		</ul>
 	</div>
+	<b>1</b>2<b>3</b>4
 </div>
 ```
 

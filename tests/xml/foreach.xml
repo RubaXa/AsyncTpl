@@ -21,4 +21,12 @@
         </xtpl:foreach>
 	    <xtpl:text value="]"/>
     </xtpl:foreach>
+
+	<ul>
+		<li xtpl:foreach="ctx.items.slice(0,1) as val"><xtpl:value>val</xtpl:value></li>
+	</ul>
+
+	<ul xtpl:inner-foreach="ctx.items.slice(1) as idx => val">
+		<li><xtpl:value>idx+1</xtpl:value>. <xtpl:value>val</xtpl:value></li>
+	</ul>
 </xtpl:template>

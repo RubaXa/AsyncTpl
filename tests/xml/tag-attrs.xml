@@ -31,5 +31,9 @@
 
 		<div xtpl:set="cont1">|cont1</div>
 		<div xtpl:set="cont2" xtpl:tag-if="false">|cont2</div>
+
+		<b xtpl:foreach="[1,2,3,4] as val" xtpl:tag-if="val % 2">
+			<xtpl:value>val</xtpl:value>
+		</b>
 	</div>
 </xtpl:template>

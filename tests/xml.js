@@ -51,6 +51,7 @@ vows.describe('XML tests').addBatch({
 		, 'result': function(result){ assert.equal(result, 'http://rubaxa.org/'); }
 	},
 
+
 	'tag-attrs': {
 		'topic':  function(){ return transform('tag-attrs.xml'); }
 		, 'result': function(result){
@@ -64,6 +65,7 @@ vows.describe('XML tests').addBatch({
 				'<div>|cont1</div>' +
 				'<p>|cont2</p>' +
 				'|cont2' +
+				'<b>1</b>2<b>3</b>4' +
 				'</div>'
 			);
 		}
@@ -113,7 +115,13 @@ vows.describe('XML tests').addBatch({
 
     'foreach': {
 		  'topic':	function(){ return transform('foreach.xml', {items: [6, -1], subitems: [[1, 2], [3, 4]]}); }
-		, 'result':	function(result){ assert.equal(result, '123:6-1:[0-1-2][1-3-4]'); }
+		, 'result':	function(result){
+			assert.equal(result,
+				'123:6-1:[0-1-2][1-3-4]' +
+				'<ul><li>6</li></ul>' +
+				'<ul><li>1. -1</li></ul>'
+			);
+		}
     },
 
     'script': {
