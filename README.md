@@ -422,7 +422,7 @@ ctx = {
 }
 ```
 ```html
-<a href="xtpl:ctx.href" title="xtpl:ctx.title" class="link">link.html</a>
+<a href="{* ctx.href *}" title="{*ctx.title*}" class="link">link.html</a>
 
 <a>
 	<xtpl:attrs>
