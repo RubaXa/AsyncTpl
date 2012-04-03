@@ -3,8 +3,8 @@
     <xtpl:set name="folders">
         <xtpl:foreach iterate="ctx.folders" as="folder">
             <div class="menu" id="foldersStartId">
-        		<div class="menu__item" title="xtpl:'Всего ' + folder.Messages +' писем, ' + folder.Unread + ' непрочитанное'">
-        			<a id="xtpl:'folder' + folder.Id" class="js-folder icon-wrap icon-wrap_left menu__item__link" rel="history" href="msglist?folder=0&amp;604168000" title="Всего 11 писем">
+        		<div class="menu__item" title="Всего {*folder.Messages*} писем, {*folder.Unread*} непрочитанное">
+        			<a id="folder{*folder.Id*}" class="js-folder icon-wrap icon-wrap_left menu__item__link" rel="history" href="msglist?folder=0&amp;604168000" title="Всего 11 писем">
         				<span class="js-folder-b-unread js-folder-unread menu__item__link__qnt">
                             <xtpl:value>folder.Unread</xtpl:value>
                         </span>
