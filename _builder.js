@@ -5,8 +5,8 @@ var http	= require('http');
 var queryStr = require('querystring');
 
 
-minMe('AsyncTpl', '_all', ['Node', 'utils', 'Parser', 'Compiler', 'Buffer', 'AsyncTpl', 'XML', 'Smarty']);
-minMe('AsyncTpl.core', '_all', ['Node', 'utils', 'Buffer', 'XML', 'Smarty']);
+minMe('AsyncTpl', '_all', ['Node', 'utils', 'Parser', 'Compiler', 'Buffer', 'AsyncTpl', 'XML']);
+minMe('AsyncTpl.core', '_core', ['utils', 'Buffer']);
 
 function minMe(name, base, files){
 	var source = '';

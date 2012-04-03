@@ -5,9 +5,9 @@
  * Released under the MIT License.
  */
 
-'use strict';
-
 (function (window, undef){
+	'use strict';
+
 	var __rmname = /^.+\//, __modules = {};
 
 	function __export(name, Module){

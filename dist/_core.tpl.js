@@ -5,9 +5,9 @@
  * Released under the MIT License.
  */
 
-'use strict';
-
 (function (window, undef){
+	'use strict';
+
 	var __rmname = /^.+\//, __modules = {};
 
 	function __export(name, Module){
@@ -30,11 +30,26 @@
 	/*CODE*/
 
 
-	var utils = require('utils'), Buffer = require('Buffer');
-
 	// GLOBALIZE
-	window.AsyncTpl = window.AsyncTpl || {};
-	AsyncTpl.fetch	= function (filename, ctx, fn){
-		AsyncTpl.tpls[filename](ctx, new Buffer(fn, false), utils);
-	};
+	var Core = (window['AsyncTpl'] = window['AsyncTpl'] || {});
+	Core.require = require;
+	Core.fetch = function (name, ctx, fn){ fn(Core['__'+name](ctx)); };
+
+
+	// jQuery support
+	(function ($){
+		if( $ ){
+			$.tpl = function (name, ctx, key){
+				key = '__'+name;
+				return	(key in Core) ? Core[key](ctx) : '[AsyncTpl] '+name +' -- template not found';
+			};
+
+			$.fn.tpl = function (name, ctx){
+				if( this.length && this[0].nodeType == 1 ){
+					this[0].innerHTML = $.tpl(name, ctx);
+				}
+				return	this;
+			};
+		}
+	})(window.jQuery);
 })(this);
