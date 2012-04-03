@@ -32,38 +32,99 @@ xtpl.COMPILE_DIR    = './tpl_c/';
 
 http.createServer(function (req, res){
 	res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-	xtpl.fetch('index.xml', { text: 'Yahoo!' }, function (result){
+	xtpl.fetch(
+	  'index.xml'
+	, {
+		  text: 'Yahoo!'
+		, items: [{ selected: true, href: '/', text: 'index' }, { href: '/page', text: 'page' }]
+	}
+	, function (result){
 		res.end(result);
 	});
 }).listen(8082);
 ```
 
-#### page.xml
+#### default.xml -- default page
 ```html
 <?xml version="1.0"?>
 <xtpl:template>
-	<xtpl:doctype />
-	<head>
-		<title><xtpl:get name="title" /></title>
-	</head>
-	<body>
-		<xtpl:get name="content">empty</xtpl:get>
-		<xtpl:value>(new Date).toString()</xtpl:value>
-	</body>
+	<xtpl:doctype mode="xhtml" />
+	<html>
+		<head>
+			<title xtpl:get="title">Default page</title>
+		</head>
+		<body>
+			<div xtpl:get="nav" class="nav"></div>
+			<div class="content">
+				<xtpl:get name="content">
+					default content
+				</xtpl:get>
+			</div>
+			<footer>
+				<b>Date:</b>
+				<xtpl:space />
+				<xtpl:value>(new Date).toString()</xtpl:value>
+			</footer>
+		</body>
+	</html>
 </xtpl:template>
 ```
 
-#### index.xml
+#### index.xml -- index page, based on default.xml
 ```html
 <?xml version="1.0"?>
 <xtpl:template>
 	<xtpl:include name="page.xml" />
 	<xtpl:set name="title">AsyncTpl :: XML</xtpl:set>
+	<ul xtpl:inner-foreach="ctx.items as item">
+		<li>
+			<xtpl:attrs>
+				<xtpl:attr name="class">
+					<xtpl:text="nav__item"/>
+					<xtpl:if test="item.selected"><xtpl:space/>nav__item_selected</xtpl:if>
+				</xtpl:attr>
+			</xtpl:attrs>
+			<a href="{*item.href*}" xtpl:tag-if="!item.selected">
+				<xtpl:value>item.text.toUpperCase()</xtpl:value>
+			</a>
+		</li>
+	</ul>
 	<xtpl:set name="content">
-		<xtpl:value>ctx.text</xtpl:value>
+		<p>
+			<b>text:</b>
+			<xtpl:space/>
+			<xtpl:value>ctx.text</xtpl:value>
+		</p>
 	</xtpl:set>
 </xtpl:template>
 ```
+
+#### HTML result
+```html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+	<head>
+		<title>AsyncTpl :: XML</title>
+	</head>
+	<body>
+		<div class="nav">
+			<ul>
+				<li class="nav__item nav__item_selected">index</li>
+				<li class="nav__item"><a href="/page">page</a></li>
+			</ul>
+		</div>
+		<div class="content">
+			<p><b>text:</b> Yahoo!</p>
+		</div>
+		<footer>
+			<b>Date:</b> Tue Apr 03 2012 11:28:55 GMT+0400 (MSK)
+		</footer>
+	</body>
+</html>
+```
+
+
+--------------------------
 
 
 ### Browser
@@ -105,46 +166,6 @@ http.createServer(function (req, res){
 	})(jQuery);
 </script>
 ```
-
-## Support Smarty
-
-* comment: `{{* ... *}}`
-* foreach: `foreach, foreachelse`
-* if statement: `if, elseif and else`
-* modifilers: `upper, lower, capitalize, nl2br, regex_replace, combining`
-* functions: `assign`
-* `include` (support only file-attr)
-* `extends + block`
-
-
-### Usage
-
-```js
-var smarty = require('AsyncTpl').engine('Smarty');
-
-smarty.LEFT = '{{';
-smarty.RIGHT = '}}';
-
-smarty
-	// Add custom functions
-	.fn({
-		funcName: function (attrs, ctx){
-			return attrs['a']+attrs['b'];
-		}
-	})
-
-	// Add custom modifiers
-	.modifiers({
-		modName: function (val, arg1, arg2){
-			reutrn val.substr(arg1, arg2);
-		}
-	})
-;
-
-
-smarty.fetch('my.tpl', {}, function (res){  });
-```
-
 
 ## Support XML
 
@@ -536,3 +557,42 @@ Error: Tag "foreach", attribute "iterate" is missing in /my/template.xml on line
 Error: variable is not defined in /my/template.xml on line 3
 ```
 
+
+## Support Smarty
+
+* comment: `{{* ... *}}`
+* foreach: `foreach, foreachelse`
+* if statement: `if, elseif and else`
+* modifilers: `upper, lower, capitalize, nl2br, regex_replace, combining`
+* functions: `assign`
+* `include` (support only file-attr)
+* `extends + block`
+
+
+### Usage
+
+```js
+var smarty = require('AsyncTpl').engine('Smarty');
+
+smarty.LEFT = '{{';
+smarty.RIGHT = '}}';
+
+smarty
+	// Add custom functions
+	.fn({
+		funcName: function (attrs, ctx){
+			return attrs['a']+attrs['b'];
+		}
+	})
+
+	// Add custom modifiers
+	.modifiers({
+		modName: function (val, arg1, arg2){
+			reutrn val.substr(arg1, arg2);
+		}
+	})
+;
+
+
+smarty.fetch('my.tpl', {}, function (res){  });
+```
