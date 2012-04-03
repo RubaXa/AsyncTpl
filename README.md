@@ -80,7 +80,7 @@ http.createServer(function (req, res){
 		<li>
 			<xtpl:attrs>
 				<xtpl:attr name="class">
-					<xtpl:text="nav__item"/>
+					<xtpl:text value="nav__item"/>
 					<xtpl:if test="item.selected"><xtpl:space/>nav__item_selected</xtpl:if>
 				</xtpl:attr>
 			</xtpl:attrs>
@@ -166,6 +166,8 @@ http.createServer(function (req, res){
 	})(jQuery);
 </script>
 ```
+
+--------------------------
 
 ## Support XML
 
