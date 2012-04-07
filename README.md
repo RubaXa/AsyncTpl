@@ -174,6 +174,7 @@ http.createServer(function (req, res){
 * if
 * include
 * assign
+* tag
 * block: `get & set`
 * choose: `when & otherwise`
 * foreach: `iterate, as & index`
@@ -222,6 +223,42 @@ true
 ```
 ```html
 http://rubaxa.org/
+```
+
+
+### tag
+```html
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:tag name="subscribe-form" context="form">
+		<form action="{*form.action*}" method="{*form.method*}">
+			<xtpl:tag-inner/>
+			<hr/>
+			<xtpl:button value="{*form.submit*}" type="submit"/>
+		</form>
+	</xtpl:tag>
+
+	<xtpl:tag name="button">
+		<input value="{*tag.value*}" type="{*tag.type*}" class="btn btn_type-{*tag.type*}"/>
+	</xtpl:tag>
+
+	<xtpl:subscribe-form action="/subscribe/add" method="POST" submit="  OK  ">
+		<h2>Email subscribe</h2>
+		<fieldset>
+			<label>E-mail: <input name="email" type="text"/></label>
+		</fieldset>
+	</xtpl:subscribe-form>
+</xtpl:template>
+```
+```html
+<form action="/subscribe/add" method="POST">
+	<h2>Email subscribe</h2>
+	<fieldset>
+		<label>E-mail: <input name="email" type="text"/></label>
+	</fieldset>
+	<hr/>
+	<input value="  OK  " type="submit" class="btn btn_type-submit"/>
+</form>
 ```
 
 
