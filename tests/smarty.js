@@ -2,7 +2,7 @@
 
 var
 	  xtpl		= require('../lib/AsyncTpl').engine(require('../lib/Smarty'))
-	, vows		= require('../../vows/lib/vows.js')
+	, vows		= require('vows')
 	, events	= require('events')
 	, assert	= require('assert')
 ;
