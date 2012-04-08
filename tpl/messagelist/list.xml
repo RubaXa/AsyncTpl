@@ -4,9 +4,9 @@
         <div class="messagelist-wrapper">
             <div class="messagelist messagelist_simple">
 				<xtpl:foreach iterate="ctx.messages" as="msg">
-					<div id="xtpl:'msglist-' + msg.Id" class="js-msg messageline ">
+					<div id="msglist-{*msg.Id*}" class="js-msg messageline ">
 						<label class="messageline__checkbox">
-							<input title="выбрать" type="checkbox" name="id" value="xtpl:msg.Id" id="chb13208443130000000461"/>
+							<input title="выбрать" type="checkbox" name="id" value="{*msg.Id*}" id="chb13208443130000000461"/>
 						</label>
 						<span class="js-ico messageline__status">
 							<i class="messageline__status__icon icon icon_message-status icon_message-status_0" title=""></i>
@@ -20,16 +20,16 @@
 						</span>
 						<span class="messageline__body">
 							<span class="messageline__microformat-buttons"></span>
-							<a class="messageline__body__link" rel="history" href="xtpl:'/cgi-bin/readmsg?id=' + msg.Id + '&amp;folder=' + msg.FolderId" title="xtpl:msg.From">
+							<a class="messageline__body__link" rel="history" href="/cgi-bin/readmsg?id={*msg.Id*}&folder={*msg.FolderId*}" title="{*msg.From*}">
 								<i class="messageline__picture"></i>
-								<span class="messageline__body__name" title="xtpl:msg.From">
+								<span class="messageline__body__name" title="{*msg.From*}">
 									<xtpl:value>msg.From</xtpl:value>
 								</span>
-								<span class="messageline__body__subject" title="xtpl:msg.Subject">
+								<span class="messageline__body__subject" title="{*msg.Subject*}">
 									<xtpl:value>msg.Subject</xtpl:value>
 								</span>
 								<span class="messageline__body__text"></span>
-								<span class="messageline__date" title="xtpl:msg.Date">
+								<span class="messageline__date" title="{*msg.Date*}">
 									<xtpl:value>msg.DateShort</xtpl:value>
 								</span>
 								<i class="messageline__fade messageline__fade_name"></i>

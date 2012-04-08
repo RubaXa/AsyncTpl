@@ -2,7 +2,7 @@
 
 var
 	  xtpl		= require('../lib/AsyncTpl').engine(require('../lib/Smarty'))
-	, vows		= require('../../vows/lib/vows.js')
+	, vows		= require('vows')
 	, events	= require('events')
 	, assert	= require('assert')
 ;
@@ -12,18 +12,29 @@ xtpl.STREAM		= false;
 xtpl.ROOT_DIR	= './tests/smarty/';
 
 
+String.prototype.clean = function (){
+	return	this.replace(/[\n\r\s]/g, '');
+};
+
+
 function transform(file, json, promise){
 	if( !promise ) promise = new events.EventEmitter;
-    xtpl.fetch(file, json || {}).then(function(result){ setTimeout(function(){ promise.emit('success', result.replace(/(<\/?div>|\s)/g, '')); }, 0); });
+    xtpl.fetch(file, json || {}).then(function(result){
+		setTimeout(function(){
+			promise.emit('success', result.replace(/(\n*<\/?div>\n*)/g, '').clean());
+		}, 0);
+	});
 	return	promise;
 }
 
 
 vows.describe('Smarty tests').addBatch({
+/**/
 	'value': {
 		'topic':	function(){ return transform('value.html', { username: 'RubaXa' }); }
 	  , 'result':	function(result){ assert.equal(result, 'RubaXa'); }
 	},
+
     'comment': {
 		  'topic':	function(){ return transform('comment.html'); }
 		, 'result':	function(result){ assert.equal(result, '---'); }
@@ -43,6 +54,7 @@ vows.describe('Smarty tests').addBatch({
 		  'topic':	function(){ return transform('script.html'); }
 		, 'result':	function(result){ assert.equal(result, 'true'); }
     },
+
     'extends': {
 		  'topic':	function(){ return transform('child.html'); }
 		, 'result':	function(result){ assert.equal(result, '1|second|three'); }
@@ -63,7 +75,7 @@ vows.describe('Smarty tests').addBatch({
 			assert.equal(result, 'UPPER|lower|Capitalize|a<br/>b|a_b|Combini<br/>ng|');
 		}
 	},
-
+/*
 	'functions': {
 		  'topic': function (){ return transform('functions.html', { }); }
 		, 'result': function (result){ assert.equal(result, 'RubaXa|'); }

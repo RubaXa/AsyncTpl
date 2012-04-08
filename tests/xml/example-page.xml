@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:doctype mode="xhtml"/>
+	<html>
+		<head>
+			<meta charset="utf-8"/>
+			<title xtpl:get="title">Default page</title>
+		</head>
+		<body>
+			<div xtpl:get="nav" class="nav"/>
+
+			<div class="content">
+				<xtpl:get name="content">
+					default content
+				</xtpl:get>
+			</div>
+
+			<footer>
+				<b>Date:</b>
+				<xtpl:space/>
+				<span xtpl:val="(new Date).toString()"/>
+			</footer>
+		</body>
+	</html>
+
+	<xtpl:tag name="button" context="btn">
+		<a href="{*btn.href*}" class="btn btn_type-{*btn.type*}">
+			<span class="btn__txt">
+				<xtpl:tag-inner/>
+			</span>
+		</a>
+	</xtpl:tag>
+</xtpl:template>

@@ -51,6 +51,10 @@ vows.describe('XML tests').addBatch({
 		, 'result': function(result){ assert.equal(result, 'http://rubaxa.org/'); }
 	},
 
+	'tag': {
+		  'topic':  function(){ return transform('tag.xml', { }); }
+		, 'result': function(result){ assert.equal(result, '<form action="/subscribe/add" method="POST"><h2>Email subscribe</h2><fieldset><label>E-mail: <input name="email" type="text"/></label></fieldset><hr/><input value="  OK  " type="submit" class="btn btn_type-submit"/></form>'); }
+	},
 
 	'tag-attrs': {
 		'topic':  function(){ return transform('tag-attrs.xml'); }

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<xtpl:template xmlns:xtpl="http://fest.mail.ru" context_name="ctx">
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
 	<xtpl:assign name="protocol" value="http:" />
 
 	<xtpl:part name="title">

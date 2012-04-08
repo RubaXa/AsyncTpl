@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:tag name="subscribe-form" context="form">
+		<form action="{*form.action*}" method="{*form.method*}">
+			<xtpl:tag-inner/>
+			<hr/>
+			<xtpl:button value="{*form.submit*}" type="submit"/>
+		</form>
+	</xtpl:tag>
+
+	<xtpl:subscribe-form action="/subscribe/add" method="POST" submit="  OK  ">
+		<h2>Email subscribe</h2>
+		<fieldset>
+			<label>E-mail: <input name="email" type="text"/></label>
+		</fieldset>
+	</xtpl:subscribe-form>
+
+	<xtpl:tag name="button">
+		<input value="{*tag.value*}" type="{*tag.type*}" class="btn btn_type-{*tag.type*}"/>
+	</xtpl:tag>
+</xtpl:template>

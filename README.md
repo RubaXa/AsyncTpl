@@ -47,36 +47,49 @@ http.createServer(function (req, res){
 #### default.xml -- default page
 ```html
 <?xml version="1.0"?>
-<xtpl:template>
-	<xtpl:doctype mode="xhtml" />
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:doctype mode="xhtml"/>
 	<html>
 		<head>
+			<meta charset="utf-8"/>
 			<title xtpl:get="title">Default page</title>
 		</head>
 		<body>
-			<div xtpl:get="nav" class="nav"></div>
+			<div xtpl:get="nav" class="nav"/>
+
 			<div class="content">
 				<xtpl:get name="content">
 					default content
 				</xtpl:get>
 			</div>
+
 			<footer>
 				<b>Date:</b>
-				<xtpl:space />
-				<xtpl:value>(new Date).toString()</xtpl:value>
+				<xtpl:space/>
+				<span xtpl:val="(new Date).toString()"/>
 			</footer>
 		</body>
 	</html>
+
+	<xtpl:tag name="button" context="btn">
+		<a href="{*btn.href*}" class="btn btn_type-{*btn.type*}">
+			<span class="btn__txt">
+				<xtpl:tag-inner/>
+			</span>
+		</a>
+	</xtpl:tag>
 </xtpl:template>
 ```
 
 #### index.xml -- index page, based on default.xml
 ```html
 <?xml version="1.0"?>
-<xtpl:template>
-	<xtpl:include name="page.xml" />
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:include src="example-page.xml" />
+
 	<xtpl:set name="title">AsyncTpl :: XML</xtpl:set>
-	<ul xtpl:inner-foreach="ctx.items as item">
+
+	<ul xtpl:set="nav" xtpl:inner-foreach="ctx.items as item">
 		<li>
 			<xtpl:attrs>
 				<xtpl:attr name="class">
@@ -89,12 +102,14 @@ http.createServer(function (req, res){
 			</a>
 		</li>
 	</ul>
+
 	<xtpl:set name="content">
 		<p>
 			<b>text:</b>
 			<xtpl:space/>
-			<xtpl:value>ctx.text</xtpl:value>
+			<span xtpl:val="ctx.text"/>
 		</p>
+		<xtpl:button href="/welcome" type="submit">GO!</xtpl:button>
 	</xtpl:set>
 </xtpl:template>
 ```
@@ -103,23 +118,24 @@ http.createServer(function (req, res){
 ```html
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
-	<head>
-		<title>AsyncTpl :: XML</title>
-	</head>
-	<body>
-		<div class="nav">
-			<ul>
-				<li class="nav__item nav__item_selected">index</li>
-				<li class="nav__item"><a href="/page">page</a></li>
-			</ul>
-		</div>
-		<div class="content">
-			<p><b>text:</b> Yahoo!</p>
-		</div>
-		<footer>
-			<b>Date:</b> Tue Apr 03 2012 11:28:55 GMT+0400 (MSK)
-		</footer>
-	</body>
+<head>
+	<meta charset="utf-8"/>
+	<title>AsyncTpl :: XML</title></head>
+<body>
+	<div class="nav">
+		<ul>
+			<li class="nav__item nav__item_selected">INDEX</li>
+			<li class="nav__item"><a href="/page">PAGE</a></li>
+		</ul>
+	</div>
+	<div class="content">
+		<p><b>text:</b> <span>Yahoo!</span></p>
+		<a href="/welcome" class="btn btn_type-submit"><span class="btn__txt">GO!</span></a>
+	</div>
+	<footer>
+		<b>Date:</b> <span>Sun Apr 08 2012 20:12:05 GMT+0400 (MSK)</span>
+	</footer>
+</body>
 </html>
 ```
 
@@ -167,11 +183,14 @@ http.createServer(function (req, res){
 </script>
 ```
 
+--------------------------
+
 ## Support XML
 
 * if
 * include
 * assign
+* tag
 * block: `get & set`
 * choose: `when & otherwise`
 * foreach: `iterate, as & index`
@@ -220,6 +239,42 @@ true
 ```
 ```html
 http://rubaxa.org/
+```
+
+
+### tag
+```html
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:tag name="subscribe-form" context="form">
+		<form action="{*form.action*}" method="{*form.method*}">
+			<xtpl:tag-inner/>
+			<hr/>
+			<xtpl:button value="{*form.submit*}" type="submit"/>
+		</form>
+	</xtpl:tag>
+
+	<xtpl:tag name="button">
+		<input value="{*tag.value*}" type="{*tag.type*}" class="btn btn_type-{*tag.type*}"/>
+	</xtpl:tag>
+
+	<xtpl:subscribe-form action="/subscribe/add" method="POST" submit="  OK  ">
+		<h2>Email subscribe</h2>
+		<fieldset>
+			<label>E-mail: <input name="email" type="text"/></label>
+		</fieldset>
+	</xtpl:subscribe-form>
+</xtpl:template>
+```
+```html
+<form action="/subscribe/add" method="POST">
+	<h2>Email subscribe</h2>
+	<fieldset>
+		<label>E-mail: <input name="email" type="text"/></label>
+	</fieldset>
+	<hr/>
+	<input value="  OK  " type="submit" class="btn btn_type-submit"/>
+</form>
 ```
 
 
