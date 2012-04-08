@@ -8,14 +8,14 @@
 		</form>
 	</xtpl:tag>
 
-	<xtpl:tag name="button">
-		<input value="{*tag.value*}" type="{*tag.type*}" class="btn btn_type-{*tag.type*}"/>
-	</xtpl:tag>
-
 	<xtpl:subscribe-form action="/subscribe/add" method="POST" submit="  OK  ">
 		<h2>Email subscribe</h2>
 		<fieldset>
 			<label>E-mail: <input name="email" type="text"/></label>
 		</fieldset>
 	</xtpl:subscribe-form>
+
+	<xtpl:tag name="button">
+		<input value="{*tag.value*}" type="{*tag.type*}" class="btn btn_type-{*tag.type*}"/>
+	</xtpl:tag>
 </xtpl:template>
