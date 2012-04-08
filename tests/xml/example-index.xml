@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:include src="example-page.xml" />
+
+	<xtpl:set name="title">AsyncTpl :: XML</xtpl:set>
+
+	<ul xtpl:set="nav" xtpl:inner-foreach="ctx.items as item">
+		<li>
+			<xtpl:attrs>
+				<xtpl:attr name="class">
+					<xtpl:text value="nav__item"/>
+					<xtpl:if test="item.selected"><xtpl:space/>nav__item_selected</xtpl:if>
+				</xtpl:attr>
+			</xtpl:attrs>
+			<a href="{*item.href*}" xtpl:tag-if="!item.selected">
+				<xtpl:value>item.text.toUpperCase()</xtpl:value>
+			</a>
+		</li>
+	</ul>
+
+	<xtpl:set name="content">
+		<p>
+			<b>text:</b>
+			<xtpl:space/>
+			<span xtpl:val="ctx.text"/>
+		</p>
+		<xtpl:button href="/welcome" type="submit">GO!</xtpl:button>
+	</xtpl:set>
+</xtpl:template>
