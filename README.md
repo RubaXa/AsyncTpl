@@ -581,7 +581,7 @@ ctx = { first: 1, second: 2 };
 ```
 
 
-<a href="compile-errors"></a>
+<a name="compile-errors"></a>
 ### Compile errors
 ```html
 <?xml version="1.0"?>
@@ -597,7 +597,7 @@ Error: Tag "foreach", attribute "iterate" is missing in /my/template.xml on line
 ```
 
 
-<a href="run-time-errors"></a>
+<a name="run-time-errors"></a>
 ### Run-time errors
 ```html
 <?xml version="1.0"?>
