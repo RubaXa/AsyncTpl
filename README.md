@@ -7,7 +7,7 @@ Is a asynchronous template engine for nodejs or the browser.
 
 * XML, Smarty or custom syntaxis
 * async/streaming operation
-* compile & run-time errors
+* [compile](#compile-errors) & [run-time](#run-time-errors) errors
 * browser/nodejs compatibility
 * [high performance](http://rubaxa.github.com/AsyncTpl/benchmark/index.html)
 * 10KB (minified + gzipped)
@@ -188,25 +188,26 @@ http.createServer(function (req, res){
 ## Support XML
 
 * [if](#if)
-* include
-* assign
-* tag
-* block: `get & set`
-* choose: `when & otherwise`
-* foreach: `iterate, as & index`
-* node xtpl:attrs
-* part
-* pull: `loading, fail & success`
-* script
-* text
-* value
-* comment
-* attributes
-* closure
-* custom tags: `doctype`
+* [include](#include)
+* [assign](#assign)
+* [tag](#tag)
+* [block](#block): `get & set`
+* [choose](#choose): `when & otherwise`
+* [foreach](#foreach): `iterate, as & index`
+* [node xtpl:attrs](#xattrs)
+* [part](#part)
+* [pull](#pull): `loading, fail & success`
+* [script](#script)
+* [text](#text)
+* [value](#value)
+* [comment](#comment)
+* [attributes](#attributes)
+* [closure](#closure)
+* [doctype](#doctype)
 
 
-### if<a name="if"></a>
+<a name="if"></a>
+### if
 ```html
 <xtpl:if test="true">
 	<xtpl:text>true</xtpl:text>
@@ -216,12 +217,13 @@ http.createServer(function (req, res){
 true
 ```
 
-
+<a name="include"></a>
 ### include
 ```html
 <xtpl:include src="./filename.xml"/>
 ```
 
+<a name="assign"></a>
 ### assign
 ```html
 <?xml version="1.0"?>
@@ -241,7 +243,7 @@ true
 http://rubaxa.org/
 ```
 
-
+<a name="tag"></a>
 ### tag
 ```html
 <?xml version="1.0"?>
@@ -277,60 +279,66 @@ http://rubaxa.org/
 </form>
 ```
 
-
+<a name="block"></a>
 ### block
 ```js
 var ctx = { items: [5,10] }
 ```
 ```html
-<xtpl:get name="first"/>
-<xtpl:get name="second">
-	second
-</xtpl:get>
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:get name="first"/>
+	<xtpl:get name="second">
+		second
+	</xtpl:get>
 
-<xtpl:set name="first" test="false">1</xtpl:set>
-<xtpl:set name="first">1.1</xtpl:set>
+	<xtpl:set name="first" test="false">1</xtpl:set>
+	<xtpl:set name="first">1.1</xtpl:set>
 
-<xtpl:set name="attrs">
-	<xtpl:value>attrs[0]+attrs[1]</xtpl:value>
-</xtpl:set>
+	<xtpl:set name="attrs">
+		<xtpl:value>attrs[0]+attrs[1]</xtpl:value>
+	</xtpl:set>
 
-<xtpl:space/>
-<xtpl:get name="attrs" attrs="ctx.items"/>
-<xtpl:text value="-"/>
+	<xtpl:space/>
+	<xtpl:get name="attrs" attrs="ctx.items"/>
+	<xtpl:text value="-"/>
 
-<xtpl:set name="attrs-name" attrs-name="val">
-	<xtpl:value>val</xtpl:value>
-</xtpl:set>
-<xtpl:get name="attrs-name" attrs="5"/>
+	<xtpl:set name="attrs-name" attrs-name="val">
+		<xtpl:value>val</xtpl:value>
+	</xtpl:set>
+	<xtpl:get name="attrs-name" attrs="5"/>
 
-<xtpl:text value="="/>
+	<xtpl:text value="="/>
 
-<xtpl:get name="attrs-attrs" result="10"/>
-<xtpl:set name="attrs-attrs">
-	<xtpl:value>result</xtpl:value>
-</xtpl:set>
+	<xtpl:get name="attrs-attrs" result="10"/>
+	<xtpl:set name="attrs-attrs">
+		<xtpl:value>result</xtpl:value>
+	</xtpl:set>
+</xtpl:template>
 ```
 ```html
 1.1 second 15-5=10
 ```
 
-
+<a name="choose"></a>
 ### choose
 ```html
-<div>
-	<xtpl:choose>
-		<xtpl:when test="true">if( true )</xtpl:when>
-		<xtpl:when test="false">else if( false )</xtpl:when>
-		<xtpl:otherwise>else</xtpl:otherwise>
-	</xtpl:choose>
-</div>
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<div>
+		<xtpl:choose>
+			<xtpl:when test="true">OK</xtpl:when>
+			<xtpl:when test="false">FAIL</xtpl:when>
+			<xtpl:otherwise>Hmmmm</xtpl:otherwise>
+		</xtpl:choose>
+	</div>
+</xtpl:template>
 ```
 ```html
-<div>if( true )</div>
+<div>OK</div>
 ```
 
-
+<a name="foreach"></a>
 ### foreach
 ```js
 ctx = { items: [1,2], colors: ['white', 'black'] };
@@ -366,6 +374,7 @@ ctx = { items: [1,2], colors: ['white', 'black'] };
 ```
 
 
+<a name="xattrs"></a>
 ### node xtpl:attrs
 ```js
 ctx = {
@@ -403,6 +412,7 @@ ctx = {
 ```
 
 
+<a name="part"></a>
 ### part
 ```js
 ctx = { __part: 'first-part' };
@@ -423,6 +433,7 @@ first-second
 ```
 
 
+<a name="pull"></a>
 ### pull
 ```js
 ctx = {
@@ -452,6 +463,7 @@ ctx = {
 ```
 
 
+<a name="script"></a>
 ### script
 ```html
 <xtpl:script>
@@ -471,7 +483,7 @@ ctx = {
 <div>true</div><b>global</b>
 ```
 
-
+<a name="text"></a>
 ### text
 ```html
 <xtpl:text>Hello</xtpl:text>
@@ -480,16 +492,18 @@ ctx = {
 <div>Hello</div>
 ```
 
-
+<a name="value"></a>
 ### value
 ```html
-<div><xtpl:value>ctx.value</xtpl:value></div>
+<i><xtpl:value>ctx.value</xtpl:value></i>
+<b xtpl:val="ctx.name"/>
 ```
 ```html
-<div>myValue</div>
+<i>MyValue</i><b>%username%</b>
 ```
 
 
+<a name="comment"></a>
 ### comment
 ```html
 <xtpl:comment>comment</xtpl:comment>
@@ -498,7 +512,7 @@ ctx = {
 <!--comment-->
 ```
 
-
+<a name="attributes"></a>
 ### attributes
 ```js
 ctx = {
@@ -528,6 +542,7 @@ ctx = {
 <a href="http://site.org/link.html" title="click me" class="link">link.html</a><a href="http://rubaxa.org/index.html" class="link">test</a>
 ```
 
+<a name="closure"></a>
 ### closure
 ```js
 ctx = { first: 1, second: 2 };
@@ -543,6 +558,59 @@ ctx = { first: 1, second: 2 };
 ```
 ```html
 1+2=3
+```
+
+
+<a name="doctype"></a>
+### doctype
+```html
+1. <xtpl:doctype />
+2. <xtpl:doctype mode="loose" />
+3. <xtpl:doctype mode="strict" />
+4. <xtpl:doctype mode="xstrict" />
+5. <xtpl:doctype mode="transitional" />
+6. <xtpl:doctype mode="xhtml" />
+```
+```html
+1. <!DOCTYPE html>
+2. <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+3. <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+4. <!DOCTYPE html PUBLIC  "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+5. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+6. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+```
+
+
+<a href="compile-errors"></a>
+### Compile errors
+```html
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+    <xtpl:space/>
+	<xtpl:foreach as="i">
+        <xtpl:value>i</xtpl:value>
+    </xtpl:foreach>
+</xtpl:template>
+```
+```html
+Error: Tag "foreach", attribute "iterate" is missing in /my/template.xml on line 4
+```
+
+
+<a href="run-time-errors"></a>
+### Run-time errors
+```html
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<xtpl:script>
+	    <![CDATA[
+	    variable = true;
+	    ]]>
+	</xtpl:script>
+</xtpl:template>
+```
+```html
+Error: variable is not defined in /my/template.xml on line 3
 ```
 
 
@@ -563,54 +631,6 @@ var xtpl = AsyncTpl.engine('XML').tags({
 <ul><li><a href="#0">0</a></li><li><a href="#1">1</a></li></ul>
 ```
 
-
-### doctype
-```html
-1. <xtpl:doctype />
-2. <xtpl:doctype mode="loose" />
-3. <xtpl:doctype mode="strict" />
-4. <xtpl:doctype mode="xstrict" />
-5. <xtpl:doctype mode="transitional" />
-6. <xtpl:doctype mode="xhtml" />
-```
-```html
-1. <!DOCTYPE html>
-2. <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-3. <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-4. <!DOCTYPE html PUBLIC  "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-5. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-6. <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-```
-
-
-### Compile errors
-```html
-<?xml version="1.0"?>
-<xtpl:template xmlns:xtpl="http://rubaxa.org/">
-    <xtpl:space/>
-	<xtpl:foreach as="i">
-        <xtpl:value>i</xtpl:value>
-    </xtpl:foreach>
-</xtpl:template>
-```
-```html
-Error: Tag "foreach", attribute "iterate" is missing in /my/template.xml on line 4
-```
-
-### Run-time errors
-```html
-<?xml version="1.0"?>
-<xtpl:template xmlns:xtpl="http://rubaxa.org/">
-	<xtpl:script>
-	    <![CDATA[
-	    variable = true;
-	    ]]>
-	</xtpl:script>
-</xtpl:template>
-```
-```html
-Error: variable is not defined in /my/template.xml on line 3
-```
 
 
 ## Support Smarty
