@@ -187,19 +187,19 @@ http.createServer(function (req, res){
 
 ## Support XML
 
-* [if](#if): <xtpl:if test="`js-expression`">...</xtpl:if>
-* [include](#include): <xtpl:include src="`relative path`"/>
-* [assign](#assign): <xtpl:assign name="`variable.name`" value="`set value`"/>
-* [tag](#tag): `<xtpl:tag name="`tag name`" context="`context name`" myattr="`...`">`inner html`</xtpl:tag>
-* [block](#block): <xtpl:get name="`string`"/> & <xtpl:set name="`string`" test="`js-expression`">...</xtpl:set>
-* [choose](#choose): <xtpl:choose><xtpl:when test="`js-expression`">...</xtpl:when><xtpl:otherwise>...</xtpl:otherwise></xtpl:choose>
-* [foreach](#foreach): <xtpl:foreach iterate="`js-expression`" as="`string`" key="`string`">...</xtpl:foreach>
-* [node xtpl:attrs](#xattrs): <i xtpl:val="`js-expression`"/>, ... etc.
+* [if](#if)
+* [include](#include)
+* [assign](#assign)
+* [tag](#tag)
+* [block](#block): `get & set`
+* [choose](#choose): `when & otherwise`
+* [foreach](#foreach): `iterate, as & index`
+* [node xtpl:attrs](#xattrs)
 * [part](#part)
 * [pull](#pull): `loading, fail & success`
 * [script](#script)
-* [text](#text): <xtpl:text><![CDATA[`text`]]></xtpl:text> or <xtpl:text value="`string`"/>
-* [value](#value): <xtpl:value>`js-expression`</xtpl:value>
+* [text](#text)
+* [value](#value)
 * [comment](#comment)
 * [attributes](#attributes)
 * [closure](#closure)
