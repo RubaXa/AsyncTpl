@@ -187,7 +187,7 @@ http.createServer(function (req, res){
 
 ## Support XML
 
-* if
+* [if](#if)
 * include
 * assign
 * tag
@@ -206,7 +206,7 @@ http.createServer(function (req, res){
 * custom tags: `doctype`
 
 
-### if
+### if<a name="if"></a>
 ```html
 <xtpl:if test="true">
 	<xtpl:text>true</xtpl:text>
