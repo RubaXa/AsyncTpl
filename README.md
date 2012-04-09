@@ -389,10 +389,10 @@ ctx = {
 		<p xtpl:if="ctx.hasNav"><a href="#prev" xtpl:tag-if="ctx.hasBack">prev</a> | <a xtpl:tag-if="ctx.hasNext" href="#next">next</a></p>
 		<div xtpl:if="!ctx.hasNav">nav:disabled</div>
 		<div class="sidebar" xtpl:get="sidebar"></div>
-		<ul xtpl:set="sidebar" xtpl:inner-foreach="{a:1,b:2} as key => val"">
+		<ul xtpl:set="sidebar" xtpl:inner-foreach="{a:1,b:2} as key => val">
 			<li><xtpl:value>key</xtpl:value>. <xtpl:value>val</xtpl:value></li>
 		</ul>
-		<b xtpl:foreach="[1,2,3,4] as val" xtpl:tag-if="val%2">
+		<b xtpl:foreach="[1,2,3,4] as val" xtpl:tag-if="val % 2">
 			<xtpl:value>val</xtpl:value>
 		</b>
 	</div>
