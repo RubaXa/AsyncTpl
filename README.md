@@ -449,7 +449,7 @@ ctx = {
 ```
 ```html
 <xtpl:pull name="sync">
-	<xtpl:success><xtpl:value>sync</xtpl:value></xtpl:success><
+	<xtpl:success><xtpl:value>sync</xtpl:value></xtpl:success>
 </xtpl:pull>
 <xtpl:pull name="fail" error="error">
 	<xtpl:fail><xtpl:value>error</xtpl:value></xtpl:fail>
@@ -537,7 +537,7 @@ ctx = {
 	</xtpl:attrs>
 	<xtpl:text>test</xtpl:text>
 </a>
-<xtpl:set name="page">inde.html</xtpl:set>
+<xtpl:set name="page">index.html</xtpl:set>
 ```
 ```html
 <a href="http://site.org/link.html" title="click me" class="link">link.html</a><a href="http://rubaxa.org/index.html" class="link">test</a>
@@ -632,6 +632,8 @@ var xtpl = AsyncTpl.engine('XML').tags({
 <ul><li><a href="#0">0</a></li><li><a href="#1">1</a></li></ul>
 ```
 
+
+----------------------------------------------------
 
 
 <a name="smarty-syntax"></a>
