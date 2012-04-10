@@ -5,7 +5,7 @@ Is a asynchronous template engine for nodejs or the browser.
 
 ## Features
 
-* XML, Smarty or custom syntaxis
+* [XML](#xml-syntax), [Smarty](#smarty) or custom syntaxis
 * async/streaming operation
 * [compile](#compile-errors) & [run-time](#run-time-errors) errors
 * browser/nodejs compatibility
@@ -185,6 +185,7 @@ http.createServer(function (req, res){
 
 --------------------------
 
+<a name="xml-syntax"><a/>
 ## Support XML
 
 * [if](#if)
@@ -633,6 +634,7 @@ var xtpl = AsyncTpl.engine('XML').tags({
 
 
 
+<a name="smarty-syntax"></a>
 ## Support Smarty
 
 * comment: `{{* ... *}}`
