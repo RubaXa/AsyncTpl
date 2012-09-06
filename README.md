@@ -195,7 +195,8 @@ http.createServer(function (req, res){
 * [block](#block): `get & set`
 * [choose](#choose): `when & otherwise`
 * [foreach](#foreach): `iterate, as & index`
-* [node xtpl:attrs](#xattrs)
+* [bind](#bind)
+* [xtpl:attrs](#xattrs)
 * [part](#part)
 * [pull](#pull): `loading, fail & success`
 * [script](#script)
@@ -372,6 +373,36 @@ ctx = { items: [1,2], colors: ['white', 'black'] };
 ```
 ```html
 123:12<ul><li>1. white</li><li>2. black</li></ul><ul><li>2</li><li>8</li></ul>
+```
+
+
+<a name="bind"></a>
+### bind
+```js
+var collection = new Backbone.Collection([{ id: 1, val: 'item 1' }, { id: 2, val: 'item 2' }])
+
+ctx = {
+	list: collection
+};
+
+setTimeout(function (){
+	collection.add({ id: 3, 'item 3' });
+	setTimeout(function (){
+		collection.get(2).set({ name: 'ITEM 2' }).save();
+	}, 1000);
+}, 1000);
+```
+```html
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
+	<div><xtpl:val bind="ctx.name"/></div>
+	<xtpl:bind data="ctx.list" as="list">
+		<ul>
+			<xtpl:foreach iterate="list" as="item">
+				<li xtpl:val="item.val" />
+			</xtpl:foreach>
+		</ul>
+	</xtpl:bind>
+</xtpl>
 ```
 
 
