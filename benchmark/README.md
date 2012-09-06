@@ -12,15 +12,15 @@ Processor  2,4 GHz Intel Core i7
 
 ## TOP SCORE
  1. [xtpl](#xtpl-0-8-8)
- 2. [fest](#fest-0-8-8)   +23.95%
- 3. [TSN](#TSN-0-8-8)    +36.49%
+ 2. [fest](#fest-0-8-8)   +34.19%
+ 3. [TSN](#TSN-0-8-8)    +45.07%
 
 <a name="xtpl-0-8-8"></a>
 ### xtpl
 ```
-fps:   42553.1915
-time:  0.0235ms
-total: 0.235s
+fps:   48780.4878
+time:  0.0205ms
+total: 0.205s
 ---------------------
 content:  8.211 KB
 template: 3.123 KB
@@ -40,12 +40,10 @@ template: 6.986 KB
 <a name="TSN-0-8-8"></a>
 ### TSN
 ```
-fps:   27027.0270
-time:  0.037ms
-total: 0.37s
 ---------------------
-content:  19.095 KB
-template: 7.369 KB
+fps:   27100.2710
+time:  0.0369ms
+total: 0.369s
 ```
 
 
