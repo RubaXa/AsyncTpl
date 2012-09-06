@@ -9,7 +9,7 @@ Is a asynchronous template engine for nodejs or the browser.
 * async/streaming operation
 * [compile](#compile-errors) & [run-time](#run-time-errors) errors
 * browser/nodejs compatibility
-* [high performance](http://rubaxa.github.com/AsyncTpl/benchmark/index.html)
+* [high performance](https://github.com/RubaXa/AsyncTpl/tree/master/benchmark)
 * 10KB (minified + gzipped)
 
 
