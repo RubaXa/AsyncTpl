@@ -11,11 +11,9 @@ Processor  2,4 GHz Intel Core i7
 
 
 TOP SCORE
-```
  1. [xtpl](#xtpl-0-8-8)
  2. [fest](#fest-0-8-8)   +23.95%
  3. [TSN](#TSN-0-8-8)    +36.49%
-```
 
 <a name="xtpl-0-8-8"></a>
 xtpl
