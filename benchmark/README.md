@@ -86,6 +86,7 @@ template: 3.123 KB
 fps:   26246.7192
 time:  0.0381ms
 total: 0.381s
+---------------------
 content:  19.095 KB
 template: 7.369 KB
 ```
