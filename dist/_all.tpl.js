@@ -78,13 +78,13 @@
 		 * @public
 		 * @return	AsyncTpl
 		 */
-		jQuery.tpl = function (engine){
+		jQuery.xtpl = function (engine){
 			AsyncTpl.engine(engine);
-			jQuery.tpl = function (){ return this; };
+			jQuery.xtpl = function (){ return this; };
 			return	this;
 		};
-		jQuery.fn.tpl = function (tplId, data){
-			jQuery.tpl('XML').fetch(tplId, this[0], data);
+		jQuery.fn.xtpl = function (tplId, data){
+			jQuery.xtpl('XML').fetch(tplId, this[0], data);
 			return	this;
 		};
 	}

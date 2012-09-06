@@ -5,7 +5,7 @@
  * Released under the MIT License.
  */
 
-(function (window, undef){
+(function (window){
 	'use strict';
 
 	var __rmname = /^.+\//, __modules = {};
@@ -31,25 +31,50 @@
 
 
 	// GLOBALIZE
-	var Core = (window['AsyncTpl'] = window['AsyncTpl'] || {});
+	var
+		  Core		= (window['AsyncTpl'] = window['AsyncTpl'] || {})
+		, utils		= require('utils')
+		, Buffer	= require('Buffer')
+	;
+
+	window['__xtplFn'] = window['__xtplFn'] || {};
+
+	Core.mods = function (mods){ utils.extend(utils.mods, mods); };
 	Core.require = require;
-	Core.fetch = function (name, ctx, fn){ fn(Core['__'+name](ctx)); };
+	Core.fetch = function (name, ctx){ return __xtplFn[name](ctx || {}, new Buffer, utils); };
+	Core.get = function (name){ return function (ctx){ return Core.fetch(name, ctx); }; };
 
 
 	// jQuery support
-	(function ($){
+	(function (fn){
+		window.define && define.amd
+			? define(['jquery'], fn)
+			: fn(window.jQuery)
+		;
+	})(function ($){
 		if( $ ){
-			$.tpl = function (name, ctx, key){
-				key = '__'+name;
-				return	(key in Core) ? Core[key](ctx) : '[AsyncTpl] '+name +' -- template not found';
+			$.xtpl = function (name, ctx){
+				return Core.fetch(name, ctx);
 			};
 
-			$.fn.tpl = function (name, ctx){
+			$.fn.xtpl = function (name, ctx){
 				if( this.length && this[0].nodeType == 1 ){
-					this[0].innerHTML = $.tpl(name, ctx);
+					this[0].innerHTML = $.xtpl(name, ctx);
 				}
 				return	this;
 			};
 		}
-	})(window.jQuery);
+	});
+
+	xtpl.fetch('sdgsdg', { foo: '1', 'bar': 2 })
+
+	(new Function("(function(foo, bar){" +
+	function a(){
+		alert(foo)
+		bar
+	}.tpString())
+	+ ")"))(foo, bar)
+
+
+	window.ajs && ajs.loaded('{AsyncTpl}AsyncTpl.core.min');
 })(this);
