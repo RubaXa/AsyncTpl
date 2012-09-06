@@ -1,4 +1,7 @@
 <?xml version="1.0"?>
 <xtpl:template xmlns:xtpl="http://rubaxa.org/">
-	<b><xtpl:value>ctx.value</xtpl:value></b>
+	<xtpl:value>ctx.value</xtpl:value>
+	<xtpl:value mod="upper">ctx.value</xtpl:value>
+	<xtpl:value mod="ucfirst">ctx.value</xtpl:value>
+	<xtpl:value output="text"><![CDATA[ctx.array.join('<br/>');]]></xtpl:value>
 </xtpl:template>

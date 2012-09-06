@@ -36,6 +36,20 @@ vows.describe('XML tests').addBatch({
 		}
     },
 
+	bind: {
+		  'topic':  function(){
+			  var ctx = {
+				  			items: {
+								data: [{ id: 1 }, { id: 2 }]
+							  , on: function (){}
+							  , toJSON: function (){ return this.data; }
+							}
+			  			};
+			  return transform('bind.xml', ctx);
+		  }
+		, 'result': function(result){ assert.equal(result.replace(/id="[^"]+/, 'id="'), '<div id="">12</div>'); }
+	},
+
 	'error': {
 		  'topic':  function(){ return transform('error.xml'); }
 		, 'result': function(result){ assert.equal(result, 'Error: Tag "foreach", attribute "iterate" is missing in ./tests/xml/error.xml on line 4'); }
@@ -76,8 +90,23 @@ vows.describe('XML tests').addBatch({
 	},
 
     'attrs': {
-		  'topic':	function(){ return transform('attrs.xml', { protocol: "http:", domain: 'rubaxa.org', search: '?test', title: "home page" }); }
-		, 'result':	function(result){ assert.equal(result, '<a href="http://rubaxa.org/path?test" title="home page" class="link">link.html</a>'); }
+		  'topic':	function(){
+			  return transform('attrs.xml', {
+				  protocol: "http:"
+				, domain: 'rubaxa.org'
+				, search: '?test'
+				, title: "<home \" page>"
+				, bold: 2
+				, italic: true
+			  });
+		  }
+		, 'result':	function(result){
+			assert.equal(
+				  result
+				, '<a href="http://rubaxa.org/path?test" title="&lt;home &quot; page&gt;" class="link">link.html</a>'
+				+ '<div class="bold italic">txt</div>'
+			);
+		}
     },
 
 	'attribute': {
@@ -103,8 +132,17 @@ vows.describe('XML tests').addBatch({
     },
 
     'value': {
-		  'topic':	function(){ return transform('value.xml', {"value":"value"}); }
-		, 'result':	function(result){ assert.equal(result, '<b>value</b>'); }
+		  'topic':	function(){
+			  xtpl.mods({
+				    upper:		function (val){  return val.toUpperCase(); }
+				  , ucfirst:	function (val){  return val.charAt(0).toUpperCase() + val.substr(1); }
+			  });
+			  return transform('value.xml', {
+				    value: 'texT'
+				  , array: [1,2]
+			  });
+		  }
+		, 'result':	function(result){ assert.equal(result, 'texTTEXTTexT1<br/>2'); }
     },
 
     'if': {

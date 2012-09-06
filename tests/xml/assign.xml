@@ -5,6 +5,10 @@
 	<xtpl:assign name="url.protocol" value="http:" />
 	<xtpl:assign name="url.hostname" value="rubaxa.org" />
 
+	<xtpl:closure>
+		<xtpl:assign name="slash" type="var" value="'FAIL'" />
+	</xtpl:closure>
+
 	<xtpl:value>url.protocol</xtpl:value>
 	<xtpl:value>ctx.double.slashes</xtpl:value>
 	<xtpl:value>url.hostname</xtpl:value>

@@ -18,8 +18,6 @@ xtpl.DEBUG          = false;
 		, i, data, start
 	;
 
-	page.fetch({}, function (){});
-
 	for( i = 0; i < iteration; i++ ){
 		data    = JSON.parse(require('fs').readFileSync('/git/AsyncTpl/checknew.json') + '').data;
 		start   = (new Date).getTime();
