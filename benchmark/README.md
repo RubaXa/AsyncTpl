@@ -4,9 +4,11 @@
 
 ----------------------------
 
-Node v0.6.11
+```
+Node       v0.6.11
 Memory     8 GB 1333 MHz DDR3
 Processor  2,4 GHz Intel Core i7
+```
 
 
 ## TOP SCORE
