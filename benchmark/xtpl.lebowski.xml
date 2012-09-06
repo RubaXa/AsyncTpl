@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<xtpl:template xmlns:xtpl="http://rubaxa.org">
+    <html>
+        <head>
+        </head>
+        <body>
+            <table width="800">
+                <tbody>
+                    <tr>
+                        <td width="200">
+                            <table bgcolor="#000000"
+                                   border="0"
+                                   cellpadding="4"
+                                   cellspacing="2"
+                                   width="100%">
+                                <tbody>
+                                    <tr><td bgcolor="#ffffff"><h1>Lebowski benchmark</h1></td></tr>
+                                </tbody>
+                            </table>
+                        </td>
+
+                        <xtpl:foreach iterate="ctx.adverts" as="item">
+                            <td valign="top"
+                                width="200">
+                                <table bgcolor="#000000"
+                                       border="0"
+                                       cellpadding="2"
+                                       cellspacing="2"
+                                       width="100%">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <font color="#ffffff"><b><xtpl:value>item.title</xtpl:value></b></font>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td bgcolor="#ffffff">
+                                                <small>
+                                                    <a href="{*item.url*}"><xtpl:value>item.text</xtpl:value></a>
+                                                </small>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </xtpl:foreach>
+
+                    </tr>
+
+                    <tr valign="top">
+                        <td width="200">
+                            <xtpl:if test="ctx.sections">
+                                <table cellpadding="3"
+                                       width="100%">
+                                    <tbody>
+                                        <xtpl:foreach iterate="ctx.sections" as="section" index="idx">
+                                            <tr>
+                                                <td bgcolor="{* idx % 2 ? '#dddddd' : '#eeeeee' *}">
+                                                    <font color="#ffffff">
+                                                        <b>
+                                                            <a href="http://lb/section.html?id={*section.id*}">
+                                                                <xtpl:value>section.title</xtpl:value>
+                                                            </a>
+
+                                                            <xtpl:if test="section.rip">
+                                                                <font color="#999999">R.I.P.</font>
+                                                            </xtpl:if>
+                                                        </b>
+                                                    </font>
+                                                </td>
+                                            </tr>
+                                        </xtpl:foreach>
+                                    </tbody>
+                                </table>
+                            </xtpl:if>
+
+
+                            <p>
+                                <b>Users</b>:<xtpl:value>ctx.total</xtpl:value><br />
+                                <b>Online</b>:<xtpl:value>(ctx.online||[]).length</xtpl:value><br />
+                                <small>
+                                    <i>
+                                        <xtpl:foreach iterate="ctx.online" as="online" index="idx">
+                                            <a href="http://lb/user.html?id={*idx*}">
+                                                <xtpl:value>online.name</xtpl:value>
+                                            </a>
+                                            <xtpl:value>" "</xtpl:value>
+                                        </xtpl:foreach>
+                                    </i>
+                                </small>
+                            </p>
+                        </td>
+
+                        <td colspan="3"
+                            width="400">
+                            <xtpl:foreach iterate="ctx.news" as="item" index="i">
+                                <b>
+                                    <xtpl:value>item.time+' '+item.title</xtpl:value>
+                                </b>
+                                <br />
+
+                                <small>
+                                    <xtpl:value>item.text</xtpl:value>
+                                    <a href="http://lb/news.html?id={*item.id*}">[ read full story ]</a>
+                                </small>
+                                <br />
+                            </xtpl:foreach>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"
+                            align="center">
+                            <hr />
+                            <small><i>This test based on "Big Lebowski" test by Alexey A. Rybak, 2005.<br />Please send all questions and suggestions to <b>reki@reki.ru</b></i></small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </body>
+    </html>
+</xtpl:template>
