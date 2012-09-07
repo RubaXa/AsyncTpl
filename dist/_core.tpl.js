@@ -66,15 +66,5 @@
 		}
 	});
 
-	xtpl.fetch('sdgsdg', { foo: '1', 'bar': 2 })
-
-	(new Function("(function(foo, bar){" +
-	function a(){
-		alert(foo)
-		bar
-	}.tpString())
-	+ ")"))(foo, bar)
-
-
 	window.ajs && ajs.loaded('{AsyncTpl}AsyncTpl.core.min');
 })(this);
