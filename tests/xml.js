@@ -104,7 +104,7 @@ vows.describe('XML tests').addBatch({
 			assert.equal(
 				  result
 				, '<a href="http://rubaxa.org/path?test" title="&lt;home &quot; page&gt;" class="link">link.html</a>'
-				+ '<div class="bold italic">txt</div>'
+				+ '<div class="def bold italic">txt</div>'
 			);
 		}
     },

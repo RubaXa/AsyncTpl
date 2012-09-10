@@ -90,13 +90,7 @@ http.createServer(function (req, res){
 	<xtpl:set name="title">AsyncTpl :: XML</xtpl:set>
 
 	<ul xtpl:set="nav" xtpl:inner-foreach="ctx.items as item">
-		<li>
-			<xtpl:attrs>
-				<xtpl:attr name="class">
-					<xtpl:text value="nav__item"/>
-					<xtpl:if test="item.selected"><xtpl:space/>nav__item_selected</xtpl:if>
-				</xtpl:attr>
-			</xtpl:attrs>
+		<li class="nav__item" xtpl:class="{ 'nav__item_selected': item.selected, 'nav__item__sub': item.parentId > 0 }">
 			<a href="{*item.href*}" xtpl:tag-if="!item.selected">
 				<xtpl:value>item.text.toUpperCase()</xtpl:value>
 			</a>

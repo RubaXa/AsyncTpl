@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <xtpl:template xmlns:xtpl="http://rubaxa.org/">
 	<a href="{*ctx.protocol*}//{*ctx.domain*}/path{*ctx.search*}" title="{*ctx.title*}" class="link">link.html</a>
-	<div xtpl:class="{ 'bold': ctx.bold > 1, 'italic': !!ctx.italic, 'undefined': ctx.undefined }">txt</div>
+	<div class="def" xtpl:class="{ 'bold': ctx.bold > 1, 'italic': !!ctx.italic, 'undefined': ctx.undefined }">txt</div>
 </xtpl:template>
