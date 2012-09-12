@@ -1,4 +1,4 @@
 .idea
 out.js
-*-out.js
+*-out.*
 node_modules

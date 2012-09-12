@@ -71,9 +71,7 @@
                                                         <b>
                                                             <a>
                                                                 <xtpl:attributes>
-                                                                    <xtpl:attribute name="href">
-                                                                        http://lb/section.html?id=<xtpl:value>item.id</xtpl:value>
-                                                                    </xtpl:attribute>
+                                                                    <xtpl:attribute name="href">http://lb/section.html?id=<xtpl:value>item.id</xtpl:value></xtpl:attribute>
                                                                 </xtpl:attributes>
 
                                                                 <xtpl:value>item.title</xtpl:value>
@@ -93,16 +91,14 @@
 
 
                             <p>
-                                <b>Users</b>: <xtpl:value>ctx.total</xtpl:value><br />
-                                <b>Online</b>: <xtpl:value>(ctx.online||[]).length</xtpl:value><br />
+                                <b>Users</b>:<xtpl:space/><xtpl:value>ctx.total</xtpl:value><br />
+                                <b>Online</b>:<xtpl:space/><xtpl:value>(ctx.online||[]).length</xtpl:value><br />
                                 <small>
                                     <i>
                                         <xtpl:foreach iterate="ctx.online" index="i" as="item">
                                             <a>
                                                 <xtpl:attributes>
-                                                    <xtpl:attribute name="href">
-                                                        http://lb/user.html?id=<xtpl:value>i</xtpl:value>
-                                                    </xtpl:attribute>
+                                                    <xtpl:attribute name="href">http://lb/user.html?id=<xtpl:value>i</xtpl:value></xtpl:attribute>
                                                 </xtpl:attributes>
                                                 <xtpl:value>item.name</xtpl:value>
                                             </a>
@@ -126,11 +122,9 @@
                                     <xtpl:value>item.text</xtpl:value>
                                     <a>
                                         <xtpl:attributes>
-                                            <xtpl:attribute name="href">
-                                                http://lb/news.html?id=<xtpl:value>item.id</xtpl:value>
-                                            </xtpl:attribute>
+                                            <xtpl:attribute name="href">http://lb/news.html?id=<xtpl:value>item.id</xtpl:value></xtpl:attribute>
                                         </xtpl:attributes>
-                                        [ read full story ]
+                                        <xtpl:text>[ read full story ]</xtpl:text>
                                     </a>
                                 </small>
                                 <br />

@@ -22,7 +22,7 @@ fps:   53191.4894
 time:  0.0188ms
 total: 0.188s
 ---------------------
-content:  8.211 KB
+content:  8.213 KB
 template: 3.123 KB
 ```
 
@@ -33,7 +33,7 @@ fps:   50761.4213
 time:  0.0197ms
 total: 0.197s
 ---------------------
-content:  8.210 KB
+content:  8.213 KB
 template: 6.986 KB
 ```
 

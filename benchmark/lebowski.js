@@ -19,6 +19,7 @@ TestSuites.run = function (){
 		unit.time	= (time / max);
 
 		require('fs').writeFileSync(unit.name+'-out.js', unit.template.toString());
+		require('fs').writeFileSync(unit.name+'-out.html', unit.result.toString());
 
 		console.log([
 			  unit.name

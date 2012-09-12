@@ -94,8 +94,8 @@
 
 
                             <p>
-                                <b>Users</b>: <fest:value>json.total</fest:value><br />
-                                <b>Online</b>: <fest:value>(json.online||[]).length</fest:value><br />
+                                <b>Users</b>:<fest:space/><fest:value>json.total</fest:value><br />
+                                <b>Online</b>:<fest:space/><fest:value>(json.online||[]).length</fest:value><br />
                                 <small>
                                     <i>
                                         <fest:for iterate="json.online" index="i" value="item">
@@ -142,7 +142,7 @@
                         <td colspan="4"
                             align="center">
                             <hr />
-                            <small><i>This test based on "Big Lebowski" test by Alexey A. Rybak, 2005.<br />Please send all questions and suggestions to <b>reki@reki.ru</b></i></small>
+                            <small><i>This test based on "Big Lebowski" test by Alexey A. Rybak, 2005.<br />Please send all questions and suggestions to<fest:space/><b>reki@reki.ru</b></i></small>
                         </td>
                     </tr>
                 </tbody>
