@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<xtpl:template xmlns:xtpl="http://rubaxa.org">
+<xtpl:template xmlns:xtpl="http://rubaxa.org/">
     <html>
         <head>
         </head>
@@ -19,7 +19,7 @@
                             </table>
                         </td>
 
-                        <xtpl:foreach iterate="ctx.adverts" as="item">
+                        <xtpl:foreach iterate="ctx.adverts" index="i" as="item">
                             <td valign="top"
                                 width="200">
                                 <table bgcolor="#000000"
@@ -36,7 +36,12 @@
                                         <tr>
                                             <td bgcolor="#ffffff">
                                                 <small>
-                                                    <a href="{*item.url*}"><xtpl:value>item.text</xtpl:value></a>
+                                                    <a>
+                                                        <xtpl:attributes>
+                                                            <xtpl:attribute name="href"><xtpl:value>item.url</xtpl:value></xtpl:attribute>
+                                                        </xtpl:attributes>
+                                                        <xtpl:value>item.text</xtpl:value>
+                                                    </a>
                                                 </small>
                                             </td>
                                         </tr>
@@ -53,16 +58,28 @@
                                 <table cellpadding="3"
                                        width="100%">
                                     <tbody>
-                                        <xtpl:foreach iterate="ctx.sections" as="section" index="idx">
+                                        <xtpl:foreach iterate="ctx.sections" index="i" as="item">
                                             <tr>
-                                                <td bgcolor="{* idx % 2 ? '#dddddd' : '#eeeeee' *}">
+                                                <td>
+                                                    <xtpl:attributes>
+                                                        <xtpl:attribute name="bgcolor">
+                                                            <xtpl:value output="text">i%2 ? '#dddddd' : '#eeeeee'</xtpl:value>
+                                                        </xtpl:attribute>
+                                                    </xtpl:attributes>
+
                                                     <font color="#ffffff">
                                                         <b>
-                                                            <a href="http://lb/section.html?id={*section.id*}">
-                                                                <xtpl:value>section.title</xtpl:value>
+                                                            <a>
+                                                                <xtpl:attributes>
+                                                                    <xtpl:attribute name="href">
+                                                                        http://lb/section.html?id=<xtpl:value>item.id</xtpl:value>
+                                                                    </xtpl:attribute>
+                                                                </xtpl:attributes>
+
+                                                                <xtpl:value>item.title</xtpl:value>
                                                             </a>
 
-                                                            <xtpl:if test="section.rip">
+                                                            <xtpl:if test="item.rip">
                                                                 <font color="#999999">R.I.P.</font>
                                                             </xtpl:if>
                                                         </b>
@@ -76,15 +93,20 @@
 
 
                             <p>
-                                <b>Users</b>:<xtpl:value>ctx.total</xtpl:value><br />
-                                <b>Online</b>:<xtpl:value>(ctx.online||[]).length</xtpl:value><br />
+                                <b>Users</b>: <xtpl:value>ctx.total</xtpl:value><br />
+                                <b>Online</b>: <xtpl:value>(ctx.online||[]).length</xtpl:value><br />
                                 <small>
                                     <i>
-                                        <xtpl:foreach iterate="ctx.online" as="online" index="idx">
-                                            <a href="http://lb/user.html?id={*idx*}">
-                                                <xtpl:value>online.name</xtpl:value>
+                                        <xtpl:foreach iterate="ctx.online" index="i" as="item">
+                                            <a>
+                                                <xtpl:attributes>
+                                                    <xtpl:attribute name="href">
+                                                        http://lb/user.html?id=<xtpl:value>i</xtpl:value>
+                                                    </xtpl:attribute>
+                                                </xtpl:attributes>
+                                                <xtpl:value>item.name</xtpl:value>
                                             </a>
-                                            <xtpl:value>" "</xtpl:value>
+                                            <xtpl:space/>
                                         </xtpl:foreach>
                                     </i>
                                 </small>
@@ -93,7 +115,8 @@
 
                         <td colspan="3"
                             width="400">
-                            <xtpl:foreach iterate="ctx.news" as="item" index="i">
+                            <xtpl:foreach iterate="ctx.news"
+                                          index="i" as="item">
                                 <b>
                                     <xtpl:value>item.time+' '+item.title</xtpl:value>
                                 </b>
@@ -101,7 +124,14 @@
 
                                 <small>
                                     <xtpl:value>item.text</xtpl:value>
-                                    <a href="http://lb/news.html?id={*item.id*}">[ read full story ]</a>
+                                    <a>
+                                        <xtpl:attributes>
+                                            <xtpl:attribute name="href">
+                                                http://lb/news.html?id=<xtpl:value>item.id</xtpl:value>
+                                            </xtpl:attribute>
+                                        </xtpl:attributes>
+                                        [ read full story ]
+                                    </a>
                                 </small>
                                 <br />
                             </xtpl:foreach>

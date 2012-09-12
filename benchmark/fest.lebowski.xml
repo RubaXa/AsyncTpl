@@ -64,15 +64,7 @@
                                                 <td>
                                                     <fest:attributes>
                                                         <fest:attribute name="bgcolor">
-                                                            <fest:choose>
-                                                                <fest:when test="i%2">
-                                                                    <fest:text>#dddddd</fest:text>
-                                                                </fest:when>
-
-                                                                <fest:otherwise>
-                                                                    <fest:text>#eeeeee</fest:text>
-                                                                </fest:otherwise>
-                                                            </fest:choose>
+                                                            <fest:value output="text">i%2 ? '#dddddd' : '#eeeeee'</fest:value>
                                                         </fest:attribute>
                                                     </fest:attributes>
 
@@ -113,10 +105,9 @@
                                                         http://lb/user.html?id=<fest:value>i</fest:value>
                                                     </fest:attribute>
                                                 </fest:attributes>
-
                                                 <fest:value>item.name</fest:value>
                                             </a>
-                                            <fest:value>" "</fest:value>
+                                            <fest:space/>
                                         </fest:for>
                                     </i>
                                 </small>
@@ -126,21 +117,20 @@
                         <td colspan="3"
                             width="400">
                             <fest:for iterate="json.news"
-                                          index="i">
+                                          index="i" value="item">
                                 <b>
-                                    <fest:value>json.news[i].time+' '+json.news[i].title</fest:value>
+                                    <fest:value>item.time+' '+item.title</fest:value>
                                 </b>
                                 <br />
 
                                 <small>
-                                    <fest:value>json.news[i].text</fest:value>
+                                    <fest:value>item.text</fest:value>
                                     <a>
                                         <fest:attributes>
                                             <fest:attribute name="href">
-                                                http://lb/news.html?id=<fest:value>json.news[i].id</fest:value>
+                                                http://lb/news.html?id=<fest:value>item.id</fest:value>
                                             </fest:attribute>
                                         </fest:attributes>
-
                                         [ read full story ]
                                     </a>
                                 </small>
