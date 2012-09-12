@@ -1,6 +1,7 @@
 # Benchmark
 
-Исходный тест: http://ctpp.havoc.ru/template_benchmarks.html
+Для тестов используется: `http://benchmarkjs.com/`
+Исходный тест: `http://ctpp.havoc.ru/template_benchmarks.html`
 
 ----------------------------
 ```
@@ -9,43 +10,15 @@ Memory     8 GB 1333 MHz DDR3
 Processor  2,4 GHz Intel Core i7
 ```
 
-
 ## TOP SCORE
- 1. [xtpl](#xtpl-0-8-8)
- 2. [fest](#fest-0-8-8)   +4.57%
- 3. [TSN](#TSN-0-8-8)    +50.26%
+1. **xtpl x 53,665 ops/sec ±0.38% (98 runs sampled)**
+2. fest x 52,098 ops/sec ±0.39% (102 runs sampled)
+3. tsn x 26,464 ops/sec ±0.36% (97 runs sampled)
 
-<a name="xtpl-0-8-8"></a>
-### xtpl
-```
-fps:   53191.4894
-time:  0.0188ms
-total: 0.188s
----------------------
-content:  8.213 KB
-template: 3.123 KB
-```
 
-<a name="fest-0-8-8"></a>
-### fest
-```
-fps:   50761.4213
-time:  0.0197ms
-total: 0.197s
----------------------
-content:  8.213 KB
-template: 6.986 KB
-```
+### TOP SCORE (get/set)
+1. **xtpl.block x 32,073 ops/sec ±0.68% (98 runs sampled)**
+2. fest.block x 14,533 ops/sec ±2.99% (80 runs sampled)
 
-<a name="TSN-0-8-8"></a>
-### TSN
-```
-fps:   26455.0265
-time:  0.0378ms
-total: 0.378s
----------------------
-content:  19.095 KB
-template: 7.369 KB
-```
 
 

@@ -1,100 +1,52 @@
-var data = JSON.parse(require('fs').readFileSync('./lebowski.json'));
-var TestSuites = [];
-
-TestSuites.run = function (){
-	TestSuites.forEach(function (unit){
-		unit.setup();
-
-		var
-			  time = (new Date).getTime()
-			, max = 10000
-			, i = max
-		;
-
-		while( i-- ){
-			unit.test();
-		}
-
-		unit.total	= time = (new Date).getTime() - time;
-		unit.time	= (time / max);
-
-		require('fs').writeFileSync(unit.name+'-out.js', unit.template.toString());
-		require('fs').writeFileSync(unit.name+'-out.html', unit.result.toString());
-
-		console.log([
-			  unit.name
-			, '---------------------'
-			, 'fps:   ' + (max / time * 1000).toFixed(4)
-			, 'time:  ' + unit.time + 'ms'
-			, 'total: ' + (time / 1000) + 's'
-			, '---------------------'
-			, 'content:  '+ (unit.result.length/1024).toFixed(3) + ' KB'
-			, 'template: '+ (unit.template.toString().length/1024).toFixed(3) +' KB'
-			, ''
-		].join('\n'));
-	});
+var json = JSON.parse(require('fs').readFileSync('./lebowski.json'));
+var TSN = require('../../TSN');
+var xtpl = require('../lib/AsyncTpl').engine('XML');
+var fest = require('../../fest.mail.ru/lib/fest');
+var Benchmark = require('benchmark');
+xtpl.ASYNC = false;
+xtpl.BLOCK_MODE = false;
 
 
-	TestSuites.sort(function (a, b){
-		return	a.total - b.total;
-	});
+function runTest(type){
+	var
+		  tplName = 'lebowski'+type+'.xml'
 
+		, suite = new Benchmark.Suite
+		, festTpl = (new Function('return ' + fest.compile('fest.'+tplName, {beatify:false})))()
+		, festTplHtml
 
-	console.log('\n     TOP SCORE');
-	console.log('---------------------');
-	TestSuites.forEach(function (unit, i){
-		console.log(
-			  i ? '' : '\033[0;32m'
-			, (i+1)+'.'
-			, unit.name
-			, (new Array(Math.max(0, 6-unit.name.length))).join(' ')
-			, i ? '+' + ((1-TestSuites[0].time/unit.time)*100).toFixed(2) + '%' : ''
-			, ' \033[0m'
-		);
-	});
-};
+		, xtplTpl = new xtpl('xtpl.'+tplName)
+		, xtplTplHtml
+		, xtplFender = function (res){ xtplTplHtml = res; }
 
+		, tsnTpl
+		, tsnHtml
+	;
 
-/**
- *           ~~    TESTS   ~~~
- */
+	// force compile
+	xtplTpl.compile();
 
-TestSuites.push(
-	{
-		name: 'xtpl',
-		setup: function (){
-			var _this = this;
-			var xtpl = require('../lib/AsyncTpl').engine('XML');
-
-			this.xtpl = new xtpl('xtpl.lebowski.xml', { async: false });
-			this.template = this.xtpl.compile(); // Force compile
-			this.render = function (res){ _this.result = res; };
-		},
-		test: function (){ this.xtpl.fetch(data, this.render); }
-	},
-
-	{
-		name: 'fest',
-		setup: function (){
-			var fest = require('../../fest.mail.ru/lib/fest'), compiled = fest.compile('fest.lebowski.xml', {beatify:false});
-			this.template = (new Function('return ' + compiled))();
-		},
-		test: function (){ this.result = this.template(data); }
-	},
-
-	{
-		name: 'TSN',
-		setup: function (){
-			var TSN = require('../../TSN');
-
-			this.template	= TSN.load('tsn.lebowski.xml', null, {
-				indent:4,
-				templateRoot:__dirname
-			});
-		},
-		test: function (){ this.result = this.template.call(data); }
+	try {
+		tsnTpl = TSN.load('tsn.'+tplName, null, { indent: 4, templateRoot:__dirname });
+		suite.add('tsn'+type, function (){ tsnHtml = tsnTpl.call(json) });
 	}
-);
+	catch (e){}
+
+	suite
+		.add('fest'+type, function (){ festTplHtml = festTpl(json); })
+		.add('xtpl'+type, function (){ xtplTpl.fetch(json, xtplFender) })
+
+		.on('cycle', function(evt) { console.log(String(evt.target)); })
+		.on('error', function (evt){ console.log(evt.target); })
+		.on('complete', function() {
+			console.log('\033[0;32mFastest is ' + this.filter('fastest').pluck('name'), '\033[0m');
+		})
+	;
 
 
-TestSuites.run();
+	suite.run({ 'async': false });
+}
+
+runTest('');
+console.log('');
+runTest('.block');
