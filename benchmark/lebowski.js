@@ -18,6 +18,8 @@ TestSuites.run = function (){
 		unit.total	= time = (new Date).getTime() - time;
 		unit.time	= (time / max);
 
+		require('fs').writeFileSync(unit.name+'-out.js', unit.template.toString());
+
 		console.log([
 			  unit.name
 			, '---------------------'
@@ -58,16 +60,16 @@ TestSuites.run = function (){
 
 TestSuites.push(
 	{
-		name: 'TSN',
+		name: 'xtpl',
 		setup: function (){
-			var TSN = require('../../TSN');
+			var _this = this;
+			var xtpl = require('../lib/AsyncTpl').engine('XML');
 
-			this.template	= TSN.load('tsn.lebowski.xml', null, {
-				indent:4,
-				templateRoot:__dirname
-			});
+			this.xtpl = new xtpl('xtpl.lebowski.xml', { async: false });
+			this.template = this.xtpl.compile(); // Force compile
+			this.render = function (res){ _this.result = res; };
 		},
-		test: function (){ this.result = this.template.call(data); }
+		test: function (){ this.xtpl.fetch(data, this.render); }
 	},
 
 	{
@@ -79,18 +81,17 @@ TestSuites.push(
 		test: function (){ this.result = this.template(data); }
 	},
 
-
 	{
-		name: 'xtpl',
+		name: 'TSN',
 		setup: function (){
-			var _this = this;
-			var xtpl = require('../lib/AsyncTpl').engine('XML');
+			var TSN = require('../../TSN');
 
-			this.xtpl = new xtpl('xtpl.lebowski.xml', { async: false });
-			this.template = this.xtpl.compile(); // Force compile
-			this.render = function (res){ _this.result = res; };
+			this.template	= TSN.load('tsn.lebowski.xml', null, {
+				indent:4,
+				templateRoot:__dirname
+			});
 		},
-		test: function (){ this.xtpl.fetch(data, this.render); }
+		test: function (){ this.result = this.template.call(data); }
 	}
 );
 
