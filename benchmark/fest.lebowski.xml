@@ -20,8 +20,7 @@
                             </table>
                         </td>
 
-                        <fest:for iterate="json.adverts"
-                                      index="i">
+                        <fest:for iterate="json.adverts" index="i" value="item">
                             <td valign="top"
                                 width="200">
                                 <table bgcolor="#000000"
@@ -32,7 +31,7 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <font color="#ffffff"><b><fest:value>json.adverts[i].title</fest:value></b></font>
+                                                <font color="#ffffff"><b><fest:value>item.title</fest:value></b></font>
                                             </td>
                                         </tr>
                                         <tr>
@@ -40,10 +39,9 @@
                                                 <small>
                                                     <a>
                                                         <fest:attributes>
-                                                            <fest:attribute name="href"><fest:value>json.adverts[i].url</fest:value></fest:attribute>
+                                                            <fest:attribute name="href"><fest:value>item.url</fest:value></fest:attribute>
                                                         </fest:attributes>
-
-                                                        <fest:value>json.adverts[i].text</fest:value>
+                                                        <fest:value>item.text</fest:value>
                                                     </a>
                                                 </small>
                                             </td>
@@ -61,8 +59,7 @@
                                 <table cellpadding="3"
                                        width="100%">
                                     <tbody>
-                                        <fest:for iterate="json.sections"
-                                                      index="i">
+                                        <fest:for iterate="json.sections" index="i" value="item">
                                             <tr>
                                                 <td>
                                                     <fest:attributes>
@@ -84,14 +81,14 @@
                                                             <a>
                                                                 <fest:attributes>
                                                                     <fest:attribute name="href">
-                                                                        http://lb/section.html?id=<fest:value>json.sections[i].id</fest:value>
+                                                                        http://lb/section.html?id=<fest:value>item.id</fest:value>
                                                                     </fest:attribute>
                                                                 </fest:attributes>
 
-                                                                <fest:value>json.sections[i].title</fest:value>
+                                                                <fest:value>item.title</fest:value>
                                                             </a>
 
-                                                            <fest:if test="json.sections[i].rip">
+                                                            <fest:if test="item.rip">
                                                                 <font color="#999999">R.I.P.</font>
                                                             </fest:if>
                                                         </b>
@@ -109,8 +106,7 @@
                                 <b>Online</b>: <fest:value>(json.online||[]).length</fest:value><br />
                                 <small>
                                     <i>
-                                        <fest:for iterate="json.online"
-                                                      index="i">
+                                        <fest:for iterate="json.online" index="i" value="item">
                                             <a>
                                                 <fest:attributes>
                                                     <fest:attribute name="href">
@@ -118,7 +114,7 @@
                                                     </fest:attribute>
                                                 </fest:attributes>
 
-                                                <fest:value>json.online[i].name</fest:value>
+                                                <fest:value>item.name</fest:value>
                                             </a>
                                             <fest:value>" "</fest:value>
                                         </fest:for>
