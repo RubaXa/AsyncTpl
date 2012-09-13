@@ -1,181 +1,88 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
-	<title>shootout</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<style type="text/css">
-		body {
-			margin: 0 10%;
-			text-shadow: white 1px 1px 0px;
-			font-family: Helvetica, Arial, sans-serif;
-			background-color: #eee;
-		}
+	<title>Benchmarks: AsyncTpl vs. Fest vs. TSN</title>
 
-		p {
-			color: #777;
-		}
+	<script>
+		var __xtplFn = {};
+		function microAjax(B,A){this.bindFunction=function(E,D){return function(){return E.apply(D,[D])}};this.stateChange=function(D){if(this.request.readyState==4){this.callbackFunction(this.request.responseText)}};this.getRequest=function(){if(window.ActiveXObject){return new ActiveXObject("Microsoft.XMLHTTP")}else{if(window.XMLHttpRequest){return new XMLHttpRequest()}}return false};this.postBody=(arguments[2]||"");this.callbackFunction=A;this.url=B;this.request=this.getRequest();if(this.request){var C=this.request;C.onreadystatechange=this.bindFunction(this.stateChange,this);if(this.postBody!==""){C.open("POST",B,true);C.setRequestHeader("X-Requested-With","XMLHttpRequest");C.setRequestHeader("Content-type","application/x-www-form-urlencoded");C.setRequestHeader("Connection","close")}else{C.open("GET",B,true)}C.send(this.postBody)}};
+	</script>
 
-		#header p {
-			color: #555;
-			font-size: 1.1em;
-			font-weight: bold;
-		}
+	<script src="./benchmark.js"></script>
+	<script src="../dist/AsyncTpl.core.min.js"></script>
 
-		h1 {
-			color: #333;
-			font-size: 7em;
-			font-weight: bold;
-			margin-top: 0.10em;
-			margin-bottom: -0.25em;
-		}
+	<script src="./out/fest.js"></script>
+	<script src="./out/xtpl.js"></script>
+	<script src="./out/TSN.js"></script>
 
-		.chart {
-			border: 4px solid #ccc;
-			float: left;
-			margin-right: 1em;
-			margin-bottom: 1em;
-		}
-
-		#control {
-			margin-bottom: 1em;
-		}
-
-		#progress {
-			-moz-border-radius: 4px;
-			-webkit-border-radius: 4px;
-			border: 1px solid #aaa;
-			padding: 2px;
-		}
-
-		#progress div {
-			-moz-border-radius: 4px;
-			-webkit-border-radius: 4px;
-			height: 25px;
-			width: 0%;
-			background-color: #888;
-		}
-	</style>
-
-	<script src="../dist/AsyncTpl.min.js"></script>
-	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
-
-	<script src="uubench.js"></script>
-
-	<script src="./suites/AsyncTpl_suite.js"></script>
-	<script src="./suites/dust_suite.js"></script>
-
-	<script src="http://akdubya.github.com/dustjs/dist/dust-full-0.3.0.min.js"></script>
-
-
-	<script src="./suites/mustache_suite.js"></script>
-	<script src="./suites/handlebars_suite.js"></script>
-	<script src="./suites/jquery_suite.js"></script>
-	<script src="http://github.com/wycats/handlebars.js/raw/766497bb553a926c046c5e5b50ee35529d168ba5/lib/handlebars.js"></script>
-	<script src="http://github.com/janl/mustache.js/raw/master/mustache.js"></script>
-	<script src="http://github.com/jquery/jquery-tmpl/raw/master/jquery.tmpl.js"></script>
-
-
-	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-	<script type="text/javascript">google.load('visualization', '1.0', {packages: ['imagechart']});</script>
+	<script src="./out/fest.block.js"></script>
+	<script src="./out/xtpl.block.js"></script>
+	<script src="./out/TSN.block.js"></script>
 
 </head>
 <body>
-	<div id="header">
-		<h1>shootout</h1>
-		<p>Template benchmarks (ops per millisecond)</p>
-	</div>
+	<pre id="log"></pre>
 
-	<div id="control">
-		<div id="progress"><div></div></div>
-		<button id="run" style="display:none;">Run</button>
-	</div>
+	<script>
+		var logNode = document.getElementById('log');
 
-	<div id="content">
-		<div id="charts"></div>
-		<p style="clear: both">
-			Targets:
-			<a href="http://rubaxa.github.com/AsyncTpl">AsyncTpl</a>,
-			<a href="http://akdubya.github.com/dustjs">Dust</a>,
-			<a href="http://github.com/wycats/handlebars.js">Handlebars</a>,
-			<a href="http://mustache.github.com/">Mustache</a>,
-			<a href="http://api.jquery.com/tmpl/">jquery-tmpl</a>.
-			Each benchmark runs once using an adaptive test cycles algorithm similar to the one found in
-			<a href="http://github.com/broofa/jslitmus">jslitmus</a>.
-		</p>
-	</div>
+		function _log(){
+			var log = Array.prototype.join.call(arguments, ' ');
+			if( typeof console !== 'undefined' && console.log ){
+				console.log(log);
+			}
+			logNode.innerHTML += log+'<br/>';
+		}
 
-	<script type="text/javascript">
-		$(document).ready(function() {
-			var $bar = $('#progress > div');
-			var tick;
-			var testQueue = [];
+		function runTest(type, json){
+			var
+				  suite = new Benchmark.Suite
+				, festTpl = __xtplFn['fest'+type]
+				, festTplHtml
 
-			function runAll() {
-				$bar.css('width', "0%");
-				$('#progress').show();
-				for (var key in dustBench.benches) {
-					testQueue.push(key)
-				}
-				tick = 100 / testQueue.length;
-				$('#charts').empty();
-				next();
+				, XBuffer = AsyncTpl.require('Buffer')
+				, XUtils = AsyncTpl.require('utils')
+				, xtplTpl = __xtplFn['xtpl'+type]
+				, xtplTplHtml
+				, xtplRender = function (res){ xtplTplHtml = res; }
+
+				, tsnTpl = __xtplFn['TSN'+type]
+				, tsnHtml
+			;
+
+			if( tsnTpl ){
+				suite.add('tsn'+type, function (){ tsnHtml = tsnTpl.call(json) });
 			}
 
-			function next() {
-				var test = testQueue.shift();
-				if (test) {
-					runSuite(test);
-				} else {
-					$('#progress').fadeOut(1000, function(){ $('#run').fadeIn(); });
-				}
-			}
+			suite
+				.add('xtpl'+type, function (){ xtplTplHtml = xtplTpl(json, new XBuffer, XUtils) })
+				.add('fest'+type, function (){ festTplHtml = festTpl(json); })
 
-			function runSuite(type) {
-				var rows = [];
-				var suite = new uubench.Suite({
-					iterations: 1000,
-					result: function(name, stats) {
-						var opms = stats.iterations / stats.elapsed;
-						rows.push([name, opms]);
-					},
-					start: function() {
-						$('#charts').append("<div id=\"" + type + "\" class=\"chart\"></div>");
-					},
-					done: function() {
-						var pct = parseFloat($bar.css('width')) + tick;
-						drawBarChart(type, rows);
-						$('#progress > div').css('width', pct + "%");
-						next();
-					}
-				});
+				.on('cycle', function(evt) { _log(String(evt.target)); })
+				.on('error', function (evt){ _log('Error:', evt.target); })
+				.on('complete', function() {
+					_log('<b style="color: green;">Fastest is ' + this.filter('fastest').pluck('name')+'</b>');
+				})
+			;
 
-				xtplBench(suite, type, "AsyncTpl");
-				xtplSafeBench(suite, type, "AsyncTpl (safe)");
-				dustBench(suite, type, "dust");
-				handlebarsBench(suite, type, "handlebars");
-				mustacheBench(suite, type, "mustache");
-				jqueryBench(suite, type, "jquery");
-				suite.run();
-			}
 
-			function drawBarChart(type, rows) {
-				var dataTable = new google.visualization.DataTable();
-				dataTable.addColumn("string", "engine");
-				dataTable.addColumn("number", "ops");
-				dataTable.addRows(rows);
+			_log('run test'+type);
+			suite.run({ 'async': false });
+		}
 
-				var chart = new google.visualization.ImageChart(document.getElementById(type));
-				chart.draw(dataTable, {title: type, cht: 'bhs', chs: '420x175'});
-			}
 
-			$('#run').click(function() {
-				$('#run').hide();
-				runAll();
-				return false;
-			});
+		microAjax('./lebowski.json', function (res){
+			var json = (new Function('return '+res))();
 
-			runAll();
+			_log(navigator.userAgent);
+			_log('--');
+
+			runTest('', json);
+			_log('--');
+			runTest('.block', json);
 		});
 	</script>
+
+
 </body>
 </html>
