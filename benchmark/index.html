@@ -19,10 +19,13 @@
 	<script src="./out/xtpl.block.js"></script>
 	<script src="./out/TSN.block.js"></script>
 
+	<!-- libjs -->
+	<script src="./.import/mask.js"></script>
+	<script src="./.import/include.js"></script>	
 </head>
 <body>
 	<pre id="log"></pre>
-
+	<div id='placeholder'></div>
 	<script>
 		var logNode = document.getElementById('log');
 
@@ -48,17 +51,21 @@
 
 				, tsnTpl = __xtplFn['TSN'+type]
 				, tsnHtml
+				, maskTpl = window['maskTpl' + type]
+				, maskRender = mask.render
+				, placeholder = document.getElementById('placeholder')
 			;
 
 			if( tsnTpl ){
-				suite.add('tsn'+type, function (){ tsnHtml = tsnTpl.call(json) });
+				suite.add('tsn'+type, function (){ placeholder.innerHTML = tsnTpl.call(json); });
 			}
 
 			suite
-				.add('xtpl'+type, function (){ xtplTplHtml = xtplTpl(json, new XBuffer, XUtils) })
-				.add('fest'+type, function (){ festTplHtml = festTpl(json); })
+				.add('xtpl'+type, function (){ placeholder.innerHTML = xtplTpl(json, new XBuffer, XUtils); })
+				.add('fest'+type, function (){ placeholder.innerHTML = festTpl(json); })
+				.add('mask'+type, function (){ placeholder.appendChild(maskRender(maskTpl, json)); })
 
-				.on('cycle', function(evt) { _log(String(evt.target)); })
+				.on('cycle', function(evt) { placeholder.innerHTML = ''; _log(String(evt.target)); })
 				.on('error', function (evt){ _log('Error:', evt.target); })
 				.on('complete', function() {
 					_log('<b style="color: green;">Fastest is ' + this.filter('fastest').pluck('name')+'</b>');
@@ -71,16 +78,23 @@
 		}
 
 
-		microAjax('./lebowski.json', function (res){
-			var json = (new Function('return '+res))();
+		include
+			.load('lebowski.json::Data', 'lebowski.mask::Mask', 'lebowski.block.mask::MaskBlock')
+			.done(function(resp){
+				window['maskTpl'] = resp.load.Mask;
+				window['maskTpl.block'] = resp.load.MaskBlock;
 
-			_log(navigator.userAgent);
-			_log('--');
+				var json = (new Function('return '+resp.load.Data))();
 
-			runTest('', json);
-			_log('--');
-			runTest('.block', json);
-		});
+				_log(navigator.userAgent);
+				_log('--');
+
+				runTest('', json);
+				_log('--');
+				runTest('.block', json);
+
+			});
+
 	</script>
 
 
