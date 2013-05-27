@@ -1,0 +1,89 @@
+html{
+    head;
+    body > 
+        table width=800 > 
+            tbody{
+                tr{
+                    td width=200 > 
+                        table 
+                        	bgcolor=#000000 
+                        	border=0 
+                        	cellpadding=4 
+                        	cellspacing=2 
+                        	width=100% 
+
+                        		> tbody > tr > td bgcolor=#ffffff > h1 > "Lebowski benchmark"
+
+                    % each=adverts > 
+                        td valign=top width=200 > 
+                            table 
+                            	bgcolor=#000000 
+                            	border=0 
+                            	cellpadding=2 
+                            	cellspacing=2 
+                            	width=100% 
+                            		>  tbody{
+
+                                    tr > td > font color=#ffffff > b > '~[title]'
+                                    tr > td bgcolor=#ffffff > small > a href='~[url]' > '~[text]'
+                                }
+                }
+
+                tr valign=top{
+                    td width=200{
+
+                        % if='sections' > 
+                            table cellpadding=3 width=100% > 
+                                tbody > 
+                                    % each='sections' > 
+                                        tr > td bgcolor='~[:index % 2 ? "#dddddd" : "#eeeeee"]' 
+                                                > font color=#ffffff > 
+                                                    b{
+                                                        a href='http://lb/section.html?id=~[id]' > '~[title]' 
+                                                        
+                                                        % if="rip" > font color=#999999 >  "R.I.P."
+                                                    }
+                                            
+                        p{
+                            b > "Users"
+                            " : ~[total]"
+                            br;
+                            b > "Online"
+                            " : ~[:online.length || 0]"
+
+                            br;
+                            small > 
+                                i > 
+                                    % each='online' {
+                                        a href='http://lb/user.html?id=~[index]' > '~[name] '
+                                    }
+                        }
+                    }
+                    td colspan=3 width=400 > 
+                        % each='news'{
+                            b > '~[time] ~[title]'
+                                
+                            br;
+                            small{
+                            	'~[text]'
+                                
+                                a href='http://lb/news.html?id=~[id]' > '[ read full story ]'
+                                
+                            }
+                            br;
+                        }
+                }
+                tr > 
+                    td colspan=4 align=center{
+                        hr;
+                        small > 
+                            i{
+                                'This test based on "Big Lebowski" test by Alexey A. Rybak, 2005.'
+                                br;
+                                "Please send all questions and suggestions to"
+                                b > 
+                                    "reki@reki.ru"
+                            }
+                    }
+            }
+}
