@@ -1,4 +1,4 @@
-# AsyncTpl
+# AsyncTpl (closed)
 
 Is a asynchronous template engine for nodejs or the browser.
 
